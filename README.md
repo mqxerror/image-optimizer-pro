@@ -25,7 +25,8 @@ Image Optimizer Pro is a modern, multi-tenant SaaS platform that transforms raw 
 - ✅ Batch image processing with queue management
 - ✅ AI Studio for individual image enhancement
   - **Quick Mode**: 3 essential sliders (Lighting, Contrast, Sharpness)
-  - **Advanced Mode**: Full control via sliding panel (Camera, Lighting, Background, Jewelry, Composition)
+  - **Advanced Mode**: Full control via draggable floating panel (Camera, Lighting, Background, Jewelry, Composition)
+  - Drag-and-drop repositioning with position persistence
   - Mode persistence with localStorage
 - ✅ Project-based workflow
 - ✅ Template and preset system
@@ -49,7 +50,8 @@ Image Optimizer Pro is a modern, multi-tenant SaaS platform that transforms raw 
 - ✅ **UX-016**: Quality Feedback System (thumbs up/down)
 - ✅ **UX-018**: Enhanced Loading Skeletons with shimmer
 - ✅ **UX-020**: Image Zoom on Hover
-- ✅ **Studio Redesign**: Quick Mode (3 sliders) + Advanced Mode (sliding panel)
+- ✅ **Studio Redesign**: Quick Mode (3 sliders) + Advanced Mode (draggable floating panel)
+- ✅ **Draggable Advanced Panel**: Drag-and-drop repositioning with position memory
 - ✅ **Queue Modernization**: Soft gradients, modern pill-styled filters, enhanced cards
 
 ## Getting Started
