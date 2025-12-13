@@ -962,12 +962,13 @@ export default function History() {
                 }`}
                 onClick={() => handleView(item)}
               >
-                <div className="relative aspect-square bg-gray-100">
+                {/* UX-020: Image zoom on hover */}
+                <div className="relative aspect-square bg-gray-100 overflow-hidden">
                   {item.optimized_url ? (
                     <img
                       src={item.optimized_url}
                       alt={item.file_name}
-                      className="w-full h-full object-cover"
+                      className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
                     />
                   ) : (
                     <div className="w-full h-full flex items-center justify-center">
