@@ -53,6 +53,16 @@ export default {
   			lg: 'var(--radius)',
   			md: 'calc(var(--radius) - 2px)',
   			sm: 'calc(var(--radius) - 4px)'
+  		},
+  		// UX-018: Shimmer animation for loading skeletons
+  		keyframes: {
+  			shimmer: {
+  				'0%': { backgroundPosition: '-200% 0' },
+  				'100%': { backgroundPosition: '200% 0' }
+  			}
+  		},
+  		animation: {
+  			shimmer: 'shimmer 2s ease-in-out infinite'
   		}
   	}
   },
