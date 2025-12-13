@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef } from 'react'
-import { X, GripVertical } from 'lucide-react'
+import { X, GripVertical, ChevronDown, ChevronUp } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { AdvancedPanelSection } from './AdvancedPanelSection'
@@ -24,6 +24,14 @@ interface Position {
   y: number
 }
 
+interface SectionConfig {
+  id: string
+  title: string
+  icon: string
+  defaultExpanded: boolean
+  component: React.ReactNode
+}
+
 export function AdvancedPanel({
   isOpen,
   onClose,
@@ -32,7 +40,7 @@ export function AdvancedPanel({
   expandedSections,
   onToggleSection
 }: AdvancedPanelProps) {
-  // Dragging state
+  // Panel dragging state
   const [isDragging, setIsDragging] = useState(false)
   const [position, setPosition] = useState<Position>(() => {
     // Load saved position or use default (right side)
@@ -48,6 +56,90 @@ export function AdvancedPanel({
   })
   const [dragStart, setDragStart] = useState<Position>({ x: 0, y: 0 })
   const panelRef = useRef<HTMLDivElement>(null)
+
+  // Section reordering state
+  const [draggedSection, setDraggedSection] = useState<string | null>(null)
+  const [dragOverSection, setDragOverSection] = useState<string | null>(null)
+
+  // Section order state
+  const [sectionOrder, setSectionOrder] = useState<string[]>(() => {
+    const saved = localStorage.getItem('advancedPanelSectionOrder')
+    if (saved) {
+      try {
+        return JSON.parse(saved)
+      } catch {
+        return ['camera', 'lighting', 'background', 'jewelry', 'composition']
+      }
+    }
+    return ['camera', 'lighting', 'background', 'jewelry', 'composition']
+  })
+
+  // All sections expanded/collapsed state
+  const allExpanded = Object.values(expandedSections).every(val => val)
+
+  // Define sections configuration
+  const sectionsConfig: Record<string, SectionConfig> = {
+    camera: {
+      id: 'camera',
+      title: 'Camera Settings',
+      icon: '📷',
+      defaultExpanded: true,
+      component: (
+        <CameraControls
+          settings={settings.camera}
+          onChange={(camera) => onSettingsChange({ ...settings, camera })}
+        />
+      )
+    },
+    lighting: {
+      id: 'lighting',
+      title: 'Lighting',
+      icon: '💡',
+      defaultExpanded: true,
+      component: (
+        <LightingMixer
+          settings={settings.lighting}
+          onChange={(lighting) => onSettingsChange({ ...settings, lighting })}
+        />
+      )
+    },
+    background: {
+      id: 'background',
+      title: 'Background',
+      icon: '🖼️',
+      defaultExpanded: false,
+      component: (
+        <BackgroundSelector
+          settings={settings.background}
+          onChange={(background) => onSettingsChange({ ...settings, background })}
+        />
+      )
+    },
+    jewelry: {
+      id: 'jewelry',
+      title: 'Jewelry Enhancements',
+      icon: '💎',
+      defaultExpanded: false,
+      component: (
+        <JewelryEnhancements
+          settings={settings.jewelry}
+          onChange={(jewelry) => onSettingsChange({ ...settings, jewelry })}
+        />
+      )
+    },
+    composition: {
+      id: 'composition',
+      title: 'Composition',
+      icon: '📐',
+      defaultExpanded: false,
+      component: (
+        <CompositionControls
+          settings={settings.composition}
+          onChange={(composition) => onSettingsChange({ ...settings, composition })}
+        />
+      )
+    }
+  }
 
   // Close on ESC key
   useEffect(() => {
@@ -86,7 +178,12 @@ export function AdvancedPanel({
     }
   }, [isOpen])
 
-  // Handle drag start
+  // Save section order to localStorage
+  useEffect(() => {
+    localStorage.setItem('advancedPanelSectionOrder', JSON.stringify(sectionOrder))
+  }, [sectionOrder])
+
+  // Handle panel drag start
   const handleMouseDown = (e: React.MouseEvent) => {
     // Only start drag if clicking on the header (not buttons)
     if ((e.target as HTMLElement).closest('button')) {
@@ -97,6 +194,55 @@ export function AdvancedPanel({
     setDragStart({
       x: e.clientX - position.x,
       y: e.clientY - position.y
+    })
+  }
+
+  // Handle section drag start
+  const handleSectionDragStart = (sectionId: string) => {
+    setDraggedSection(sectionId)
+  }
+
+  // Handle section drag over
+  const handleSectionDragOver = (e: React.DragEvent, sectionId: string) => {
+    e.preventDefault()
+    if (draggedSection && draggedSection !== sectionId) {
+      setDragOverSection(sectionId)
+    }
+  }
+
+  // Handle section drop
+  const handleSectionDrop = (e: React.DragEvent, targetId: string) => {
+    e.preventDefault()
+
+    if (draggedSection && draggedSection !== targetId) {
+      const newOrder = [...sectionOrder]
+      const draggedIndex = newOrder.indexOf(draggedSection)
+      const targetIndex = newOrder.indexOf(targetId)
+
+      // Remove dragged item and insert at new position
+      newOrder.splice(draggedIndex, 1)
+      newOrder.splice(targetIndex, 0, draggedSection)
+
+      setSectionOrder(newOrder)
+    }
+
+    setDraggedSection(null)
+    setDragOverSection(null)
+  }
+
+  // Handle section drag end
+  const handleSectionDragEnd = () => {
+    setDraggedSection(null)
+    setDragOverSection(null)
+  }
+
+  // Toggle all sections
+  const toggleAllSections = () => {
+    const newState = allExpanded ? false : true
+    Object.keys(expandedSections).forEach(section => {
+      if (expandedSections[section] !== newState) {
+        onToggleSection(section)
+      }
     })
   }
 
@@ -176,87 +322,76 @@ export function AdvancedPanel({
               <h2 id="advanced-panel-title" className="text-lg font-semibold text-gray-900">
                 Advanced Settings
               </h2>
-              <p className="text-xs text-gray-500 mt-0.5">Drag to reposition • Fine-tune every detail</p>
+              <p className="text-xs text-gray-500 mt-0.5">Drag to reposition • Reorder sections below</p>
             </div>
           </div>
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={onClose}
-            className="hover:bg-white/80 shrink-0"
-            aria-label="Close advanced settings"
-          >
-            <X className="h-5 w-5" />
-          </Button>
+          <div className="flex items-center gap-1">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={toggleAllSections}
+              className="hover:bg-white/80 h-8 px-2 text-xs"
+              title={allExpanded ? "Collapse all sections" : "Expand all sections"}
+            >
+              {allExpanded ? (
+                <>
+                  <ChevronUp className="h-3.5 w-3.5 mr-1" />
+                  Collapse All
+                </>
+              ) : (
+                <>
+                  <ChevronDown className="h-3.5 w-3.5 mr-1" />
+                  Expand All
+                </>
+              )}
+            </Button>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={onClose}
+              className="hover:bg-white/80 shrink-0 h-8 w-8"
+              aria-label="Close advanced settings"
+            >
+              <X className="h-5 w-5" />
+            </Button>
+          </div>
         </div>
 
         {/* Scrollable Content */}
         <ScrollArea className="h-[calc(100%-73px)]">
           <div className="p-4 space-y-2">
-            {/* Camera Section */}
-            <AdvancedPanelSection
-              title="Camera Settings"
-              icon="📷"
-              isExpanded={expandedSections.camera ?? true}
-              onToggle={() => onToggleSection('camera')}
-            >
-              <CameraControls
-                settings={settings.camera}
-                onChange={(camera) => onSettingsChange({ ...settings, camera })}
-              />
-            </AdvancedPanelSection>
+            {/* Render sections in custom order */}
+            {sectionOrder.map((sectionId) => {
+              const section = sectionsConfig[sectionId]
+              if (!section) return null
 
-            {/* Lighting Section */}
-            <AdvancedPanelSection
-              title="Lighting"
-              icon="💡"
-              isExpanded={expandedSections.lighting ?? true}
-              onToggle={() => onToggleSection('lighting')}
-            >
-              <LightingMixer
-                settings={settings.lighting}
-                onChange={(lighting) => onSettingsChange({ ...settings, lighting })}
-              />
-            </AdvancedPanelSection>
-
-            {/* Background Section */}
-            <AdvancedPanelSection
-              title="Background"
-              icon="🖼️"
-              isExpanded={expandedSections.background ?? false}
-              onToggle={() => onToggleSection('background')}
-            >
-              <BackgroundSelector
-                settings={settings.background}
-                onChange={(background) => onSettingsChange({ ...settings, background })}
-              />
-            </AdvancedPanelSection>
-
-            {/* Jewelry Section */}
-            <AdvancedPanelSection
-              title="Jewelry Enhancements"
-              icon="💎"
-              isExpanded={expandedSections.jewelry ?? false}
-              onToggle={() => onToggleSection('jewelry')}
-            >
-              <JewelryEnhancements
-                settings={settings.jewelry}
-                onChange={(jewelry) => onSettingsChange({ ...settings, jewelry })}
-              />
-            </AdvancedPanelSection>
-
-            {/* Composition Section */}
-            <AdvancedPanelSection
-              title="Composition"
-              icon="📐"
-              isExpanded={expandedSections.composition ?? false}
-              onToggle={() => onToggleSection('composition')}
-            >
-              <CompositionControls
-                settings={settings.composition}
-                onChange={(composition) => onSettingsChange({ ...settings, composition })}
-              />
-            </AdvancedPanelSection>
+              return (
+                <div
+                  key={sectionId}
+                  draggable
+                  onDragStart={() => handleSectionDragStart(sectionId)}
+                  onDragOver={(e) => handleSectionDragOver(e, sectionId)}
+                  onDrop={(e) => handleSectionDrop(e, sectionId)}
+                  onDragEnd={handleSectionDragEnd}
+                  className={`
+                    transition-all
+                    ${draggedSection === sectionId ? 'opacity-50' : 'opacity-100'}
+                    ${dragOverSection === sectionId ? 'scale-105' : 'scale-100'}
+                  `}
+                >
+                  <AdvancedPanelSection
+                    title={section.title}
+                    icon={section.icon}
+                    isExpanded={expandedSections[sectionId] ?? section.defaultExpanded}
+                    onToggle={() => onToggleSection(sectionId)}
+                    isDragging={draggedSection === sectionId}
+                    isDragOver={dragOverSection === sectionId}
+                  >
+                    {section.component}
+                  </AdvancedPanelSection>
+                </div>
+              )
+            })}
           </div>
         </ScrollArea>
       </div>
