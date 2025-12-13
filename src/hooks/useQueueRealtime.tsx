@@ -6,6 +6,7 @@ import { useAuthStore } from '@/stores/auth'
 import { useToast } from '@/hooks/use-toast'
 import { ToastAction } from '@/components/ui/toast'
 import type { RealtimeChannel } from '@supabase/supabase-js'
+import confetti from 'canvas-confetti' // UX-015: Celebration confetti
 
 interface UseQueueRealtimeOptions {
   onItemCompleted?: (item: any) => void
@@ -53,9 +54,38 @@ export function useQueueRealtime(options: UseQueueRealtimeOptions = {}) {
       queryClient.invalidateQueries({ queryKey: ['recent-projects'] })
 
       if (showProjectCompletionToasts) {
+        // UX-015: Trigger confetti celebration
+        confetti({
+          particleCount: 100,
+          spread: 70,
+          origin: { y: 0.6 },
+          colors: ['#3b82f6', '#8b5cf6', '#ec4899', '#10b981']
+        })
+
+        // Add a second burst for extra celebration
+        setTimeout(() => {
+          confetti({
+            particleCount: 50,
+            angle: 60,
+            spread: 55,
+            origin: { x: 0 },
+            colors: ['#3b82f6', '#8b5cf6', '#ec4899', '#10b981']
+          })
+        }, 200)
+
+        setTimeout(() => {
+          confetti({
+            particleCount: 50,
+            angle: 120,
+            spread: 55,
+            origin: { x: 1 },
+            colors: ['#3b82f6', '#8b5cf6', '#ec4899', '#10b981']
+          })
+        }, 400)
+
         toast({
           title: `🎉 ${project.name} completed!`,
-          description: `All ${project.total_images} images have been processed.`,
+          description: `All ${project.total_images} images have been processed successfully!`,
           action: (
             <ToastAction
               altText="View Results"
