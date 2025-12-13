@@ -18,7 +18,9 @@ import {
   FileText,
   Palette,
   Wand2,
-  Image as ImageIcon
+  Image as ImageIcon,
+  ThumbsUp,
+  ThumbsDown
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -90,6 +92,35 @@ export default function History() {
   const { organization } = useAuthStore()
   const queryClient = useQueryClient()
   const { toast } = useToast()
+
+  // UX-016: Quality feedback mutation
+  const feedbackMutation = useMutation({
+    mutationFn: async ({ itemId, rating }: { itemId: string; rating: 'thumbs_up' | 'thumbs_down' }) => {
+      const { error } = await supabase
+        .from('processing_history')
+        .update({
+          quality_rating: rating,
+          feedback_submitted_at: new Date().toISOString()
+        })
+        .eq('id', itemId)
+
+      if (error) throw error
+    },
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: ['history'] })
+      toast({
+        title: 'Feedback submitted',
+        description: `Thank you for rating this result!`,
+      })
+    },
+    onError: (error) => {
+      toast({
+        title: 'Failed to submit feedback',
+        description: error instanceof Error ? error.message : 'Something went wrong',
+        variant: 'destructive'
+      })
+    }
+  })
   const [searchQuery, setSearchQuery] = useState('')
   const [statusFilter, setStatusFilter] = useState<string>('all')
   const [modelFilter, setModelFilter] = useState<string>('all')
@@ -1005,6 +1036,40 @@ export default function History() {
                       {format(new Date(item.completed_at), 'MMM d')}
                     </span>
                   </div>
+
+                  {/* UX-016: Quality Feedback Buttons */}
+                  {item.status === 'success' && (
+                    <div className="flex items-center gap-1 mt-2 pt-2 border-t">
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          feedbackMutation.mutate({ itemId: item.id, rating: 'thumbs_up' })
+                        }}
+                        className={`flex-1 p-1.5 rounded transition-colors ${
+                          (item as any).quality_rating === 'thumbs_up'
+                            ? 'bg-green-100 text-green-600'
+                            : 'hover:bg-green-50 text-gray-400 hover:text-green-600'
+                        }`}
+                        title="Good result"
+                      >
+                        <ThumbsUp className="h-3.5 w-3.5 mx-auto" />
+                      </button>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          feedbackMutation.mutate({ itemId: item.id, rating: 'thumbs_down' })
+                        }}
+                        className={`flex-1 p-1.5 rounded transition-colors ${
+                          (item as any).quality_rating === 'thumbs_down'
+                            ? 'bg-red-100 text-red-600'
+                            : 'hover:bg-red-50 text-gray-400 hover:text-red-600'
+                        }`}
+                        title="Needs improvement"
+                      >
+                        <ThumbsDown className="h-3.5 w-3.5 mx-auto" />
+                      </button>
+                    </div>
+                  )}
                 </CardContent>
               </Card>
             ))}
