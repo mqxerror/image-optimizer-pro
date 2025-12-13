@@ -110,6 +110,7 @@ export default function History() {
   const [selectedQuickPresetId, setSelectedQuickPresetId] = useState<string | null>(null)
   const [isSavePresetDialogOpen, setIsSavePresetDialogOpen] = useState(false)
   const [newPresetName, setNewPresetName] = useState('')
+  const [useSameSettings, setUseSameSettings] = useState(true) // UX-012: Default to same settings
 
   // Fetch history
   const { data: historyItems, isLoading } = useQuery({
@@ -547,6 +548,7 @@ export default function History() {
     setReoptimizeMode('custom')
     setSelectedTemplateId(null)
     setSelectedPresetId(null)
+    setUseSameSettings(true) // UX-012: Default to same settings
     setIsReoptimizeOpen(true)
   }
 
@@ -959,6 +961,20 @@ export default function History() {
                       {item.status === 'success' ? <CheckCircle className="h-3 w-3" /> : <XCircle className="h-3 w-3" />}
                     </Badge>
                   </div>
+                  {/* Version Badge */}
+                  {item.version > 1 && (
+                    <div className="absolute bottom-2 right-2">
+                      <Badge
+                        className="bg-purple-100 text-purple-700 text-[10px] cursor-pointer hover:bg-purple-200 transition-colors"
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          handleViewVersions(item)
+                        }}
+                      >
+                        v{item.version}
+                      </Badge>
+                    </div>
+                  )}
                   {/* Hover Actions */}
                   <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
                     <Button
@@ -1126,11 +1142,40 @@ export default function History() {
 
           {selectedItem && (
             <div className="space-y-4 py-2">
-              {/* Top row: Image preview + Quick preset */}
-              <div className="flex gap-4 items-start">
-                {/* Compact image preview */}
-                {selectedItem.original_url && (
-                  <div className="shrink-0">
+              {/* UX-012: Simplified Flow Toggle */}
+              <div className="flex items-center justify-between p-3 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg border border-blue-100">
+                <div className="flex items-center gap-2">
+                  <Checkbox
+                    id="use-same-settings"
+                    checked={useSameSettings}
+                    onCheckedChange={(checked) => setUseSameSettings(checked === true)}
+                  />
+                  <Label htmlFor="use-same-settings" className="text-sm font-medium cursor-pointer">
+                    Try again with same settings
+                  </Label>
+                </div>
+                {useSameSettings && (
+                  <Badge variant="secondary" className="text-xs">
+                    {selectedItem.ai_model || 'flux-kontext-pro'}
+                  </Badge>
+                )}
+              </div>
+
+              {useSameSettings && selectedItem.generated_prompt && (
+                <div className="p-3 bg-gray-50 rounded-lg border">
+                  <p className="text-xs text-gray-500 mb-1">Will use previous prompt:</p>
+                  <p className="text-sm text-gray-700 line-clamp-2">{selectedItem.generated_prompt}</p>
+                </div>
+              )}
+
+              {/* Change Settings Section - Collapsible */}
+              {!useSameSettings && (
+                <>
+                  {/* Top row: Image preview + Quick preset */}
+                  <div className="flex gap-4 items-start">
+                    {/* Compact image preview */}
+                    {selectedItem.original_url && (
+                      <div className="shrink-0">
                     <img
                       src={selectedItem.original_url}
                       alt="Original"
@@ -1176,11 +1221,11 @@ export default function History() {
                             </Badge>
                           </div>
                         </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
                 </div>
-              </div>
 
               {/* Prompt Mode Selection */}
               <div className="space-y-3">
@@ -1330,42 +1375,48 @@ export default function History() {
                 </div>
               )}
 
-              {/* Compact Footer with inline summary */}
-              <div className="flex items-center justify-between pt-2 border-t">
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => setIsSavePresetDialogOpen(true)}
-                  className="text-muted-foreground"
-                >
-                  <Download className="h-4 w-4 mr-1" />
-                  Save Preset
+                  {/* Save Preset Button (only in change settings mode) */}
+                  <div className="flex items-center justify-start pt-2 border-t">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => setIsSavePresetDialogOpen(true)}
+                      className="text-muted-foreground"
+                    >
+                      <Download className="h-4 w-4 mr-1" />
+                      Save Preset
+                    </Button>
+                  </div>
+                </>
+              )}
+
+              {/* Footer - always visible */}
+              <div className="flex items-center justify-end gap-2 pt-2 border-t">
+                <Button variant="outline" size="sm" onClick={() => setIsReoptimizeOpen(false)}>
+                  Cancel
                 </Button>
-                <div className="flex items-center gap-2">
-                  <Button variant="outline" size="sm" onClick={() => setIsReoptimizeOpen(false)}>
-                    Cancel
-                  </Button>
-                  <Button
-                    size="sm"
-                    onClick={submitReoptimize}
-                    disabled={reoptimizeMutation.isPending}
-                  >
-                    {reoptimizeMutation.isPending ? (
-                      <>
-                        <Loader2 className="h-4 w-4 mr-1 animate-spin" />
-                        Starting...
-                      </>
-                    ) : (
-                      <>
-                        <Sparkles className="h-4 w-4 mr-1" />
-                        Re-optimize
+                <Button
+                  size="sm"
+                  onClick={submitReoptimize}
+                  disabled={reoptimizeMutation.isPending}
+                >
+                  {reoptimizeMutation.isPending ? (
+                    <>
+                      <Loader2 className="h-4 w-4 mr-1 animate-spin" />
+                      Starting...
+                    </>
+                  ) : (
+                    <>
+                      <Sparkles className="h-4 w-4 mr-1" />
+                      Re-optimize
+                      {selectedModelInfo && (
                         <Badge className="ml-1.5 bg-green-500/20 text-green-700 hover:bg-green-500/20">
-                          {selectedModelInfo?.price}
+                          {selectedModelInfo.price}
                         </Badge>
-                      </>
-                    )}
-                  </Button>
-                </div>
+                      )}
+                    </>
+                  )}
+                </Button>
               </div>
             </div>
           )}

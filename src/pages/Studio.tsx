@@ -60,6 +60,7 @@ export default function Studio() {
   const [showSavePresetDialog, setShowSavePresetDialog] = useState(false)
   const [presetName, setPresetName] = useState('')
   const [presetDescription, setPresetDescription] = useState('')
+  const [studioMode, setStudioMode] = useState<'quick' | 'advanced'>('quick') // UX-014: Quick/Advanced mode
 
   // Generate prompt from current settings (updates live)
   const generatedPrompt = useMemo(() => {
@@ -405,14 +406,52 @@ export default function Studio() {
 
           {/* Settings Panel */}
           <div className="w-80 bg-gray-50 border-l border-gray-200">
-            <div className="p-4 border-b border-gray-200 bg-white">
-              <h3 className="font-semibold text-gray-900">Settings</h3>
-              <p className="text-xs text-gray-500 mt-0.5">Customize your image generation</p>
+            <div className="p-4 border-b border-gray-200 bg-white space-y-3">
+              <div>
+                <h3 className="font-semibold text-gray-900">Settings</h3>
+                <p className="text-xs text-gray-500 mt-0.5">Customize your image generation</p>
+              </div>
+
+              {/* UX-014: Quick/Advanced Mode Toggle */}
+              <div className="flex items-center gap-2 p-1 bg-gray-100 rounded-lg">
+                <button
+                  onClick={() => setStudioMode('quick')}
+                  className={`flex-1 px-3 py-1.5 text-sm font-medium rounded-md transition-all ${
+                    studioMode === 'quick'
+                      ? 'bg-white text-gray-900 shadow-sm'
+                      : 'text-gray-600 hover:text-gray-900'
+                  }`}
+                >
+                  Quick
+                </button>
+                <button
+                  onClick={() => setStudioMode('advanced')}
+                  className={`flex-1 px-3 py-1.5 text-sm font-medium rounded-md transition-all ${
+                    studioMode === 'advanced'
+                      ? 'bg-white text-gray-900 shadow-sm'
+                      : 'text-gray-600 hover:text-gray-900'
+                  }`}
+                >
+                  Advanced
+                </button>
+              </div>
             </div>
             <ScrollArea className="h-[calc(100vh-65px)]">
               <div className="p-4 space-y-1">
-                {/* Camera */}
-                <div className="bg-white rounded-lg border border-gray-100 overflow-hidden">
+                {/* Quick Mode Info */}
+                {studioMode === 'quick' && (
+                  <div className="mb-4 p-3 bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-100 rounded-lg">
+                    <p className="text-sm text-blue-700">
+                      <strong>Quick Mode:</strong> Focus on the essentials. Switch to Advanced for fine-grained control over camera, lighting, and more.
+                    </p>
+                  </div>
+                )}
+
+                {/* Advanced Controls - only show in Advanced mode */}
+                {studioMode === 'advanced' && (
+                  <>
+                    {/* Camera */}
+                    <div className="bg-white rounded-lg border border-gray-100 overflow-hidden">
                   <SectionHeader
                     title="Camera"
                     section="camera"
@@ -495,8 +534,10 @@ export default function Studio() {
                     </div>
                   )}
                 </div>
+                  </>
+                )}
 
-                {/* AI Model */}
+                {/* AI Model - Always visible */}
                 <div className="bg-white rounded-lg border border-gray-100 overflow-hidden">
                   <SectionHeader
                     title="AI Model"
