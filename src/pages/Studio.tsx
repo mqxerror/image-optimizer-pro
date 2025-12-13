@@ -1,11 +1,10 @@
-import { useState, useCallback, useMemo } from 'react'
+import { useState, useCallback, useMemo, useEffect } from 'react'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { Wand2, Save, Coins, ChevronDown, ChevronUp, Eye, EyeOff, Loader2 } from 'lucide-react'
+import { Wand2, Coins, ChevronDown, ChevronUp, Eye, EyeOff, Loader2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { ScrollArea } from '@/components/ui/scroll-area'
 import {
   Dialog,
   DialogContent,
@@ -19,17 +18,14 @@ import { supabase } from '@/lib/supabase'
 import { useAuthStore } from '@/stores/auth'
 import {
   StudioPresetsSidebar,
-  CameraControls,
-  LightingMixer,
-  BackgroundSelector,
-  JewelryEnhancements,
-  CompositionControls,
   ImageUploader,
   GenerationsHistory,
-  ModelSelector,
   IdeasToExplore,
   buildPromptFromSettings,
 } from '@/components/studio'
+import { StudioModeToggle } from '@/components/studio/StudioModeToggle'
+import { QuickControls } from '@/components/studio/QuickControls'
+import { AdvancedPanel } from '@/components/studio/AdvancedPanel'
 import type {
   StudioSettings,
   StudioPreset,
@@ -60,7 +56,22 @@ export default function Studio() {
   const [showSavePresetDialog, setShowSavePresetDialog] = useState(false)
   const [presetName, setPresetName] = useState('')
   const [presetDescription, setPresetDescription] = useState('')
-  const [studioMode, setStudioMode] = useState<'quick' | 'advanced'>('quick') // UX-014: Quick/Advanced mode
+  const [studioMode, setStudioMode] = useState<'quick' | 'advanced'>(() => {
+    // Load saved mode from localStorage
+    const saved = localStorage.getItem('studioMode')
+    return (saved === 'advanced' ? 'advanced' : 'quick')
+  })
+  const [advancedPanelOpen, setAdvancedPanelOpen] = useState(false)
+  const [quickSettings, setQuickSettings] = useState({
+    lighting: 70,
+    contrast: 50,
+    sharpness: 60
+  })
+
+  // Persist studio mode to localStorage
+  useEffect(() => {
+    localStorage.setItem('studioMode', studioMode)
+  }, [studioMode])
 
   // Generate prompt from current settings (updates live)
   const generatedPrompt = useMemo(() => {
@@ -74,9 +85,31 @@ export default function Studio() {
       : generatedPrompt
   }, [customPrompt, generatedPrompt])
 
-  const toggleSection = (section: keyof typeof expandedSections) => {
-    setExpandedSections(prev => ({ ...prev, [section]: !prev[section] }))
+  const toggleSection = (section: string) => {
+    setExpandedSections(prev => ({ ...prev, [section]: !(prev as any)[section] }))
   }
+
+  // Sync quick settings to full settings
+  useEffect(() => {
+    if (studioMode === 'quick') {
+      setSettings(prev => ({
+        ...prev,
+        lighting: {
+          ...prev.lighting,
+          keyIntensity: quickSettings.lighting
+        }
+      }))
+    }
+  }, [quickSettings, studioMode])
+
+  // Open/close advanced panel based on mode
+  useEffect(() => {
+    if (studioMode === 'advanced') {
+      setAdvancedPanelOpen(true)
+    } else {
+      setAdvancedPanelOpen(false)
+    }
+  }, [studioMode])
 
   // Handle preset selection
   const handleSelectPreset = useCallback((preset: StudioPreset) => {
@@ -288,31 +321,6 @@ export default function Studio() {
     },
   })
 
-  // Section header component
-  const SectionHeader = ({
-    title,
-    section,
-    icon: Icon,
-  }: {
-    title: string
-    section: keyof typeof expandedSections
-    icon: React.ComponentType<{ className?: string }>
-  }) => (
-    <button
-      onClick={() => toggleSection(section)}
-      className="w-full flex items-center justify-between p-3 text-gray-700 hover:bg-gray-50 transition-colors"
-    >
-      <div className="flex items-center gap-2">
-        <Icon className="h-4 w-4" />
-        <span className="text-sm font-medium">{title}</span>
-      </div>
-      {expandedSections[section] ? (
-        <ChevronUp className="h-4 w-4 text-gray-400" />
-      ) : (
-        <ChevronDown className="h-4 w-4 text-gray-400" />
-      )}
-    </button>
-  )
 
   return (
     <div className="h-screen flex">
@@ -404,170 +412,31 @@ export default function Studio() {
             </div>
           </div>
 
-          {/* Settings Panel */}
-          <div className="w-80 bg-gray-50 border-l border-gray-200">
-            <div className="p-4 border-b border-gray-200 bg-white space-y-3">
-              <div>
-                <h3 className="font-semibold text-gray-900">Settings</h3>
-                <p className="text-xs text-gray-500 mt-0.5">Customize your image generation</p>
+          {/* Settings Panel - Quick Controls */}
+          {studioMode === 'quick' && (
+            <div className="flex flex-col">
+              {/* Header with mode toggle */}
+              <div className="p-4 border-b border-gray-200 bg-white space-y-3">
+                <div>
+                  <h3 className="font-semibold text-gray-900">Settings</h3>
+                  <p className="text-xs text-gray-500 mt-0.5">Customize your image generation</p>
+                </div>
+                <StudioModeToggle
+                  mode={studioMode}
+                  onChange={setStudioMode}
+                />
               </div>
-
-              {/* UX-014: Quick/Advanced Mode Toggle */}
-              <div className="flex items-center gap-2 p-1 bg-gray-100 rounded-lg">
-                <button
-                  onClick={() => setStudioMode('quick')}
-                  className={`flex-1 px-3 py-1.5 text-sm font-medium rounded-md transition-all ${
-                    studioMode === 'quick'
-                      ? 'bg-white text-gray-900 shadow-sm'
-                      : 'text-gray-600 hover:text-gray-900'
-                  }`}
-                >
-                  Quick
-                </button>
-                <button
-                  onClick={() => setStudioMode('advanced')}
-                  className={`flex-1 px-3 py-1.5 text-sm font-medium rounded-md transition-all ${
-                    studioMode === 'advanced'
-                      ? 'bg-white text-gray-900 shadow-sm'
-                      : 'text-gray-600 hover:text-gray-900'
-                  }`}
-                >
-                  Advanced
-                </button>
-              </div>
+              {/* Quick Controls */}
+              <QuickControls
+                lighting={quickSettings.lighting}
+                contrast={quickSettings.contrast}
+                sharpness={quickSettings.sharpness}
+                onChange={(key, value) => {
+                  setQuickSettings(prev => ({ ...prev, [key]: value }))
+                }}
+              />
             </div>
-            <ScrollArea className="h-[calc(100vh-65px)]">
-              <div className="p-4 space-y-1">
-                {/* Quick Mode Info */}
-                {studioMode === 'quick' && (
-                  <div className="mb-4 p-3 bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-100 rounded-lg">
-                    <p className="text-sm text-blue-700">
-                      <strong>Quick Mode:</strong> Focus on the essentials. Switch to Advanced for fine-grained control over camera, lighting, and more.
-                    </p>
-                  </div>
-                )}
-
-                {/* Advanced Controls - only show in Advanced mode */}
-                {studioMode === 'advanced' && (
-                  <>
-                    {/* Camera */}
-                    <div className="bg-white rounded-lg border border-gray-100 overflow-hidden">
-                  <SectionHeader
-                    title="Camera"
-                    section="camera"
-                    icon={({ className }) => <span className={className}>📷</span>}
-                  />
-                  {expandedSections.camera && (
-                    <div className="px-4 pb-4">
-                      <CameraControls
-                        settings={settings.camera}
-                        onChange={(camera) => setSettings(s => ({ ...s, camera }))}
-                      />
-                    </div>
-                  )}
-                </div>
-
-                {/* Lighting */}
-                <div className="bg-white rounded-lg border border-gray-100 overflow-hidden">
-                  <SectionHeader
-                    title="Lighting"
-                    section="lighting"
-                    icon={({ className }) => <span className={className}>💡</span>}
-                  />
-                  {expandedSections.lighting && (
-                    <div className="px-4 pb-4">
-                      <LightingMixer
-                        settings={settings.lighting}
-                        onChange={(lighting) => setSettings(s => ({ ...s, lighting }))}
-                      />
-                    </div>
-                  )}
-                </div>
-
-                {/* Background */}
-                <div className="bg-white rounded-lg border border-gray-100 overflow-hidden">
-                  <SectionHeader
-                    title="Background"
-                    section="background"
-                    icon={({ className }) => <span className={className}>🖼️</span>}
-                  />
-                  {expandedSections.background && (
-                    <div className="px-4 pb-4">
-                      <BackgroundSelector
-                        settings={settings.background}
-                        onChange={(background) => setSettings(s => ({ ...s, background }))}
-                      />
-                    </div>
-                  )}
-                </div>
-
-                {/* Jewelry */}
-                <div className="bg-white rounded-lg border border-gray-100 overflow-hidden">
-                  <SectionHeader
-                    title="Jewelry"
-                    section="jewelry"
-                    icon={({ className }) => <span className={className}>💎</span>}
-                  />
-                  {expandedSections.jewelry && (
-                    <div className="px-4 pb-4">
-                      <JewelryEnhancements
-                        settings={settings.jewelry}
-                        onChange={(jewelry) => setSettings(s => ({ ...s, jewelry }))}
-                      />
-                    </div>
-                  )}
-                </div>
-
-                {/* Composition */}
-                <div className="bg-white rounded-lg border border-gray-100 overflow-hidden">
-                  <SectionHeader
-                    title="Composition"
-                    section="composition"
-                    icon={({ className }) => <span className={className}>📐</span>}
-                  />
-                  {expandedSections.composition && (
-                    <div className="px-4 pb-4">
-                      <CompositionControls
-                        settings={settings.composition}
-                        onChange={(composition) => setSettings(s => ({ ...s, composition }))}
-                      />
-                    </div>
-                  )}
-                </div>
-                  </>
-                )}
-
-                {/* AI Model - Always visible */}
-                <div className="bg-white rounded-lg border border-gray-100 overflow-hidden">
-                  <SectionHeader
-                    title="AI Model"
-                    section="model"
-                    icon={({ className }) => <span className={className}>🤖</span>}
-                  />
-                  {expandedSections.model && (
-                    <div className="px-4 pb-4">
-                      <ModelSelector
-                        model={settings.aiModel}
-                        onChange={(aiModel) => setSettings(s => ({ ...s, aiModel }))}
-                      />
-                    </div>
-                  )}
-                </div>
-
-                {/* Save Preset Button */}
-                <div className="pt-3">
-                  <Button
-                    variant="outline"
-                    className="w-full gap-2 bg-white"
-                    onClick={() => setShowSavePresetDialog(true)}
-                  >
-                    <Save className="h-4 w-4" />
-                    Save as Preset
-                  </Button>
-                </div>
-              </div>
-            </ScrollArea>
-          </div>
+          )}
         </div>
       </div>
 
@@ -578,6 +447,19 @@ export default function Studio() {
           onReuse={handleReuseGeneration}
         />
       </div>
+
+      {/* Advanced Panel (sliding overlay) */}
+      <AdvancedPanel
+        isOpen={advancedPanelOpen}
+        onClose={() => {
+          setAdvancedPanelOpen(false)
+          setStudioMode('quick')
+        }}
+        settings={settings}
+        onSettingsChange={setSettings}
+        expandedSections={expandedSections}
+        onToggleSection={toggleSection}
+      />
 
       {/* Save Preset Dialog */}
       <Dialog open={showSavePresetDialog} onOpenChange={setShowSavePresetDialog}>

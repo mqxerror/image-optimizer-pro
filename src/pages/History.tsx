@@ -96,7 +96,7 @@ export default function History() {
   // UX-016: Quality feedback mutation
   const feedbackMutation = useMutation({
     mutationFn: async ({ itemId, rating }: { itemId: string; rating: 'thumbs_up' | 'thumbs_down' }) => {
-      const { error } = await supabase
+      const { error } = await (supabase as any)
         .from('processing_history')
         .update({
           quality_rating: rating,
@@ -106,7 +106,7 @@ export default function History() {
 
       if (error) throw error
     },
-    onSuccess: (_, variables) => {
+    onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['history'] })
       toast({
         title: 'Feedback submitted',
