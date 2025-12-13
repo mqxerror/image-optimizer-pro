@@ -24,6 +24,9 @@ Image Optimizer Pro is a modern, multi-tenant SaaS platform that transforms raw 
 - ✅ Google Drive integration
 - ✅ Batch image processing with queue management
 - ✅ AI Studio for individual image enhancement
+  - **Quick Mode**: 3 essential sliders (Lighting, Contrast, Sharpness)
+  - **Advanced Mode**: Full control via sliding panel (Camera, Lighting, Background, Jewelry, Composition)
+  - Mode persistence with localStorage
 - ✅ Project-based workflow
 - ✅ Template and preset system
 
@@ -41,11 +44,13 @@ Image Optimizer Pro is a modern, multi-tenant SaaS platform that transforms raw 
 - ✅ **UX-011**: Version Badges on re-optimized images
 - ✅ **UX-012**: Simplified Re-optimize Flow
 - ✅ **UX-013**: Drag-and-Drop Upload in Studio
-- ✅ **UX-014**: Quick/Advanced Mode Toggle in Studio
+- ✅ **UX-014**: Quick/Advanced Mode Toggle in Studio (Redesigned Phase 1)
 - ✅ **UX-015**: Processing Success Celebration (confetti)
 - ✅ **UX-016**: Quality Feedback System (thumbs up/down)
 - ✅ **UX-018**: Enhanced Loading Skeletons with shimmer
 - ✅ **UX-020**: Image Zoom on Hover
+- ✅ **Studio Redesign**: Quick Mode (3 sliders) + Advanced Mode (sliding panel)
+- ✅ **Queue Modernization**: Soft gradients, modern pill-styled filters, enhanced cards
 
 ## Getting Started
 
