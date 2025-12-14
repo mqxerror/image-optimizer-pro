@@ -1331,7 +1331,450 @@ User completes payment on Stripe
 
 ---
 
-## 9. Implementation Checklist
+## 9. Shopify Integration Architecture
+
+### 9.1 Overview
+
+The Shopify integration enables automated product image optimization directly from connected Shopify stores. Users can connect multiple stores, apply presets to product images, preview results, and push optimized images back to Shopify.
+
+**Key Principles:**
+- **Approval-first flow** - All optimizations require user confirmation before pushing to Shopify
+- **No permanent storage** - Images are downloaded, processed, and pushed back (temporary storage during approval)
+- **Multi-store support** - Single user can connect multiple Shopify stores
+- **Token-based billing** - Uses existing token balance system
+
+### 9.2 System Flow Diagram
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                        SHOPIFY INTEGRATION FLOW                              │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+1. CONNECT STORE (OAuth 2.0)
+   ┌──────────┐    Install App    ┌──────────────┐    Access Token    ┌────────────┐
+   │  User    │ ────────────────► │   Shopify    │ ──────────────────► │  Supabase  │
+   │  clicks  │                   │   OAuth      │                     │  DB        │
+   │ "Connect"│ ◄──────────────── │   Flow       │                     │            │
+   └──────────┘    Redirect       └──────────────┘                     └────────────┘
+
+2. BROWSE & SELECT PRODUCTS
+   ┌────────────────────────────────────────────────────────────────────────┐
+   │  Product Browser (in Image Optimizer Pro)                              │
+   │  ┌─────────────────────────────────────────────────────────────────┐  │
+   │  │ Filter: [Collection ▼] [Product Type ▼] [Tags]                  │  │
+   │  ├─────────────────────────────────────────────────────────────────┤  │
+   │  │ ☑ Gold Ring - 3 images          ☑ Silver Necklace - 2 images   │  │
+   │  │ ☐ Diamond Earrings - 4 images   ☑ Pearl Bracelet - 2 images    │  │
+   │  ├─────────────────────────────────────────────────────────────────┤  │
+   │  │ Selected: 3 products (7 images)  Est. Cost: 14 tokens           │  │
+   │  │ [Choose Preset ▼]                [Start Optimization]           │  │
+   │  └─────────────────────────────────────────────────────────────────┘  │
+   └────────────────────────────────────────────────────────────────────────┘
+
+3. PROCESS & PREVIEW
+   ┌──────────────┐    Download    ┌──────────────┐    Optimize    ┌──────────────┐
+   │   Shopify    │ ─────────────► │  Edge Func   │ ─────────────► │  AI API      │
+   │   CDN        │                │  (temp store)│                │  (Kie.ai)    │
+   └──────────────┘                └──────────────┘                └──────────────┘
+                                          │
+                                          ▼
+   ┌────────────────────────────────────────────────────────────────────────┐
+   │  Approval Preview                                                      │
+   │  ┌─────────────────────────────────────────────────────────────────┐  │
+   │  │  Original          →          Optimized                ☑ Use    │  │
+   │  │  [image]                      [image]                           │  │
+   │  ├─────────────────────────────────────────────────────────────────┤  │
+   │  │  7/7 Ready  •  14 tokens used  •  Expires in 6 days             │  │
+   │  │                                                                  │  │
+   │  │              [Discard All]    [Approve & Push to Shopify]       │  │
+   │  └─────────────────────────────────────────────────────────────────┘  │
+   └────────────────────────────────────────────────────────────────────────┘
+
+4. PUSH TO SHOPIFY
+   ┌──────────────┐    PUT /admin/products/{id}/images    ┌──────────────┐
+   │  Approved    │ ─────────────────────────────────────► │   Shopify    │
+   │  Images      │                                        │   Updated!   │
+   └──────────────┘                                        └──────────────┘
+```
+
+### 9.3 Data Model
+
+```sql
+-- ============================================
+-- SHOPIFY INTEGRATION TABLES
+-- ============================================
+
+-- Connected Shopify stores
+CREATE TABLE shopify_stores (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE,
+  shop_domain TEXT NOT NULL,              -- "mystore.myshopify.com"
+  access_token TEXT NOT NULL,             -- Encrypted via Supabase Vault
+  scopes TEXT[],                          -- ['read_products', 'write_products']
+  status TEXT DEFAULT 'active',           -- active, paused, disconnected
+  webhook_id TEXT,                        -- Shopify webhook ID for product updates
+  webhook_secret TEXT,                    -- HMAC verification secret
+  settings JSONB DEFAULT '{
+    "optimization_mode": "preview",
+    "schedule": null,
+    "auto_optimize_new": false,
+    "default_preset_type": null,
+    "default_preset_id": null,
+    "notify_on_new_products": true,
+    "notify_on_completion": true
+  }'::jsonb,
+  created_at TIMESTAMPTZ DEFAULT now(),
+  updated_at TIMESTAMPTZ DEFAULT now(),
+  UNIQUE(user_id, shop_domain)
+);
+
+-- Optimization jobs (batch of products)
+CREATE TABLE shopify_sync_jobs (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  store_id UUID REFERENCES shopify_stores(id) ON DELETE CASCADE,
+  trigger_type TEXT NOT NULL,             -- 'manual', 'webhook', 'scheduled'
+  preset_type TEXT NOT NULL,              -- 'template' or 'studio_preset'
+  preset_id UUID,                         -- References template or preset
+  status TEXT DEFAULT 'pending',          -- pending, processing, awaiting_approval,
+                                          -- approved, pushing, completed, failed
+  product_count INT DEFAULT 0,
+  image_count INT DEFAULT 0,
+  tokens_used INT DEFAULT 0,
+  retry_count INT DEFAULT 0,
+  max_retries INT DEFAULT 3,
+  last_error TEXT,
+  next_retry_at TIMESTAMPTZ,
+  approved_at TIMESTAMPTZ,
+  completed_at TIMESTAMPTZ,
+  expires_at TIMESTAMPTZ,                 -- Unapproved jobs expire after 7 days
+  created_at TIMESTAMPTZ DEFAULT now()
+);
+
+-- Individual images within a job
+CREATE TABLE shopify_images (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  job_id UUID REFERENCES shopify_sync_jobs(id) ON DELETE CASCADE,
+  shopify_product_id TEXT NOT NULL,
+  shopify_image_id TEXT NOT NULL,
+  product_title TEXT,
+  original_url TEXT NOT NULL,
+  optimized_url TEXT,                     -- Supabase Storage temp URL
+  optimized_storage_path TEXT,            -- Path in Supabase Storage
+  status TEXT DEFAULT 'queued',           -- queued, processing, ready,
+                                          -- approved, pushing, pushed, failed
+  error_message TEXT,
+  tokens_used INT,
+  processing_time_ms INT,
+  push_attempts INT DEFAULT 0,
+  last_push_error TEXT,
+  pushed_at TIMESTAMPTZ,
+  created_at TIMESTAMPTZ DEFAULT now()
+);
+
+-- Indexes
+CREATE INDEX idx_shopify_stores_user ON shopify_stores(user_id);
+CREATE INDEX idx_shopify_jobs_store ON shopify_sync_jobs(store_id);
+CREATE INDEX idx_shopify_jobs_status ON shopify_sync_jobs(status);
+CREATE INDEX idx_shopify_images_job ON shopify_images(job_id);
+CREATE INDEX idx_shopify_images_status ON shopify_images(status);
+
+-- RLS Policies
+ALTER TABLE shopify_stores ENABLE ROW LEVEL SECURITY;
+ALTER TABLE shopify_sync_jobs ENABLE ROW LEVEL SECURITY;
+ALTER TABLE shopify_images ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Users can manage own stores"
+  ON shopify_stores FOR ALL
+  USING (user_id = auth.uid());
+
+CREATE POLICY "Users can view jobs for own stores"
+  ON shopify_sync_jobs FOR ALL
+  USING (store_id IN (SELECT id FROM shopify_stores WHERE user_id = auth.uid()));
+
+CREATE POLICY "Users can view images for own jobs"
+  ON shopify_images FOR ALL
+  USING (job_id IN (
+    SELECT j.id FROM shopify_sync_jobs j
+    JOIN shopify_stores s ON j.store_id = s.id
+    WHERE s.user_id = auth.uid()
+  ));
+```
+
+### 9.4 Shopify API Data Structure
+
+```json
+{
+  "product": {
+    "id": 7982345678,
+    "title": "14K Gold Diamond Ring",
+    "product_type": "Rings",
+    "vendor": "MyBrand",
+    "tags": ["gold", "diamond", "bestseller"],
+    "images": [
+      {
+        "id": 2233445566,
+        "src": "https://cdn.shopify.com/s/files/1/0123/4567/8901/products/ring-front.jpg",
+        "position": 1,
+        "alt": "Front view",
+        "width": 2048,
+        "height": 2048
+      }
+    ]
+  }
+}
+```
+
+**Preset Matching Options:**
+- Manual product selection
+- By collection (e.g., "Fine Jewelry", "Engagement")
+- By product_type (e.g., "Rings", "Necklaces")
+- By tags (e.g., "gold", "featured")
+
+### 9.5 Edge Functions
+
+| Function | Purpose | Trigger |
+|----------|---------|---------|
+| `shopify-oauth-start` | Generate Shopify OAuth URL | User clicks "Connect Store" |
+| `shopify-oauth-callback` | Exchange code for access token, save store | Shopify redirect |
+| `shopify-fetch-products` | List products with filters (proxy to Shopify API) | User browses products |
+| `shopify-create-job` | Create optimization job, queue images | User starts optimization |
+| `shopify-webhook` | Receive product.create/update events | Shopify webhook |
+| `shopify-push-images` | Upload approved images back to Shopify | User approves job |
+| `shopify-cleanup` | Delete expired temp images, failed jobs | Scheduled (daily) |
+
+### 9.6 Settings UI Specification
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│  Store Settings: mystore.myshopify.com                          [Disconnect]│
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                             │
+│  OPTIMIZATION MODE                                                          │
+│  ┌─────────────────────────────────────────────────────────────────────┐   │
+│  │ ○ Manual Only                                                        │   │
+│  │   I'll select products and optimize when I want                      │   │
+│  ├─────────────────────────────────────────────────────────────────────┤   │
+│  │ ◉ Preview First (Recommended)                                        │   │
+│  │   Notify me when products change, I'll review before pushing         │   │
+│  ├─────────────────────────────────────────────────────────────────────┤   │
+│  │ ○ Auto-Optimize                                                      │   │
+│  │   Automatically process new/updated products                         │   │
+│  │   ⚠️ Tokens will be deducted automatically                           │   │
+│  ├─────────────────────────────────────────────────────────────────────┤   │
+│  │ ○ Scheduled                                                          │   │
+│  │   Run optimization on a schedule                                     │   │
+│  │   ┌──────────────┐  ┌─────────────────┐                             │   │
+│  │   │ Daily     ▼ │  │ 2:00 AM      ▼ │  Timezone: America/New_York │   │
+│  │   └──────────────┘  └─────────────────┘                             │   │
+│  └─────────────────────────────────────────────────────────────────────┘   │
+│                                                                             │
+│  DEFAULT PRESET                                                             │
+│  ┌─────────────────────────────────────────────────────────────────────┐   │
+│  │ When auto-optimizing or scheduling, use:                             │   │
+│  │ ○ Template    ○ Studio Preset                                        │   │
+│  │ ┌────────────────────────────────────────────────────────────────┐  │   │
+│  │ │ 🎨 Jewelry Gold Premium                                     ▼ │  │   │
+│  │ └────────────────────────────────────────────────────────────────┘  │   │
+│  └─────────────────────────────────────────────────────────────────────┘   │
+│                                                                             │
+│  NOTIFICATIONS                                                              │
+│  ┌─────────────────────────────────────────────────────────────────────┐   │
+│  │ ☑ Notify when new products are added to store                       │   │
+│  │ ☑ Notify when optimization jobs complete                            │   │
+│  │ ☐ Email daily digest summary                                        │   │
+│  └─────────────────────────────────────────────────────────────────────┘   │
+│                                                                             │
+│                                            [Cancel]  [Save Settings]       │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
+
+### 9.7 Job Progress UI
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│  Shopify Optimization Jobs                                      [+ New Job] │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                             │
+│  ┌───────────────────────────────────────────────────────────────────────┐ │
+│  │ 🔄 Processing              mystore.myshopify.com           2 min ago  │ │
+│  │    12 products • 34 images                                            │ │
+│  │                                                                        │ │
+│  │    ████████████████████░░░░░░░░░░  28/34 images (82%)                 │ │
+│  │                                                                        │ │
+│  │    ✅ 26 ready  🔄 2 processing  ⏳ 6 queued                           │ │
+│  │                                                            [View →]   │ │
+│  └───────────────────────────────────────────────────────────────────────┘ │
+│                                                                             │
+│  ┌───────────────────────────────────────────────────────────────────────┐ │
+│  │ ⏸️  Awaiting Approval       mystore.myshopify.com          15 min ago │ │
+│  │    8 products • 24 images • 48 tokens                                 │ │
+│  │                                                                        │ │
+│  │    ⚠️ Expires in 6 days - approve or images will be deleted           │ │
+│  │                                                                        │ │
+│  │                              [Discard]  [Review & Approve →]          │ │
+│  └───────────────────────────────────────────────────────────────────────┘ │
+│                                                                             │
+│  ┌───────────────────────────────────────────────────────────────────────┐ │
+│  │ ⚠️  Push Failed (Retry 2/3)  mystore.myshopify.com          5 min ago │ │
+│  │    3 products • 8 images                                              │ │
+│  │                                                                        │ │
+│  │    Error: Shopify rate limit exceeded                                 │ │
+│  │    Next automatic retry: in 10 minutes                                │ │
+│  │                                                                        │ │
+│  │                                        [Cancel]  [Retry Now]          │ │
+│  └───────────────────────────────────────────────────────────────────────┘ │
+│                                                                             │
+│  ┌───────────────────────────────────────────────────────────────────────┐ │
+│  │ ✅ Completed                 mystore.myshopify.com          2 hrs ago │ │
+│  │    15 products • 42 images • 84 tokens                                │ │
+│  │                                                                        │ │
+│  │    All images pushed successfully                         [View →]   │ │
+│  └───────────────────────────────────────────────────────────────────────┘ │
+│                                                                             │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
+
+### 9.8 Implementation Phases
+
+#### Phase 1: Core Connection (Est. 1-2 weeks)
+
+**Goal:** Enable users to connect Shopify stores, browse products, manually select and optimize images, preview results, and push approved images back.
+
+| Component | Tasks |
+|-----------|-------|
+| **Database** | Create `shopify_stores`, `shopify_sync_jobs`, `shopify_images` tables |
+| **Edge Functions** | `shopify-oauth-start`, `shopify-oauth-callback`, `shopify-fetch-products`, `shopify-create-job`, `shopify-push-images` |
+| **Frontend** | Store connection flow, Product browser with filters, Job creation UI, Preview/approval UI, Push confirmation |
+| **Storage** | Supabase Storage bucket for temp optimized images |
+
+**Detailed Tasks:**
+
+- [ ] Register Shopify Partner account and create unlisted app
+- [ ] Configure Shopify app with required scopes (`read_products`, `write_products`)
+- [ ] Create database migration for Shopify tables
+- [ ] Implement OAuth start Edge Function (generate auth URL)
+- [ ] Implement OAuth callback Edge Function (exchange code, save store)
+- [ ] Implement product fetch Edge Function (list with pagination, filters)
+- [ ] Build "Connect Store" UI component
+- [ ] Build Product Browser page with collection/type/tag filters
+- [ ] Build product selection UI with image count and token estimate
+- [ ] Implement job creation (queue images for processing)
+- [ ] Build job progress tracking UI
+- [ ] Build preview/comparison UI for optimized images
+- [ ] Implement image push Edge Function (upload to Shopify)
+- [ ] Add push progress and confirmation UI
+
+#### Phase 2: Automation (Est. 1 week)
+
+**Goal:** Enable webhook-triggered jobs, user-configurable settings, and notifications.
+
+| Component | Tasks |
+|-----------|-------|
+| **Edge Functions** | `shopify-webhook` for product.create/update |
+| **Database** | Store settings column, notification preferences |
+| **Frontend** | Settings page, Notification center integration |
+| **Backend** | Webhook HMAC verification |
+
+**Detailed Tasks:**
+
+- [ ] Register Shopify webhooks on store connection
+- [ ] Implement webhook Edge Function with HMAC verification
+- [ ] Create pending jobs from webhook events (status: `pending_confirmation`)
+- [ ] Build store settings UI (optimization mode selector)
+- [ ] Implement default preset selection in settings
+- [ ] Add in-app notification for new webhook-triggered jobs
+- [ ] Implement "Preview First" mode (require approval)
+- [ ] Implement "Auto-Optimize" mode (process immediately)
+- [ ] Add notification preferences (in-app, email digest)
+
+#### Phase 3: Scheduling & Polish (Est. 1 week)
+
+**Goal:** Enable scheduled batch optimization, robust retry system, and analytics.
+
+| Component | Tasks |
+|-----------|-------|
+| **Database** | Schedule configuration, retry tracking |
+| **Backend** | pg_cron or scheduled Edge Function for batch jobs |
+| **Edge Functions** | `shopify-cleanup` for expired jobs |
+| **Frontend** | Schedule configuration UI, Job history/analytics |
+
+**Detailed Tasks:**
+
+- [ ] Implement schedule settings UI (frequency, time, timezone)
+- [ ] Create scheduled Edge Function trigger (via pg_cron or Supabase cron)
+- [ ] Implement batch job creation from schedule
+- [ ] Add retry logic with exponential backoff
+- [ ] Track retry attempts and errors in database
+- [ ] Build retry UI (manual retry, cancel, view errors)
+- [ ] Implement job expiration (7-day TTL for unapproved jobs)
+- [ ] Create cleanup Edge Function for expired images
+- [ ] Build job history page with filters (status, date range, store)
+- [ ] Add basic analytics (images processed, tokens used, success rate)
+
+### 9.9 Architecture Decisions
+
+#### ADR-006: Shopify App Type
+
+**Status:** Accepted
+
+**Context:** Need to choose between public (App Store) and custom/unlisted Shopify app.
+
+**Decision:** Start with unlisted custom app for faster iteration, consider App Store listing in future.
+
+**Consequences:**
+- (+) No app review delays
+- (+) Can iterate quickly based on user feedback
+- (+) Simpler setup process
+- (-) No organic discovery via Shopify App Store
+- (-) Must handle distribution manually (direct install links)
+
+#### ADR-007: Approval-First Flow
+
+**Status:** Accepted
+
+**Context:** Should image optimization be automatic or require user approval?
+
+**Decision:** All optimizations require user approval before pushing to Shopify.
+
+**Consequences:**
+- (+) User maintains control over product images
+- (+) Can review quality before going live
+- (+) No accidental token usage
+- (-) Requires additional UI for preview/approval
+- (-) More steps in user workflow
+
+#### ADR-008: Temporary Image Storage
+
+**Status:** Accepted
+
+**Context:** Need to store optimized images between processing and approval.
+
+**Decision:** Use Supabase Storage with 7-day TTL, cleanup via scheduled function.
+
+**Consequences:**
+- (+) Integrated with existing stack
+- (+) Simple implementation
+- (+) Automatic cleanup prevents storage bloat
+- (-) Storage costs during approval period
+- (-) Need to handle expiration in UI
+
+#### ADR-009: Token Deduction Timing
+
+**Status:** Accepted
+
+**Context:** When should tokens be deducted - on processing or on approval?
+
+**Decision:** Deduct on processing, refund if push fails permanently.
+
+**Consequences:**
+- (+) Simpler accounting
+- (+) Prevents abuse (process many, approve few)
+- (-) User pays even if they don't approve
+- (-) Need refund logic for permanent failures
+
+---
+
+## 10. Implementation Checklist
 
 ### Phase 1 Tasks
 
@@ -1386,6 +1829,94 @@ User completes payment on Stripe
 - [ ] **Frontend - Settings**
   - [ ] Connected storage display
   - [ ] Org settings form
+
+### Shopify Integration - Phase 1 Tasks
+
+- [ ] **Shopify App Setup**
+  - [ ] Register Shopify Partner account
+  - [ ] Create unlisted custom app
+  - [ ] Configure OAuth redirect URI
+  - [ ] Set required scopes (read_products, write_products)
+
+- [ ] **Database**
+  - [ ] Create migration for `shopify_stores` table
+  - [ ] Create migration for `shopify_sync_jobs` table
+  - [ ] Create migration for `shopify_images` table
+  - [ ] Add RLS policies for all Shopify tables
+  - [ ] Create indexes for performance
+
+- [ ] **Edge Functions**
+  - [ ] `shopify-oauth-start` - Generate OAuth URL
+  - [ ] `shopify-oauth-callback` - Exchange code, save store
+  - [ ] `shopify-fetch-products` - List products with filters
+  - [ ] `shopify-create-job` - Create optimization job
+  - [ ] `shopify-push-images` - Upload to Shopify
+
+- [ ] **Frontend - Store Connection**
+  - [ ] "Connect Store" button and flow
+  - [ ] OAuth redirect handling
+  - [ ] Connected stores list
+  - [ ] Disconnect store functionality
+
+- [ ] **Frontend - Product Browser**
+  - [ ] Product list with pagination
+  - [ ] Filter by collection
+  - [ ] Filter by product type
+  - [ ] Filter by tags
+  - [ ] Product selection checkboxes
+  - [ ] Image count and token estimate display
+
+- [ ] **Frontend - Job Management**
+  - [ ] Create job with preset selection
+  - [ ] Job progress tracking
+  - [ ] Preview/comparison viewer
+  - [ ] Approve/discard actions
+  - [ ] Push confirmation
+
+- [ ] **Storage**
+  - [ ] Create Supabase Storage bucket for temp images
+  - [ ] Configure public access for preview URLs
+
+### Shopify Integration - Phase 2 Tasks
+
+- [ ] **Webhooks**
+  - [ ] `shopify-webhook` Edge Function
+  - [ ] HMAC signature verification
+  - [ ] Register webhooks on store connection
+  - [ ] Create pending jobs from webhook events
+
+- [ ] **Settings**
+  - [ ] Optimization mode selector UI
+  - [ ] Default preset configuration
+  - [ ] Notification preferences
+
+- [ ] **Notifications**
+  - [ ] In-app notifications for new jobs
+  - [ ] Completion notifications
+  - [ ] Email digest (optional)
+
+### Shopify Integration - Phase 3 Tasks
+
+- [ ] **Scheduling**
+  - [ ] Schedule configuration UI
+  - [ ] pg_cron or scheduled Edge Function
+  - [ ] Batch job creation
+
+- [ ] **Retry System**
+  - [ ] Exponential backoff logic
+  - [ ] Retry tracking in database
+  - [ ] Manual retry UI
+
+- [ ] **Cleanup**
+  - [ ] `shopify-cleanup` scheduled function
+  - [ ] 7-day TTL for unapproved jobs
+  - [ ] Expired image deletion
+
+- [ ] **Analytics**
+  - [ ] Job history page
+  - [ ] Filter by status/date/store
+  - [ ] Success rate metrics
+  - [ ] Token usage per store
 
 ---
 

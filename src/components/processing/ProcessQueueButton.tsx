@@ -48,24 +48,50 @@ export default function ProcessQueueButton({
       const { data: { session } } = await supabase.auth.getSession()
       if (!session) throw new Error('Not authenticated')
 
-      const response = await fetch(
-        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/process-queue`,
-        {
-          method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${session.access_token}`,
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            organization_id: organization.id,
-            batch_size: 10
-          })
-        }
+      // Get queued items to process
+      const { data: queueItems, error: queueError } = await supabase
+        .from('processing_queue')
+        .select('id')
+        .eq('organization_id', organization.id)
+        .eq('status', 'queued')
+        .order('created_at', { ascending: true })
+        .limit(10) // Process in batches of 10
+
+      if (queueError) throw queueError
+      if (!queueItems || queueItems.length === 0) {
+        return { success: true, total: 0, successCount: 0, failed: 0, skipped: 0 }
+      }
+
+      // Process each item by calling process-image edge function
+      const results = await Promise.allSettled(
+        queueItems.map(async (item) => {
+          const response = await fetch(
+            `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/process-image`,
+            {
+              method: 'POST',
+              headers: {
+                'Authorization': `Bearer ${session.access_token}`,
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify({ queue_item_id: item.id })
+            }
+          )
+          const result = await response.json()
+          if (result.error) throw new Error(result.error)
+          return result
+        })
       )
 
-      const result = await response.json()
-      if (result.error) throw new Error(result.error)
-      return result as ProcessResult
+      const successCount = results.filter(r => r.status === 'fulfilled').length
+      const failed = results.filter(r => r.status === 'rejected').length
+
+      return {
+        success: true,
+        total: queueItems.length,
+        successCount,
+        failed,
+        skipped: 0
+      } as ProcessResult
     },
     onSuccess: (data) => {
       setResults(data)

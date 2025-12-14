@@ -16,13 +16,22 @@ import {
   FileText,
   Palette,
   PenLine,
-  Sparkles
+  Sparkles,
+  HelpCircle,
+  FlaskConical,
+  Plus
 } from 'lucide-react'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Progress } from '@/components/ui/progress'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@/components/ui/tooltip'
 import { AddToQueue } from '@/components/processing'
 import {
   useProjectQueueStats,
@@ -38,6 +47,7 @@ import {
   type TemplateData,
   type StudioPreset
 } from '@/lib/prompt-utils'
+import { getModelById } from '@/constants/aiModels'
 import type { Project } from '@/types/database'
 
 interface OverviewTabProps {
@@ -49,15 +59,6 @@ const statusConfig: Record<string, { color: string; label: string }> = {
   active: { color: 'bg-blue-100 text-blue-700', label: 'Active' },
   completed: { color: 'bg-green-100 text-green-700', label: 'Completed' },
   archived: { color: 'bg-yellow-100 text-yellow-700', label: 'Archived' },
-}
-
-const AI_MODELS: Record<string, string> = {
-  'flux-kontext-pro': 'Flux Kontext Pro',
-  'flux-kontext-max': 'Flux Kontext Max',
-  'nano-banana': 'Nano Banana',
-  'nano-banana-pro': 'Nano Banana Pro',
-  'ghibli': 'Ghibli Style',
-  'midjourney': 'Midjourney',
 }
 
 const TOKEN_PRICE = 0.04 // $0.04 per token
@@ -137,7 +138,8 @@ export function OverviewTab({ project: initialProject }: OverviewTabProps) {
 
   // Get AI model name from project (with fallback)
   const aiModelKey = project.ai_model || 'flux-kontext-pro'
-  const aiModelName = AI_MODELS[aiModelKey] || aiModelKey
+  const aiModelInfo = getModelById(aiModelKey)
+  const aiModelName = aiModelInfo?.friendlyName || aiModelInfo?.technicalName || aiModelKey
 
   // Generate the active prompt based on mode
   const getActivePrompt = (): { prompt: string; source: string; sourceName?: string } => {
@@ -214,6 +216,16 @@ export function OverviewTab({ project: initialProject }: OverviewTabProps) {
             <CardTitle className="text-sm font-medium flex items-center gap-2">
               <ImageIcon className="h-4 w-4 text-primary" />
               Processing Progress
+              {/* Live indicator when project is actively processing */}
+              {project.status === 'active' && (
+                <span className="flex items-center gap-1.5 ml-2 text-xs font-normal">
+                  <span className="relative flex h-2 w-2">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                    <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+                  </span>
+                  <span className="text-green-600">Live</span>
+                </span>
+              )}
             </CardTitle>
             <span className="text-2xl font-bold">{progressPercent}%</span>
           </div>
@@ -247,9 +259,26 @@ export function OverviewTab({ project: initialProject }: OverviewTabProps) {
         {/* Queue Status */}
         <Card>
           <CardContent className="p-4">
-            <div className="flex items-center gap-2 text-xs text-muted-foreground mb-2">
-              <Clock className="h-3.5 w-3.5" />
-              QUEUE STATUS
+            <div className="flex items-center justify-between mb-2">
+              <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                <Clock className="h-3.5 w-3.5" />
+                QUEUE STATUS
+              </div>
+              {(queueStats?.processing || 0) > 0 && (
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger>
+                      <span className="flex items-center gap-1 text-[10px] text-amber-600">
+                        <Loader2 className="h-2.5 w-2.5 animate-spin" />
+                        Updating
+                      </span>
+                    </TooltipTrigger>
+                    <TooltipContent side="top">
+                      <p className="text-xs">Auto-refreshes every 5 seconds</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              )}
             </div>
             {loadingStats ? (
               <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
@@ -323,77 +352,119 @@ export function OverviewTab({ project: initialProject }: OverviewTabProps) {
         </Card>
       </div>
 
-      {/* Quick Actions */}
+      {/* Quick Actions - Reorganized */}
       <Card className="bg-primary/5 border-primary/20">
-        <CardContent className="p-4">
-          <div className="flex items-center gap-2 text-xs text-muted-foreground mb-3">
-            <Zap className="h-3.5 w-3.5" />
-            QUICK ACTIONS
-          </div>
-          <div className="flex flex-wrap gap-2">
-            {/* Run Trial Button - only show if trial_count > 0 and trial not completed */}
-            {project.trial_count > 0 && project.trial_completed < project.trial_count && (
+        <CardContent className="p-4 space-y-4">
+          {/* Primary Action: Process Queue */}
+          <div>
+            <div className="flex items-center gap-2 text-xs text-muted-foreground mb-2">
+              <Play className="h-3.5 w-3.5" />
+              PROCESSING
+            </div>
+            <div className="flex flex-wrap gap-2">
               <Button
-                size="sm"
-                onClick={() => runTrial.mutate()}
-                disabled={runTrial.isPending || !queueStats?.queued}
-                className="bg-amber-600 hover:bg-amber-700"
+                onClick={() => processQueue.mutate(10)}
+                disabled={processQueue.isPending || !queueStats?.queued}
+                className="bg-green-600 hover:bg-green-700"
               >
-                {runTrial.isPending ? (
+                {processQueue.isPending ? (
                   <Loader2 className="h-4 w-4 mr-2 animate-spin" />
                 ) : (
                   <Play className="h-4 w-4 mr-2" />
                 )}
-                Run Trial ({project.trial_count} images)
+                Process All Queued Images
+                {queueStats?.queued ? (
+                  <Badge variant="secondary" className="ml-2 bg-green-500/20 text-white">
+                    {queueStats.queued}
+                  </Badge>
+                ) : null}
               </Button>
-            )}
+              {(queueStats?.failed || 0) > 0 && (
+                <Button
+                  variant="outline"
+                  onClick={() => retryFailed.mutate()}
+                  disabled={retryFailed.isPending}
+                  className="border-red-200 text-red-600 hover:bg-red-50"
+                >
+                  {retryFailed.isPending ? (
+                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                  ) : (
+                    <RefreshCw className="h-4 w-4 mr-2" />
+                  )}
+                  Retry {queueStats?.failed} Failed
+                </Button>
+              )}
+            </div>
+          </div>
 
-            {/* Reset Trial Button - show when there's trial progress to reset */}
-            {project.trial_count > 0 && project.trial_completed > 0 && (
-              <Button
-                size="sm"
-                variant="outline"
-                onClick={() => resetTrial.mutate()}
-                disabled={resetTrial.isPending}
-                className="border-amber-600 text-amber-600 hover:bg-amber-50"
-              >
-                {resetTrial.isPending ? (
-                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+          {/* Trial Run Section - Only show if trial is configured */}
+          {project.trial_count > 0 && (
+            <div className="pt-3 border-t">
+              <div className="flex items-center gap-2 text-xs text-muted-foreground mb-2">
+                <FlaskConical className="h-3.5 w-3.5" />
+                TRIAL RUN
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger>
+                      <HelpCircle className="h-3 w-3 text-muted-foreground/60" />
+                    </TooltipTrigger>
+                    <TooltipContent side="top" className="max-w-xs">
+                      <p className="text-sm">
+                        <strong>Trial Run</strong> lets you test your settings on a small batch
+                        ({project.trial_count} images) before processing the entire project.
+                        Review the results, then process the rest if satisfied.
+                      </p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              </div>
+              <div className="flex flex-wrap gap-2 items-center">
+                {project.trial_completed < project.trial_count ? (
+                  <Button
+                    size="sm"
+                    onClick={() => runTrial.mutate()}
+                    disabled={runTrial.isPending || !queueStats?.queued}
+                    className="bg-amber-600 hover:bg-amber-700"
+                  >
+                    {runTrial.isPending ? (
+                      <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                    ) : (
+                      <FlaskConical className="h-4 w-4 mr-2" />
+                    )}
+                    Run Trial Batch ({project.trial_count} images)
+                  </Button>
                 ) : (
-                  <RotateCcw className="h-4 w-4 mr-2" />
+                  <Badge className="bg-green-100 text-green-700">
+                    <CheckCircle className="h-3 w-3 mr-1" />
+                    Trial Complete
+                  </Badge>
                 )}
-                Reset Trial
-              </Button>
-            )}
+                {project.trial_completed > 0 && (
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    onClick={() => resetTrial.mutate()}
+                    disabled={resetTrial.isPending}
+                    className="text-muted-foreground hover:text-foreground"
+                  >
+                    {resetTrial.isPending ? (
+                      <Loader2 className="h-4 w-4 mr-1 animate-spin" />
+                    ) : (
+                      <RotateCcw className="h-4 w-4 mr-1" />
+                    )}
+                    Reset
+                  </Button>
+                )}
+              </div>
+            </div>
+          )}
 
-            <Button
-              size="sm"
-              onClick={() => processQueue.mutate(10)}
-              disabled={processQueue.isPending || !queueStats?.queued}
-              className="bg-green-600 hover:bg-green-700"
-            >
-              {processQueue.isPending ? (
-                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-              ) : (
-                <Play className="h-4 w-4 mr-2" />
-              )}
-              Process Queue {queueStats?.queued ? `(${queueStats.queued})` : ''}
-            </Button>
-
-            <Button
-              size="sm"
-              variant="outline"
-              onClick={() => retryFailed.mutate()}
-              disabled={retryFailed.isPending || !queueStats?.failed}
-            >
-              {retryFailed.isPending ? (
-                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-              ) : (
-                <RefreshCw className="h-4 w-4 mr-2" />
-              )}
-              Retry Failed {queueStats?.failed ? `(${queueStats.failed})` : ''}
-            </Button>
-
+          {/* Add More Images */}
+          <div className="pt-3 border-t">
+            <div className="flex items-center gap-2 text-xs text-muted-foreground mb-2">
+              <Plus className="h-3.5 w-3.5" />
+              ADD IMAGES
+            </div>
             <AddToQueue
               projectId={project.id}
               projectName={project.name}

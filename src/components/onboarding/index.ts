@@ -1,1 +1,2 @@
-export { OnboardingTour, useOnboardingTour } from './OnboardingTour'
+export { StudioWelcomeModal } from "./StudioWelcomeModal"
+export { ContextualHint } from "./ContextualHint"

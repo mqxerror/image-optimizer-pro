@@ -113,6 +113,7 @@ export interface StudioPreset {
   composition_padding: number
 
   ai_model: string
+  custom_prompt: string | null
 
   created_by: string | null
   created_at: string

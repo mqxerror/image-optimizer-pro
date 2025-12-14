@@ -7,6 +7,27 @@ const corsHeaders = {
   'Access-Control-Allow-Methods': 'POST, OPTIONS',
 }
 
+// Helper function for fetch with timeout
+async function fetchWithTimeout(url: string, options: RequestInit, timeoutMs: number = 30000): Promise<Response> {
+  const controller = new AbortController()
+  const timeoutId = setTimeout(() => controller.abort(), timeoutMs)
+
+  try {
+    const response = await fetch(url, {
+      ...options,
+      signal: controller.signal,
+    })
+    clearTimeout(timeoutId)
+    return response
+  } catch (error) {
+    clearTimeout(timeoutId)
+    if (error instanceof Error && error.name === 'AbortError') {
+      throw new Error(`Request timed out after ${timeoutMs / 1000} seconds`)
+    }
+    throw error
+  }
+}
+
 interface ProcessRequest {
   queue_item_id: string
 }
@@ -210,6 +231,13 @@ function buildPromptFromPreset(preset: StudioPreset): string {
   return parts.join('. ') + '.'
 }
 
+// FIRE-AND-FORGET PATTERN
+// This function now:
+// 1. Downloads image from Google Drive
+// 2. Uploads to storage
+// 3. Submits AI job via submit-ai-job (returns immediately)
+// 4. Database triggers handle creating history when job completes
+
 Deno.serve(async (req: Request) => {
   // Handle CORS
   if (req.method === 'OPTIONS') {
@@ -241,7 +269,7 @@ Deno.serve(async (req: Request) => {
       )
     }
 
-    console.log('Processing queue item:', queueItemId)
+    console.log('[process-image] Processing queue item:', queueItemId)
 
     // Get queue item
     const { data: queueItem, error: queueError } = await supabase
@@ -257,7 +285,7 @@ Deno.serve(async (req: Request) => {
       )
     }
 
-    console.log('Queue item:', queueItem.file_name, 'Status:', queueItem.status)
+    console.log('[process-image] Queue item:', queueItem.file_name, 'Status:', queueItem.status)
 
     // Update status to processing
     await supabase
@@ -279,13 +307,12 @@ Deno.serve(async (req: Request) => {
         .single()
 
       if (template) {
-        // Build prompt from template fields
         const parts = [template.base_prompt]
         if (template.style) parts.push(`Style: ${template.style}`)
         if (template.background) parts.push(`Background: ${template.background}`)
         if (template.lighting) parts.push(`Lighting: ${template.lighting}`)
         templatePrompt = parts.filter(Boolean).join('. ')
-        console.log('Using template prompt:', templatePrompt)
+        console.log('[process-image] Using template prompt')
       }
     }
 
@@ -299,9 +326,8 @@ Deno.serve(async (req: Request) => {
         .single()
 
       if (preset) {
-        // Build prompt from studio preset using same logic as frontend PromptBuilder
         presetPrompt = buildPromptFromPreset(preset)
-        console.log('Using studio preset prompt:', presetPrompt)
+        console.log('[process-image] Using studio preset prompt')
       }
     }
 
@@ -317,12 +343,15 @@ Deno.serve(async (req: Request) => {
       throw new Error('No active Google Drive connection found')
     }
 
-    console.log('Using Google Drive connection:', connection.id)
-
     // Step 1: Download image from Google Drive
-    console.log('Step 1: Downloading from Google Drive, file_id:', queueItem.file_id)
+    console.log('[process-image] Step 1: Downloading from Google Drive')
 
-    const downloadResponse = await fetch(
+    await supabase
+      .from('processing_queue')
+      .update({ progress: 20 })
+      .eq('id', queueItemId)
+
+    const downloadResponse = await fetchWithTimeout(
       `${supabaseUrl}/functions/v1/google-drive-files`,
       {
         method: 'POST',
@@ -335,7 +364,8 @@ Deno.serve(async (req: Request) => {
           folder_id: queueItem.file_id,
           connection_id: connection.id
         })
-      }
+      },
+      30000
     )
 
     if (!downloadResponse.ok) {
@@ -344,65 +374,64 @@ Deno.serve(async (req: Request) => {
     }
 
     const downloadResult = await downloadResponse.json()
-    console.log('Download successful, content type:', downloadResult.contentType)
+    console.log('[process-image] Download successful')
 
-    // Update progress
     await supabase
       .from('processing_queue')
-      .update({ progress: 30 })
+      .update({ progress: 40 })
       .eq('id', queueItemId)
 
-    // The download result should have base64 encoded content
-    const originalImageBase64 = downloadResult.data
-    const originalImageDataUrl = `data:${downloadResult.contentType};base64,${originalImageBase64}`
-
     // Step 2: Upload original to Supabase Storage
-    console.log('Step 2: Uploading original to storage')
+    console.log('[process-image] Step 2: Uploading to storage')
 
+    const originalImageBase64 = downloadResult.data
     const originalBuffer = Uint8Array.from(atob(originalImageBase64), c => c.charCodeAt(0))
     const fileExt = queueItem.file_name.split('.').pop() || 'jpg'
     const originalPath = `${queueItem.organization_id}/${queueItem.project_id}/original_${Date.now()}.${fileExt}`
 
-    const { error: originalUploadError } = await supabase.storage
+    const { error: uploadError } = await supabase.storage
       .from('processed-images')
       .upload(originalPath, originalBuffer, {
         contentType: downloadResult.contentType,
         upsert: true
       })
 
-    if (originalUploadError) {
-      console.error('Original upload error:', originalUploadError)
+    if (uploadError) {
+      console.error('[process-image] Upload error:', uploadError)
+      throw new Error('Failed to upload image to storage')
     }
 
     const { data: { publicUrl: originalPublicUrl } } = supabase.storage
       .from('processed-images')
       .getPublicUrl(originalPath)
 
-    console.log('Original uploaded:', originalPublicUrl)
+    console.log('[process-image] Original uploaded:', originalPublicUrl)
 
-    // Update progress
     await supabase
       .from('processing_queue')
-      .update({ progress: 50 })
+      .update({ progress: 60 })
       .eq('id', queueItemId)
 
-    // Step 3: Call optimize-image to enhance with Kie.ai
-    console.log('Step 3: Calling Kie.ai for optimization')
+    // Step 3: Submit AI job (FIRE-AND-FORGET!)
+    console.log('[process-image] Step 3: Submitting AI job')
 
-    // Get project settings for optimization - priority: template > preset > custom
     const projectPrompt = templatePrompt || presetPrompt || queueItem.projects?.custom_prompt || "Enhance this jewelry image with clean white background"
     const projectModel = queueItem.projects?.ai_model || 'flux-kontext-pro'
 
-    console.log('Prompt source:', templatePrompt ? 'template' : presetPrompt ? 'studio_preset' : 'custom')
+    // Update queue item with prompt and model info
+    await supabase
+      .from('processing_queue')
+      .update({
+        generated_prompt: projectPrompt,
+        ai_model: projectModel,
+        status: 'optimizing', // New status: waiting for AI
+        progress: 70,
+      })
+      .eq('id', queueItemId)
 
-    console.log('Using AI model:', projectModel)
-    console.log('Using prompt:', projectPrompt.substring(0, 100) + '...')
-
-    // Use public URL instead of data URL - Kie.ai API requires HTTP URL
-    console.log('Sending public URL to optimize-image:', originalPublicUrl)
-
-    const optimizeResponse = await fetch(
-      `${supabaseUrl}/functions/v1/optimize-image`,
+    // Submit to unified AI job system
+    const submitResponse = await fetch(
+      `${supabaseUrl}/functions/v1/submit-ai-job`,
       {
         method: 'POST',
         headers: {
@@ -410,10 +439,13 @@ Deno.serve(async (req: Request) => {
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-          image_url: originalPublicUrl,
-          file_id: queueItem.file_id,
+          job_type: 'optimize',
+          source: 'queue',
+          source_id: queueItemId,
           ai_model: projectModel,
+          input_url: originalPublicUrl,
           prompt: projectPrompt,
+          aspect_ratio: '1:1',
           settings: {
             enhance_quality: true,
             remove_background: true,
@@ -424,159 +456,40 @@ Deno.serve(async (req: Request) => {
       }
     )
 
-    const optimizeResult = await optimizeResponse.json()
-    console.log('Optimize result:', JSON.stringify(optimizeResult))
-    console.log('optimizeResult.success:', optimizeResult.success)
-    console.log('optimizeResult.optimized_url:', optimizeResult.optimized_url)
-    console.log('optimizeResult.passthrough:', optimizeResult.passthrough)
+    const submitResult = await submitResponse.json()
+    console.log('[process-image] Submit result:', JSON.stringify(submitResult))
 
-    // Update progress
+    if (submitResult.error) {
+      throw new Error(submitResult.error)
+    }
+
+    // Update queue with task_id for tracking
     await supabase
       .from('processing_queue')
-      .update({ progress: 80 })
+      .update({
+        task_id: submitResult.task_id,
+        progress: 80,
+      })
       .eq('id', queueItemId)
 
-    let optimizedPublicUrl = originalPublicUrl
-    let wasOptimized = false
+    console.log('[process-image] Job submitted successfully, returning immediately')
 
-    if (optimizeResult.success && optimizeResult.optimized_url) {
-      // Step 4: Download optimized image and upload to storage
-      console.log('Step 4: Downloading optimized image from:', optimizeResult.optimized_url)
-
-      try {
-        console.log('Fetching optimized image from URL:', optimizeResult.optimized_url)
-        const optimizedImageResponse = await fetch(optimizeResult.optimized_url)
-        console.log('Fetch response status:', optimizedImageResponse.status, optimizedImageResponse.ok)
-        if (optimizedImageResponse.ok) {
-          const optimizedBuffer = new Uint8Array(await optimizedImageResponse.arrayBuffer())
-          const optimizedPath = `${queueItem.organization_id}/${queueItem.project_id}/optimized_${Date.now()}.png`
-
-          const { error: optimizedUploadError } = await supabase.storage
-            .from('processed-images')
-            .upload(optimizedPath, optimizedBuffer, {
-              contentType: 'image/png',
-              upsert: true
-            })
-
-          if (!optimizedUploadError) {
-            const { data: { publicUrl } } = supabase.storage
-              .from('processed-images')
-              .getPublicUrl(optimizedPath)
-
-            optimizedPublicUrl = publicUrl
-            wasOptimized = true
-            console.log('Optimized image uploaded:', optimizedPublicUrl)
-          } else {
-            console.error('Optimized upload error:', optimizedUploadError)
-          }
-        }
-      } catch (downloadError) {
-        console.error('Failed to download optimized image:', downloadError)
-      }
-    } else if (optimizeResult.passthrough) {
-      console.log('Passthrough mode:', optimizeResult.message || 'Using original image')
-    }
-
-    // Step 5: Create processing history record
-    console.log('Step 5: Creating history record')
-
-    const processingTimeMs = Date.now() - new Date(queueItem.started_at || Date.now()).getTime()
-
-    // Use the actual prompt that was sent to Kie.ai (includes enhancement settings)
-    const actualPromptUsed = optimizeResult.final_prompt || projectPrompt
-
-    const { data: historyRecord, error: historyError } = await supabase
-      .from('processing_history')
-      .insert({
-        organization_id: queueItem.organization_id,
-        project_id: queueItem.project_id,
-        file_id: queueItem.file_id,
-        file_name: queueItem.file_name,
-        original_url: originalPublicUrl,
-        optimized_url: optimizedPublicUrl,
-        optimized_storage_path: wasOptimized ? `${queueItem.organization_id}/${queueItem.project_id}/optimized_${Date.now()}.png` : null,
-        processing_time_sec: Math.round(processingTimeMs / 1000),
-        generated_prompt: actualPromptUsed,
-        ai_model: projectModel,
-        tokens_used: 1,
-        status: 'success',
-        completed_at: new Date().toISOString()
-      })
-      .select()
-      .single()
-
-    if (historyError) {
-      console.error('History record error:', historyError)
-      throw new Error(`Failed to create history record: ${historyError.message}`)
-    }
-
-    console.log('History record created:', historyRecord.id)
-
-    // Step 6: Update project stats (using atomic RPC to prevent race conditions)
-    console.log('Step 6: Updating project stats')
-
-    // Check if this is a trial image
-    const trialCount = queueItem.projects?.trial_count || 0
-    const isTrialImage = trialCount > 0
-
-    if (isTrialImage) {
-      // Use atomic RPC to increment trial_completed (prevents race conditions with concurrent processing)
-      const { data: newTrialCompleted, error: trialError } = await supabase.rpc('increment_trial_completed', {
-        p_project_id: queueItem.project_id
-      })
-
-      if (trialError) {
-        console.error('Trial increment RPC failed:', trialError.message)
-      } else {
-        console.log('Trial completed (atomic):', newTrialCompleted, '/', trialCount)
-      }
-    } else {
-      // Non-trial: just increment processed_images and tokens
-      const { error: updateError } = await supabase
-        .from('projects')
-        .update({
-          processed_images: (queueItem.projects?.processed_images || 0) + 1,
-          total_tokens: (queueItem.projects?.total_tokens || 0) + 1,
-          updated_at: new Date().toISOString()
-        })
-        .eq('id', queueItem.project_id)
-
-      if (updateError) {
-        console.error('Project update failed:', updateError.message)
-      }
-    }
-
-    // Step 7: Delete queue item (it's now in history)
-    console.log('Step 7: Removing from queue')
-
-    const { error: deleteError } = await supabase
-      .from('processing_queue')
-      .delete()
-      .eq('id', queueItemId)
-
-    if (deleteError) {
-      console.error('Failed to delete queue item:', deleteError)
-      // Non-fatal - item processed successfully, just cleanup failed
-    }
-
-    console.log('Processing complete!')
-
+    // Return immediately - database trigger will handle the rest when AI completes!
     return new Response(
       JSON.stringify({
         success: true,
+        message: 'Job submitted. Result will be delivered via webhook.',
         queue_item_id: queueItemId,
-        history_id: historyRecord?.id,
+        job_id: submitResult.job_id,
+        task_id: submitResult.task_id,
         original_url: originalPublicUrl,
-        optimized_url: optimizedPublicUrl,
-        was_optimized: wasOptimized,
-        passthrough: !wasOptimized
       }),
       { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     )
 
   } catch (err) {
     const error = err as Error
-    console.error('Process image error:', error)
+    console.error('[process-image] Error:', error)
 
     // Update queue item with error
     if (queueItemId) {

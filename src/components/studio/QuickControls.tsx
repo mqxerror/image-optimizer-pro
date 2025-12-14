@@ -1,22 +1,28 @@
 import { Lightbulb, Contrast as ContrastIcon, Sparkles } from 'lucide-react'
 import { Label } from '@/components/ui/label'
 import { Slider } from '@/components/ui/slider'
+import { STUDIO_SPACING } from '@/constants/spacing'
+import { AIModelSelector } from './AIModelSelector'
 
 interface QuickControlsProps {
   lighting: number
   contrast: number
   sharpness: number
+  aiModel: string
   onChange: (key: string, value: number) => void
+  onModelChange: (model: string) => void
 }
 
 export function QuickControls({
   lighting,
   contrast,
   sharpness,
-  onChange
+  aiModel,
+  onChange,
+  onModelChange
 }: QuickControlsProps) {
   return (
-    <div className="w-80 bg-white border-l border-gray-200 p-6 space-y-8">
+    <div className={`${STUDIO_SPACING.quickPanel} bg-white border-l border-gray-200 ${STUDIO_SPACING.panel} ${STUDIO_SPACING.section} overflow-y-auto max-h-[calc(100vh-120px)]`}>
       <div>
         <h3 className="text-sm font-semibold text-gray-900 mb-4">Quick Adjustments</h3>
         <p className="text-xs text-gray-500 mb-6">
@@ -25,10 +31,22 @@ export function QuickControls({
         </p>
       </div>
 
+      {/* AI Model Selection - Using shared component */}
+      <AIModelSelector
+        value={aiModel}
+        onChange={onModelChange}
+        mode="single"
+      />
+
+      {/* Divider */}
+      <div className="border-t border-gray-100 my-4" />
+
       {/* Lighting Control */}
       <div className="space-y-3">
         <div className="flex items-center gap-2">
-          <Lightbulb className="h-4 w-4 text-yellow-600" />
+          <div className="p-1.5 rounded-md bg-yellow-100">
+            <Lightbulb className="h-4 w-4 text-yellow-600" />
+          </div>
           <Label className="text-sm font-medium">Lighting Intensity</Label>
         </div>
         <Slider
@@ -54,7 +72,9 @@ export function QuickControls({
       {/* Contrast Control */}
       <div className="space-y-3">
         <div className="flex items-center gap-2">
-          <ContrastIcon className="h-4 w-4 text-purple-600" />
+          <div className="p-1.5 rounded-md bg-indigo-100">
+            <ContrastIcon className="h-4 w-4 text-indigo-600" />
+          </div>
           <Label className="text-sm font-medium">Contrast</Label>
         </div>
         <Slider
@@ -80,7 +100,9 @@ export function QuickControls({
       {/* Sharpness Control */}
       <div className="space-y-3">
         <div className="flex items-center gap-2">
-          <Sparkles className="h-4 w-4 text-blue-600" />
+          <div className="p-1.5 rounded-md bg-blue-100">
+            <Sparkles className="h-4 w-4 text-blue-600" />
+          </div>
           <Label className="text-sm font-medium">Sharpness</Label>
         </div>
         <Slider

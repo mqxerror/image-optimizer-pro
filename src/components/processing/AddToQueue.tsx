@@ -22,6 +22,8 @@ interface AddToQueueProps {
   projectId: string
   projectName: string
   onQueued?: (count: number) => void
+  autoProcess?: boolean // Auto-start processing after adding
+  autoProcessBatchSize?: number // How many to auto-process (default: 10)
 }
 
 const CHUNK_SIZE = 100 // Insert 100 items at a time
@@ -29,7 +31,9 @@ const CHUNK_SIZE = 100 // Insert 100 items at a time
 export default function AddToQueue({
   projectId,
   projectName,
-  onQueued
+  onQueued,
+  autoProcess = true, // Default to auto-processing
+  autoProcessBatchSize = 10
 }: AddToQueueProps) {
   const queryClient = useQueryClient()
   const { toast } = useToast()
@@ -38,6 +42,27 @@ export default function AddToQueue({
   const [selectedFiles, setSelectedFiles] = useState<GoogleDriveFile[]>([])
   const [uploadProgress, setUploadProgress] = useState(0)
   const [isUploading, setIsUploading] = useState(false)
+
+  // Function to trigger processing for queue items
+  const triggerProcessing = async (queueItemIds: string[]) => {
+    const { data: { session } } = await supabase.auth.getSession()
+    if (!session) return
+
+    // Fire-and-forget processing calls (don't await)
+    queueItemIds.forEach((id) => {
+      fetch(
+        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/process-image`,
+        {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${session.access_token}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ queue_item_id: id })
+        }
+      ).catch(err => console.error('Auto-processing error for', id, err))
+    })
+  }
 
   // Add to queue mutation with chunked inserts
   const addToQueueMutation = useMutation({
@@ -49,6 +74,7 @@ export default function AddToQueue({
 
       const totalFiles = files.length
       let insertedCount = 0
+      const allInsertedIds: string[] = []
 
       // Split files into chunks
       const chunks: GoogleDriveFile[][] = []
@@ -72,12 +98,17 @@ export default function AddToQueue({
           tokens_reserved: 1
         }))
 
-        // Try insert with basic fields first (always works)
-        const { error: insertError } = await supabase
+        // Insert and return the IDs
+        const { data: insertedItems, error: insertError } = await supabase
           .from('processing_queue')
           .insert(basicItems)
+          .select('id')
 
         if (insertError) throw insertError
+
+        if (insertedItems) {
+          allInsertedIds.push(...insertedItems.map(item => item.id))
+        }
         insertedCount += chunk.length
 
         // Update progress
@@ -85,7 +116,7 @@ export default function AddToQueue({
         setUploadProgress(progress)
       }
 
-      return { inserted: insertedCount, total: totalFiles }
+      return { inserted: insertedCount, total: totalFiles, insertedIds: allInsertedIds }
     },
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ['queue-page'] })
@@ -96,10 +127,26 @@ export default function AddToQueue({
       setSelectedFiles([])
       setUploadProgress(0)
       setIsUploading(false)
-      toast({
-        title: 'Images added to queue',
-        description: `${data.inserted} images queued for processing`
-      })
+
+      // Auto-process a batch of items if enabled
+      if (autoProcess && data.insertedIds.length > 0) {
+        const idsToProcess = data.insertedIds.slice(0, autoProcessBatchSize)
+        triggerProcessing(idsToProcess)
+
+        const remainingCount = data.inserted - idsToProcess.length
+        toast({
+          title: 'Processing started',
+          description: remainingCount > 0
+            ? `Processing ${idsToProcess.length} images, ${remainingCount} more in queue`
+            : `Processing ${idsToProcess.length} images`
+        })
+      } else {
+        toast({
+          title: 'Images added to queue',
+          description: `${data.inserted} images queued for processing`
+        })
+      }
+
       onQueued?.(data.inserted)
     },
     onError: (error) => {

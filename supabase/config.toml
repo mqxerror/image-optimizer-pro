@@ -1,6 +1,8 @@
 # Supabase Local Development Configuration
 # https://supabase.com/docs/guides/cli/config
 
+project_id = "xleufdtjdmcgbnbduzun"
+
 [api]
 enabled = true
 port = 54321
@@ -43,6 +45,30 @@ verify_jwt = true
 verify_jwt = true
 
 [functions.optimize-image]
+verify_jwt = true
+
+[functions.kie-webhook]
+verify_jwt = false
+
+[functions.check-pending-generations]
+verify_jwt = true
+
+[functions.submit-ai-job]
+verify_jwt = false
+
+[functions.shopify-process-images]
+verify_jwt = true
+
+[functions.ai-webhook]
+verify_jwt = false
+
+[functions.check-ai-jobs]
+verify_jwt = true
+
+[functions.combine-images]
+verify_jwt = true
+
+[functions.shopify-automation]
 verify_jwt = true
 
 [analytics]

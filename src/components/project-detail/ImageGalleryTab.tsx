@@ -91,12 +91,29 @@ export function ImageGalleryTab({ projectId }: ImageGalleryTabProps) {
 
       {/* Image Grid */}
       {images.length === 0 ? (
-        <div className="flex-1 flex flex-col items-center justify-center text-gray-500">
-          <ImageIcon className="h-12 w-12 mb-3 text-gray-300" />
-          <p className="text-sm">No processed images yet</p>
-          <p className="text-xs text-gray-400 mt-1">
-            Add images to the queue and start processing
-          </p>
+        <div className="flex-1 flex flex-col items-center justify-center">
+          <div className="text-center p-8 rounded-xl bg-gradient-to-b from-gray-50 to-gray-100/50 border border-dashed border-gray-200 max-w-sm">
+            <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-purple-50 flex items-center justify-center">
+              <ImageIcon className="h-8 w-8 text-purple-400" />
+            </div>
+            <h3 className="font-medium text-gray-700 mb-1">No processed images yet</h3>
+            <p className="text-sm text-gray-500 mb-4">
+              {statusFilter !== 'all'
+                ? `No ${statusFilter === 'success' ? 'successful' : 'failed'} images to display. Try changing the filter.`
+                : 'Your processed images will appear here. Head to the Overview tab to start processing.'}
+            </p>
+            <div className="flex items-center justify-center gap-2 text-xs text-gray-400">
+              <div className="flex items-center gap-1">
+                <CheckCircle className="h-3.5 w-3.5 text-green-400" />
+                <span>Success</span>
+              </div>
+              <span className="text-gray-300">•</span>
+              <div className="flex items-center gap-1">
+                <XCircle className="h-3.5 w-3.5 text-red-400" />
+                <span>Failed</span>
+              </div>
+            </div>
+          </div>
         </div>
       ) : (
         <div className="flex-1 overflow-y-auto">

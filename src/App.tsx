@@ -5,16 +5,21 @@ import ProtectedRoute from './components/ProtectedRoute'
 import Dashboard from './pages/Dashboard'
 import Projects from './pages/Projects'
 import Templates from './pages/Templates'
-import Queue from './pages/Queue'
-import History from './pages/History'
 import Settings from './pages/Settings'
 import Studio from './pages/Studio'
+import Activity from './pages/Activity'
 import Onboarding from './pages/Onboarding'
 import Login from './pages/auth/Login'
 import Register from './pages/auth/Register'
 import ForgotPassword from './pages/auth/ForgotPassword'
 import ResetPassword from './pages/auth/ResetPassword'
 import AuthCallback from './pages/auth/Callback'
+import Shopify from './pages/Shopify'
+import ShopifyCallback from './pages/ShopifyCallback'
+import ShopifyProducts from './pages/ShopifyProducts'
+import ShopifySettings from './pages/ShopifySettings'
+import ShopifyJobs from './pages/ShopifyJobs'
+import ShopifyJobDetail from './pages/ShopifyJobDetail'
 
 function App() {
   return (
@@ -37,6 +42,16 @@ function App() {
           }
         />
 
+        {/* Shopify OAuth callback - standalone page */}
+        <Route
+          path="/shopify/callback"
+          element={
+            <ProtectedRoute>
+              <ShopifyCallback />
+            </ProtectedRoute>
+          }
+        />
+
         {/* Protected routes - require auth and organization */}
         <Route
           path="/"
@@ -49,13 +64,24 @@ function App() {
           <Route index element={<Dashboard />} />
           <Route path="studio" element={<Studio />} />
           <Route path="projects" element={<Projects />} />
-          <Route path="templates" element={<Templates />} />
-          <Route path="queue" element={<Queue />} />
-          <Route path="history" element={<History />} />
+          <Route path="activity" element={<Activity />} />
           <Route path="settings" element={<Settings />} />
+
+          {/* Shopify routes */}
+          <Route path="shopify" element={<Shopify />} />
+          <Route path="shopify/jobs" element={<ShopifyJobs />} />
+          <Route path="shopify/jobs/:jobId" element={<ShopifyJobDetail />} />
+          <Route path="shopify/:storeId/products" element={<ShopifyProducts />} />
+          <Route path="shopify/:storeId/settings" element={<ShopifySettings />} />
+
+          {/* Legacy routes - redirect to new locations */}
+          <Route path="templates" element={<Templates />} /> {/* Keep accessible, moved from nav */}
+          <Route path="queue" element={<Navigate to="/activity" replace />} />
+          <Route path="ai-jobs" element={<Navigate to="/activity" replace />} />
+          <Route path="history" element={<Navigate to="/activity" replace />} />
         </Route>
 
-        {/* Catch all - redirect to dashboard */}
+        {/* Catch all - redirect to home */}
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
       <Toaster />

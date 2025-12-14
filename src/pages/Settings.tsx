@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { Coins, Settings2, CreditCard, Loader2, Check, Building2 } from 'lucide-react'
+import { Link } from 'react-router-dom'
+import { Coins, Settings2, CreditCard, Loader2, Check, Building2, FileText, ChevronRight } from 'lucide-react'
 import { GoogleDriveConnect } from '@/components/google-drive'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -153,6 +154,34 @@ export default function Settings() {
         <h1 className="text-2xl font-bold text-gray-900">Settings</h1>
         <p className="text-gray-500 mt-1">Configure your Image Optimizer Pro settings</p>
       </div>
+
+      {/* Quick Links */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <FileText className="h-5 w-5" />
+            Content & Templates
+          </CardTitle>
+          <CardDescription>Manage your prompt templates and presets</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <Link
+            to="/templates"
+            className="flex items-center justify-between p-4 rounded-lg border border-gray-200 hover:border-gray-300 hover:bg-gray-50 transition-colors"
+          >
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-lg bg-purple-100 flex items-center justify-center">
+                <FileText className="h-5 w-5 text-purple-600" />
+              </div>
+              <div>
+                <p className="font-medium text-gray-900">Prompt Templates</p>
+                <p className="text-sm text-gray-500">Create and manage AI prompt templates</p>
+              </div>
+            </div>
+            <ChevronRight className="h-5 w-5 text-gray-400" />
+          </Link>
+        </CardContent>
+      </Card>
 
       {/* Storage Connections */}
       <GoogleDriveConnect />

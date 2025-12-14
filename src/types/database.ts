@@ -6,774 +6,1514 @@ export type Json =
   | { [key: string]: Json | undefined }
   | Json[]
 
-export interface Database {
+export type Database = {
+  // Allows to automatically instantiate createClient with right options
+  // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
+  __InternalSupabase: {
+    PostgrestVersion: "13.0.5"
+  }
   public: {
     Tables: {
+      ai_jobs: {
+        Row: {
+          ai_model: string
+          attempt_count: number | null
+          callback_at: string | null
+          callback_received: boolean | null
+          completed_at: string | null
+          created_at: string | null
+          created_by: string | null
+          error_code: string | null
+          error_message: string | null
+          id: string
+          input_url: string
+          input_url_2: string | null
+          job_type: string
+          last_error: string | null
+          max_attempts: number | null
+          metadata: Json | null
+          next_retry_at: string | null
+          organization_id: string
+          processing_time_ms: number | null
+          prompt: string | null
+          provider: string | null
+          result_url: string | null
+          settings: Json | null
+          source: string
+          source_id: string | null
+          status: string | null
+          submitted_at: string | null
+          task_id: string | null
+          tokens_refunded: boolean | null
+          tokens_reserved: number | null
+          tokens_used: number | null
+        }
+        Insert: {
+          ai_model: string
+          attempt_count?: number | null
+          callback_at?: string | null
+          callback_received?: boolean | null
+          completed_at?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          error_code?: string | null
+          error_message?: string | null
+          id?: string
+          input_url: string
+          input_url_2?: string | null
+          job_type: string
+          last_error?: string | null
+          max_attempts?: number | null
+          metadata?: Json | null
+          next_retry_at?: string | null
+          organization_id: string
+          processing_time_ms?: number | null
+          prompt?: string | null
+          provider?: string | null
+          result_url?: string | null
+          settings?: Json | null
+          source: string
+          source_id?: string | null
+          status?: string | null
+          submitted_at?: string | null
+          task_id?: string | null
+          tokens_refunded?: boolean | null
+          tokens_reserved?: number | null
+          tokens_used?: number | null
+        }
+        Update: {
+          ai_model?: string
+          attempt_count?: number | null
+          callback_at?: string | null
+          callback_received?: boolean | null
+          completed_at?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          error_code?: string | null
+          error_message?: string | null
+          id?: string
+          input_url?: string
+          input_url_2?: string | null
+          job_type?: string
+          last_error?: string | null
+          max_attempts?: number | null
+          metadata?: Json | null
+          next_retry_at?: string | null
+          organization_id?: string
+          processing_time_ms?: number | null
+          prompt?: string | null
+          provider?: string | null
+          result_url?: string | null
+          settings?: Json | null
+          source?: string
+          source_id?: string | null
+          status?: string | null
+          submitted_at?: string | null
+          task_id?: string | null
+          tokens_refunded?: boolean | null
+          tokens_reserved?: number | null
+          tokens_used?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ai_jobs_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      ai_model_configs: {
+        Row: {
+          avg_processing_time_sec: number | null
+          created_at: string | null
+          description: string | null
+          display_name: string
+          failure_check: Json | null
+          id: string
+          is_active: boolean | null
+          max_processing_time_sec: number | null
+          provider: string | null
+          request_template: Json
+          result_url_paths: string[] | null
+          status_endpoint: string
+          submit_endpoint: string
+          success_check: Json | null
+          supports_callback: boolean | null
+          task_id_path: string[] | null
+          token_cost: number | null
+          updated_at: string | null
+        }
+        Insert: {
+          avg_processing_time_sec?: number | null
+          created_at?: string | null
+          description?: string | null
+          display_name: string
+          failure_check?: Json | null
+          id: string
+          is_active?: boolean | null
+          max_processing_time_sec?: number | null
+          provider?: string | null
+          request_template: Json
+          result_url_paths?: string[] | null
+          status_endpoint: string
+          submit_endpoint: string
+          success_check?: Json | null
+          supports_callback?: boolean | null
+          task_id_path?: string[] | null
+          token_cost?: number | null
+          updated_at?: string | null
+        }
+        Update: {
+          avg_processing_time_sec?: number | null
+          created_at?: string | null
+          description?: string | null
+          display_name?: string
+          failure_check?: Json | null
+          id?: string
+          is_active?: boolean | null
+          max_processing_time_sec?: number | null
+          provider?: string | null
+          request_template?: Json
+          result_url_paths?: string[] | null
+          status_endpoint?: string
+          submit_endpoint?: string
+          success_check?: Json | null
+          supports_callback?: boolean | null
+          task_id_path?: string[] | null
+          token_cost?: number | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      combination_jobs: {
+        Row: {
+          advanced_settings: Json | null
+          ai_model: string | null
+          blend_intensity: number | null
+          created_at: string | null
+          created_by: string | null
+          error_message: string | null
+          generated_prompt: string | null
+          id: string
+          is_favorite: boolean | null
+          is_reprocess: boolean | null
+          jewelry_image_analysis: Json | null
+          jewelry_image_storage_path: string | null
+          jewelry_image_url: string
+          lighting_match: number | null
+          model_image_analysis: Json | null
+          model_image_storage_path: string | null
+          model_image_url: string
+          organization_id: string | null
+          parent_job_id: string | null
+          position_y: number | null
+          processing_time_sec: number | null
+          result_storage_path: string | null
+          result_thumbnail_url: string | null
+          result_url: string | null
+          rotation: number | null
+          scale: number | null
+          status: string | null
+          task_id: string | null
+          template_id: string | null
+          tokens_used: number | null
+          updated_at: string | null
+          version: number | null
+        }
+        Insert: {
+          advanced_settings?: Json | null
+          ai_model?: string | null
+          blend_intensity?: number | null
+          created_at?: string | null
+          created_by?: string | null
+          error_message?: string | null
+          generated_prompt?: string | null
+          id?: string
+          is_favorite?: boolean | null
+          is_reprocess?: boolean | null
+          jewelry_image_analysis?: Json | null
+          jewelry_image_storage_path?: string | null
+          jewelry_image_url: string
+          lighting_match?: number | null
+          model_image_analysis?: Json | null
+          model_image_storage_path?: string | null
+          model_image_url: string
+          organization_id?: string | null
+          parent_job_id?: string | null
+          position_y?: number | null
+          processing_time_sec?: number | null
+          result_storage_path?: string | null
+          result_thumbnail_url?: string | null
+          result_url?: string | null
+          rotation?: number | null
+          scale?: number | null
+          status?: string | null
+          task_id?: string | null
+          template_id?: string | null
+          tokens_used?: number | null
+          updated_at?: string | null
+          version?: number | null
+        }
+        Update: {
+          advanced_settings?: Json | null
+          ai_model?: string | null
+          blend_intensity?: number | null
+          created_at?: string | null
+          created_by?: string | null
+          error_message?: string | null
+          generated_prompt?: string | null
+          id?: string
+          is_favorite?: boolean | null
+          is_reprocess?: boolean | null
+          jewelry_image_analysis?: Json | null
+          jewelry_image_storage_path?: string | null
+          jewelry_image_url?: string
+          lighting_match?: number | null
+          model_image_analysis?: Json | null
+          model_image_storage_path?: string | null
+          model_image_url?: string
+          organization_id?: string | null
+          parent_job_id?: string | null
+          position_y?: number | null
+          processing_time_sec?: number | null
+          result_storage_path?: string | null
+          result_thumbnail_url?: string | null
+          result_url?: string | null
+          rotation?: number | null
+          scale?: number | null
+          status?: string | null
+          task_id?: string | null
+          template_id?: string | null
+          tokens_used?: number | null
+          updated_at?: string | null
+          version?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "combination_jobs_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "combination_jobs_parent_job_id_fkey"
+            columns: ["parent_job_id"]
+            isOneToOne: false
+            referencedRelation: "combination_jobs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "combination_jobs_template_id_fkey"
+            columns: ["template_id"]
+            isOneToOne: false
+            referencedRelation: "combination_templates"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      combination_templates: {
+        Row: {
+          advanced_settings: Json | null
+          blend_intensity: number | null
+          category: string | null
+          created_at: string | null
+          created_by: string | null
+          description: string | null
+          id: string
+          is_active: boolean | null
+          is_system: boolean | null
+          lighting_match: number | null
+          name: string
+          organization_id: string | null
+          position_y: number | null
+          rotation: number | null
+          scale: number | null
+          thumbnail_url: string | null
+          updated_at: string | null
+          usage_count: number | null
+        }
+        Insert: {
+          advanced_settings?: Json | null
+          blend_intensity?: number | null
+          category?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          is_system?: boolean | null
+          lighting_match?: number | null
+          name: string
+          organization_id?: string | null
+          position_y?: number | null
+          rotation?: number | null
+          scale?: number | null
+          thumbnail_url?: string | null
+          updated_at?: string | null
+          usage_count?: number | null
+        }
+        Update: {
+          advanced_settings?: Json | null
+          blend_intensity?: number | null
+          category?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          is_system?: boolean | null
+          lighting_match?: number | null
+          name?: string
+          organization_id?: string | null
+          position_y?: number | null
+          rotation?: number | null
+          scale?: number | null
+          thumbnail_url?: string | null
+          updated_at?: string | null
+          usage_count?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "combination_templates_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      google_drive_connections: {
+        Row: {
+          access_token: string
+          connected_by: string
+          created_at: string | null
+          google_email: string
+          id: string
+          is_active: boolean | null
+          last_used_at: string | null
+          organization_id: string
+          refresh_token: string | null
+          scopes: string[] | null
+          token_expires_at: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          access_token: string
+          connected_by: string
+          created_at?: string | null
+          google_email: string
+          id?: string
+          is_active?: boolean | null
+          last_used_at?: string | null
+          organization_id: string
+          refresh_token?: string | null
+          scopes?: string[] | null
+          token_expires_at?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          access_token?: string
+          connected_by?: string
+          created_at?: string | null
+          google_email?: string
+          id?: string
+          is_active?: boolean | null
+          last_used_at?: string | null
+          organization_id?: string
+          refresh_token?: string | null
+          scopes?: string[] | null
+          token_expires_at?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "google_drive_connections_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       organizations: {
         Row: {
+          created_at: string | null
           id: string
           name: string
           owner_id: string | null
-          settings: Json
-          created_at: string
-          updated_at: string
+          settings: Json | null
+          updated_at: string | null
         }
         Insert: {
+          created_at?: string | null
           id?: string
           name: string
           owner_id?: string | null
-          settings?: Json
-          created_at?: string
-          updated_at?: string
+          settings?: Json | null
+          updated_at?: string | null
         }
         Update: {
+          created_at?: string | null
           id?: string
           name?: string
           owner_id?: string | null
-          settings?: Json
-          created_at?: string
-          updated_at?: string
+          settings?: Json | null
+          updated_at?: string | null
         }
-        Relationships: [
-          {
-            foreignKeyName: "organizations_owner_id_fkey"
-            columns: ["owner_id"]
-            referencedRelation: "users"
-            referencedColumns: ["id"]
-          }
-        ]
+        Relationships: []
       }
-      user_organizations: {
+      processing_history: {
         Row: {
-          user_id: string
-          organization_id: string
-          role: string
-          created_at: string
-        }
-        Insert: {
-          user_id: string
-          organization_id: string
-          role?: string
-          created_at?: string
-        }
-        Update: {
-          user_id?: string
-          organization_id?: string
-          role?: string
-          created_at?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "user_organizations_user_id_fkey"
-            columns: ["user_id"]
-            referencedRelation: "users"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "user_organizations_organization_id_fkey"
-            columns: ["organization_id"]
-            referencedRelation: "organizations"
-            referencedColumns: ["id"]
-          }
-        ]
-      }
-      projects: {
-        Row: {
-          id: string
-          organization_id: string
-          name: string
-          input_folder_url: string | null
-          input_folder_id: string | null
-          output_folder_url: string | null
-          output_folder_id: string | null
-          template_id: string | null
-          custom_prompt: string | null
-          status: string
-          resolution: string
           ai_model: string | null
-          studio_preset_id: string | null
-          prompt_mode: 'template' | 'preset' | 'custom'
-          trial_count: number
-          trial_completed: number
-          total_images: number
-          processed_images: number
-          failed_images: number
-          total_tokens: number
-          created_at: string
-          updated_at: string
-        }
-        Insert: {
-          id?: string
-          organization_id: string
-          name: string
-          input_folder_url?: string | null
-          input_folder_id?: string | null
-          output_folder_url?: string | null
-          output_folder_id?: string | null
-          template_id?: string | null
-          custom_prompt?: string | null
-          status?: string
-          resolution?: string
-          ai_model?: string | null
-          studio_preset_id?: string | null
-          prompt_mode?: 'template' | 'preset' | 'custom'
-          trial_count?: number
-          trial_completed?: number
-          total_images?: number
-          processed_images?: number
-          failed_images?: number
-          total_tokens?: number
-          created_at?: string
-          updated_at?: string
-        }
-        Update: {
-          id?: string
-          organization_id?: string
-          name?: string
-          input_folder_url?: string | null
-          input_folder_id?: string | null
-          output_folder_url?: string | null
-          output_folder_id?: string | null
-          template_id?: string | null
-          custom_prompt?: string | null
-          status?: string
-          resolution?: string
-          ai_model?: string | null
-          studio_preset_id?: string | null
-          prompt_mode?: 'template' | 'preset' | 'custom'
-          trial_count?: number
-          trial_completed?: number
-          total_images?: number
-          processed_images?: number
-          failed_images?: number
-          total_tokens?: number
-          created_at?: string
-          updated_at?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "projects_organization_id_fkey"
-            columns: ["organization_id"]
-            referencedRelation: "organizations"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "projects_template_id_fkey"
-            columns: ["template_id"]
-            referencedRelation: "prompt_templates"
-            referencedColumns: ["id"]
-          }
-        ]
-      }
-      prompt_templates: {
-        Row: {
-          id: string
-          organization_id: string | null
-          name: string
-          category: string | null
-          subcategory: string | null
-          base_prompt: string | null
-          style: string | null
-          background: string | null
-          lighting: string | null
-          is_system: boolean
-          is_active: boolean
+          completed_at: string | null
           created_by: string | null
-          usage_count: number
-          created_at: string
-          updated_at: string
-        }
-        Insert: {
-          id?: string
-          organization_id?: string | null
-          name: string
-          category?: string | null
-          subcategory?: string | null
-          base_prompt?: string | null
-          style?: string | null
-          background?: string | null
-          lighting?: string | null
-          is_system?: boolean
-          is_active?: boolean
-          created_by?: string | null
-          usage_count?: number
-          created_at?: string
-          updated_at?: string
-        }
-        Update: {
-          id?: string
-          organization_id?: string | null
-          name?: string
-          category?: string | null
-          subcategory?: string | null
-          base_prompt?: string | null
-          style?: string | null
-          background?: string | null
-          lighting?: string | null
-          is_system?: boolean
-          is_active?: boolean
-          created_by?: string | null
-          usage_count?: number
-          created_at?: string
-          updated_at?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "prompt_templates_organization_id_fkey"
-            columns: ["organization_id"]
-            referencedRelation: "organizations"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "prompt_templates_created_by_fkey"
-            columns: ["created_by"]
-            referencedRelation: "users"
-            referencedColumns: ["id"]
-          }
-        ]
-      }
-      storage_connections: {
-        Row: {
+          error_message: string | null
+          file_id: string
+          file_name: string | null
+          file_size_after: number | null
+          file_size_before: number | null
+          generated_prompt: string | null
           id: string
-          organization_id: string
-          user_id: string
-          provider: string
-          access_token: string
-          refresh_token: string | null
-          token_expires_at: string | null
-          provider_user_id: string | null
-          provider_email: string | null
-          metadata: Json
-          created_at: string
-          updated_at: string
+          optimized_storage_path: string | null
+          optimized_url: string | null
+          organization_id: string | null
+          original_url: string | null
+          parent_id: string | null
+          processing_time_sec: number | null
+          project_id: string | null
+          resolution: string | null
+          started_at: string | null
+          status: string | null
+          tokens_used: number | null
+          version: number | null
         }
         Insert: {
+          ai_model?: string | null
+          completed_at?: string | null
+          created_by?: string | null
+          error_message?: string | null
+          file_id: string
+          file_name?: string | null
+          file_size_after?: number | null
+          file_size_before?: number | null
+          generated_prompt?: string | null
           id?: string
-          organization_id: string
-          user_id: string
-          provider: string
-          access_token: string
-          refresh_token?: string | null
-          token_expires_at?: string | null
-          provider_user_id?: string | null
-          provider_email?: string | null
-          metadata?: Json
-          created_at?: string
-          updated_at?: string
+          optimized_storage_path?: string | null
+          optimized_url?: string | null
+          organization_id?: string | null
+          original_url?: string | null
+          parent_id?: string | null
+          processing_time_sec?: number | null
+          project_id?: string | null
+          resolution?: string | null
+          started_at?: string | null
+          status?: string | null
+          tokens_used?: number | null
+          version?: number | null
         }
         Update: {
+          ai_model?: string | null
+          completed_at?: string | null
+          created_by?: string | null
+          error_message?: string | null
+          file_id?: string
+          file_name?: string | null
+          file_size_after?: number | null
+          file_size_before?: number | null
+          generated_prompt?: string | null
           id?: string
-          organization_id?: string
-          user_id?: string
-          provider?: string
-          access_token?: string
-          refresh_token?: string | null
-          token_expires_at?: string | null
-          provider_user_id?: string | null
-          provider_email?: string | null
-          metadata?: Json
-          created_at?: string
-          updated_at?: string
+          optimized_storage_path?: string | null
+          optimized_url?: string | null
+          organization_id?: string | null
+          original_url?: string | null
+          parent_id?: string | null
+          processing_time_sec?: number | null
+          project_id?: string | null
+          resolution?: string | null
+          started_at?: string | null
+          status?: string | null
+          tokens_used?: number | null
+          version?: number | null
         }
         Relationships: [
           {
-            foreignKeyName: "storage_connections_organization_id_fkey"
+            foreignKeyName: "processing_history_organization_id_fkey"
             columns: ["organization_id"]
+            isOneToOne: false
             referencedRelation: "organizations"
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "storage_connections_user_id_fkey"
-            columns: ["user_id"]
-            referencedRelation: "users"
+            foreignKeyName: "processing_history_parent_id_fkey"
+            columns: ["parent_id"]
+            isOneToOne: false
+            referencedRelation: "processing_history"
             referencedColumns: ["id"]
-          }
+          },
+          {
+            foreignKeyName: "processing_history_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
         ]
       }
       processing_queue: {
         Row: {
-          id: string
-          organization_id: string
-          project_id: string | null
+          ai_model: string | null
+          batch_id: string | null
+          error_message: string | null
           file_id: string
           file_name: string | null
           file_url: string | null
-          status: string
-          progress: number
-          task_id: string | null
-          generated_prompt: string | null
-          error_message: string | null
-          retry_count: number
-          tokens_reserved: number
-          folder_path: string | null
           folder_id: string | null
-          batch_id: string | null
-          ai_model: string | null
-          started_at: string
-          last_updated: string
+          folder_path: string | null
+          generated_prompt: string | null
+          id: string
+          last_updated: string | null
+          organization_id: string | null
+          progress: number | null
+          project_id: string | null
+          retry_count: number | null
+          started_at: string | null
+          status: string | null
+          task_id: string | null
+          thumbnail_url: string | null
+          tokens_reserved: number | null
         }
         Insert: {
-          id?: string
-          organization_id: string
-          project_id?: string | null
+          ai_model?: string | null
+          batch_id?: string | null
+          error_message?: string | null
           file_id: string
           file_name?: string | null
           file_url?: string | null
-          status?: string
-          progress?: number
-          task_id?: string | null
-          generated_prompt?: string | null
-          error_message?: string | null
-          retry_count?: number
-          tokens_reserved?: number
-          folder_path?: string | null
           folder_id?: string | null
-          batch_id?: string | null
-          ai_model?: string | null
-          started_at?: string
-          last_updated?: string
+          folder_path?: string | null
+          generated_prompt?: string | null
+          id?: string
+          last_updated?: string | null
+          organization_id?: string | null
+          progress?: number | null
+          project_id?: string | null
+          retry_count?: number | null
+          started_at?: string | null
+          status?: string | null
+          task_id?: string | null
+          thumbnail_url?: string | null
+          tokens_reserved?: number | null
         }
         Update: {
-          id?: string
-          organization_id?: string
-          project_id?: string | null
+          ai_model?: string | null
+          batch_id?: string | null
+          error_message?: string | null
           file_id?: string
           file_name?: string | null
           file_url?: string | null
-          status?: string
-          progress?: number
-          task_id?: string | null
-          generated_prompt?: string | null
-          error_message?: string | null
-          retry_count?: number
-          tokens_reserved?: number
-          folder_path?: string | null
           folder_id?: string | null
-          batch_id?: string | null
-          ai_model?: string | null
-          started_at?: string
-          last_updated?: string
+          folder_path?: string | null
+          generated_prompt?: string | null
+          id?: string
+          last_updated?: string | null
+          organization_id?: string | null
+          progress?: number | null
+          project_id?: string | null
+          retry_count?: number | null
+          started_at?: string | null
+          status?: string | null
+          task_id?: string | null
+          thumbnail_url?: string | null
+          tokens_reserved?: number | null
         }
         Relationships: [
           {
             foreignKeyName: "processing_queue_organization_id_fkey"
             columns: ["organization_id"]
+            isOneToOne: false
             referencedRelation: "organizations"
             referencedColumns: ["id"]
           },
           {
             foreignKeyName: "processing_queue_project_id_fkey"
             columns: ["project_id"]
+            isOneToOne: false
             referencedRelation: "projects"
             referencedColumns: ["id"]
-          }
+          },
         ]
       }
-      processing_history: {
+      projects: {
         Row: {
-          id: string
-          organization_id: string
-          project_id: string | null
-          file_id: string
-          file_name: string | null
-          original_url: string | null
-          optimized_url: string | null
-          optimized_storage_path: string | null
-          status: string
-          resolution: string | null
-          tokens_used: number | null
-          processing_time_sec: number | null
-          generated_prompt: string | null
-          error_message: string | null
-          started_at: string | null
-          completed_at: string
-          created_by: string | null
-          parent_id: string | null
-          version: number
           ai_model: string | null
+          created_at: string | null
+          custom_prompt: string | null
+          failed_images: number | null
+          id: string
+          input_folder_id: string | null
+          input_folder_url: string | null
+          name: string
+          organization_id: string | null
+          output_folder_id: string | null
+          output_folder_url: string | null
+          processed_images: number | null
+          prompt_mode: string | null
+          resolution: string | null
+          status: string | null
+          studio_preset_id: string | null
+          template_id: string | null
+          total_images: number | null
+          total_tokens: number | null
+          trial_completed: number | null
+          trial_count: number | null
+          updated_at: string | null
         }
         Insert: {
-          id?: string
-          organization_id: string
-          project_id?: string | null
-          file_id: string
-          file_name?: string | null
-          original_url?: string | null
-          optimized_url?: string | null
-          optimized_storage_path?: string | null
-          status?: string
-          resolution?: string | null
-          tokens_used?: number | null
-          processing_time_sec?: number | null
-          generated_prompt?: string | null
-          error_message?: string | null
-          started_at?: string | null
-          completed_at?: string
-          created_by?: string | null
-          parent_id?: string | null
-          version?: number
           ai_model?: string | null
+          created_at?: string | null
+          custom_prompt?: string | null
+          failed_images?: number | null
+          id?: string
+          input_folder_id?: string | null
+          input_folder_url?: string | null
+          name: string
+          organization_id?: string | null
+          output_folder_id?: string | null
+          output_folder_url?: string | null
+          processed_images?: number | null
+          prompt_mode?: string | null
+          resolution?: string | null
+          status?: string | null
+          studio_preset_id?: string | null
+          template_id?: string | null
+          total_images?: number | null
+          total_tokens?: number | null
+          trial_completed?: number | null
+          trial_count?: number | null
+          updated_at?: string | null
         }
         Update: {
-          id?: string
-          organization_id?: string
-          project_id?: string | null
-          file_id?: string
-          file_name?: string | null
-          original_url?: string | null
-          optimized_url?: string | null
-          optimized_storage_path?: string | null
-          status?: string
-          resolution?: string | null
-          tokens_used?: number | null
-          processing_time_sec?: number | null
-          generated_prompt?: string | null
-          error_message?: string | null
-          started_at?: string | null
-          completed_at?: string
-          created_by?: string | null
-          parent_id?: string | null
-          version?: number
           ai_model?: string | null
+          created_at?: string | null
+          custom_prompt?: string | null
+          failed_images?: number | null
+          id?: string
+          input_folder_id?: string | null
+          input_folder_url?: string | null
+          name?: string
+          organization_id?: string | null
+          output_folder_id?: string | null
+          output_folder_url?: string | null
+          processed_images?: number | null
+          prompt_mode?: string | null
+          resolution?: string | null
+          status?: string | null
+          studio_preset_id?: string | null
+          template_id?: string | null
+          total_images?: number | null
+          total_tokens?: number | null
+          trial_completed?: number | null
+          trial_count?: number | null
+          updated_at?: string | null
         }
         Relationships: [
           {
-            foreignKeyName: "processing_history_organization_id_fkey"
+            foreignKeyName: "projects_organization_id_fkey"
             columns: ["organization_id"]
+            isOneToOne: false
             referencedRelation: "organizations"
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "processing_history_project_id_fkey"
-            columns: ["project_id"]
-            referencedRelation: "projects"
+            foreignKeyName: "projects_studio_preset_id_fkey"
+            columns: ["studio_preset_id"]
+            isOneToOne: false
+            referencedRelation: "studio_presets"
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "processing_history_created_by_fkey"
-            columns: ["created_by"]
-            referencedRelation: "users"
+            foreignKeyName: "projects_template_id_fkey"
+            columns: ["template_id"]
+            isOneToOne: false
+            referencedRelation: "prompt_templates"
             referencedColumns: ["id"]
-          }
+          },
         ]
       }
-      token_accounts: {
+      prompt_templates: {
         Row: {
-          id: string
-          organization_id: string
-          balance: number
-          lifetime_purchased: number
-          lifetime_used: number
-          low_balance_threshold: number
-          created_at: string
-          updated_at: string
-        }
-        Insert: {
-          id?: string
-          organization_id: string
-          balance?: number
-          lifetime_purchased?: number
-          lifetime_used?: number
-          low_balance_threshold?: number
-          created_at?: string
-          updated_at?: string
-        }
-        Update: {
-          id?: string
-          organization_id?: string
-          balance?: number
-          lifetime_purchased?: number
-          lifetime_used?: number
-          low_balance_threshold?: number
-          created_at?: string
-          updated_at?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "token_accounts_organization_id_fkey"
-            columns: ["organization_id"]
-            referencedRelation: "organizations"
-            referencedColumns: ["id"]
-          }
-        ]
-      }
-      token_transactions: {
-        Row: {
-          id: string
-          account_id: string
-          type: string
-          amount: number
-          balance_before: number | null
-          balance_after: number | null
-          description: string | null
-          reference_type: string | null
-          reference_id: string | null
-          metadata: Json | null
-          created_at: string
+          background: string | null
+          base_prompt: string | null
+          category: string | null
+          created_at: string | null
           created_by: string | null
+          id: string
+          is_active: boolean | null
+          is_system: boolean | null
+          lighting: string | null
+          name: string
+          organization_id: string | null
+          style: string | null
+          subcategory: string | null
+          updated_at: string | null
+          usage_count: number | null
         }
         Insert: {
-          id?: string
-          account_id: string
-          type: string
-          amount: number
-          balance_before?: number | null
-          balance_after?: number | null
-          description?: string | null
-          reference_type?: string | null
-          reference_id?: string | null
-          metadata?: Json | null
-          created_at?: string
+          background?: string | null
+          base_prompt?: string | null
+          category?: string | null
+          created_at?: string | null
           created_by?: string | null
+          id?: string
+          is_active?: boolean | null
+          is_system?: boolean | null
+          lighting?: string | null
+          name: string
+          organization_id?: string | null
+          style?: string | null
+          subcategory?: string | null
+          updated_at?: string | null
+          usage_count?: number | null
         }
         Update: {
-          id?: string
-          account_id?: string
-          type?: string
-          amount?: number
-          balance_before?: number | null
-          balance_after?: number | null
-          description?: string | null
-          reference_type?: string | null
-          reference_id?: string | null
-          metadata?: Json | null
-          created_at?: string
+          background?: string | null
+          base_prompt?: string | null
+          category?: string | null
+          created_at?: string | null
           created_by?: string | null
+          id?: string
+          is_active?: boolean | null
+          is_system?: boolean | null
+          lighting?: string | null
+          name?: string
+          organization_id?: string | null
+          style?: string | null
+          subcategory?: string | null
+          updated_at?: string | null
+          usage_count?: number | null
         }
         Relationships: [
           {
-            foreignKeyName: "token_transactions_account_id_fkey"
-            columns: ["account_id"]
-            referencedRelation: "token_accounts"
+            foreignKeyName: "prompt_templates_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      regenerate_presets: {
+        Row: {
+          ai_model: string
+          created_at: string | null
+          created_by: string | null
+          custom_prompt: string | null
+          id: string
+          name: string
+          organization_id: string
+          prompt_mode: string
+          studio_preset_id: string | null
+          template_id: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          ai_model: string
+          created_at?: string | null
+          created_by?: string | null
+          custom_prompt?: string | null
+          id?: string
+          name: string
+          organization_id: string
+          prompt_mode: string
+          studio_preset_id?: string | null
+          template_id?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          ai_model?: string
+          created_at?: string | null
+          created_by?: string | null
+          custom_prompt?: string | null
+          id?: string
+          name?: string
+          organization_id?: string
+          prompt_mode?: string
+          studio_preset_id?: string | null
+          template_id?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "regenerate_presets_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "token_transactions_created_by_fkey"
-            columns: ["created_by"]
-            referencedRelation: "users"
+            foreignKeyName: "regenerate_presets_studio_preset_id_fkey"
+            columns: ["studio_preset_id"]
+            isOneToOne: false
+            referencedRelation: "studio_presets"
             referencedColumns: ["id"]
-          }
+          },
+          {
+            foreignKeyName: "regenerate_presets_template_id_fkey"
+            columns: ["template_id"]
+            isOneToOne: false
+            referencedRelation: "prompt_templates"
+            referencedColumns: ["id"]
+          },
         ]
       }
-      token_pricing: {
+      shopify_images: {
         Row: {
+          created_at: string | null
+          error_message: string | null
           id: string
-          operation: string
-          token_cost: number
-          display_name: string | null
-          description: string | null
-          is_active: boolean
+          image_position: number | null
+          job_id: string
+          last_push_error: string | null
+          optimized_storage_path: string | null
+          optimized_url: string | null
+          original_height: number | null
+          original_url: string
+          original_width: number | null
+          processing_time_ms: number | null
+          product_title: string | null
+          push_attempts: number | null
+          pushed_at: string | null
+          shopify_image_id: string
+          shopify_product_id: string
+          status: string | null
+          tokens_used: number | null
+          updated_at: string | null
         }
         Insert: {
+          created_at?: string | null
+          error_message?: string | null
           id?: string
-          operation: string
-          token_cost: number
-          display_name?: string | null
-          description?: string | null
-          is_active?: boolean
+          image_position?: number | null
+          job_id: string
+          last_push_error?: string | null
+          optimized_storage_path?: string | null
+          optimized_url?: string | null
+          original_height?: number | null
+          original_url: string
+          original_width?: number | null
+          processing_time_ms?: number | null
+          product_title?: string | null
+          push_attempts?: number | null
+          pushed_at?: string | null
+          shopify_image_id: string
+          shopify_product_id: string
+          status?: string | null
+          tokens_used?: number | null
+          updated_at?: string | null
         }
         Update: {
+          created_at?: string | null
+          error_message?: string | null
           id?: string
-          operation?: string
-          token_cost?: number
-          display_name?: string | null
-          description?: string | null
-          is_active?: boolean
+          image_position?: number | null
+          job_id?: string
+          last_push_error?: string | null
+          optimized_storage_path?: string | null
+          optimized_url?: string | null
+          original_height?: number | null
+          original_url?: string
+          original_width?: number | null
+          processing_time_ms?: number | null
+          product_title?: string | null
+          push_attempts?: number | null
+          pushed_at?: string | null
+          shopify_image_id?: string
+          shopify_product_id?: string
+          status?: string | null
+          tokens_used?: number | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "shopify_images_job_id_fkey"
+            columns: ["job_id"]
+            isOneToOne: false
+            referencedRelation: "shopify_sync_jobs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      shopify_stores: {
+        Row: {
+          access_token: string
+          created_at: string | null
+          id: string
+          last_sync_at: string | null
+          scopes: string[] | null
+          settings: Json | null
+          shop_domain: string
+          shop_name: string | null
+          status: string | null
+          updated_at: string | null
+          user_id: string
+          webhook_id: string | null
+          webhook_secret: string | null
+        }
+        Insert: {
+          access_token: string
+          created_at?: string | null
+          id?: string
+          last_sync_at?: string | null
+          scopes?: string[] | null
+          settings?: Json | null
+          shop_domain: string
+          shop_name?: string | null
+          status?: string | null
+          updated_at?: string | null
+          user_id: string
+          webhook_id?: string | null
+          webhook_secret?: string | null
+        }
+        Update: {
+          access_token?: string
+          created_at?: string | null
+          id?: string
+          last_sync_at?: string | null
+          scopes?: string[] | null
+          settings?: Json | null
+          shop_domain?: string
+          shop_name?: string | null
+          status?: string | null
+          updated_at?: string | null
+          user_id?: string
+          webhook_id?: string | null
+          webhook_secret?: string | null
         }
         Relationships: []
       }
-      google_drive_connections: {
+      shopify_sync_jobs: {
         Row: {
+          approved_at: string | null
+          completed_at: string | null
+          created_at: string | null
+          expires_at: string | null
+          failed_count: number | null
           id: string
-          organization_id: string
-          connected_by: string
-          google_email: string
-          access_token: string
-          refresh_token: string | null
-          token_expires_at: string | null
-          scopes: string[]
-          is_active: boolean
-          last_used_at: string | null
-          created_at: string
-          updated_at: string
+          image_count: number | null
+          last_error: string | null
+          max_retries: number | null
+          next_retry_at: string | null
+          preset_id: string | null
+          preset_type: string
+          processed_count: number | null
+          product_count: number | null
+          pushed_count: number | null
+          retry_count: number | null
+          status: string | null
+          store_id: string
+          tokens_used: number | null
+          trigger_type: string
+          updated_at: string | null
         }
         Insert: {
+          approved_at?: string | null
+          completed_at?: string | null
+          created_at?: string | null
+          expires_at?: string | null
+          failed_count?: number | null
           id?: string
-          organization_id: string
-          connected_by: string
-          google_email: string
-          access_token: string
-          refresh_token?: string | null
-          token_expires_at?: string | null
-          scopes?: string[]
-          is_active?: boolean
-          last_used_at?: string | null
-          created_at?: string
-          updated_at?: string
+          image_count?: number | null
+          last_error?: string | null
+          max_retries?: number | null
+          next_retry_at?: string | null
+          preset_id?: string | null
+          preset_type: string
+          processed_count?: number | null
+          product_count?: number | null
+          pushed_count?: number | null
+          retry_count?: number | null
+          status?: string | null
+          store_id: string
+          tokens_used?: number | null
+          trigger_type: string
+          updated_at?: string | null
         }
         Update: {
+          approved_at?: string | null
+          completed_at?: string | null
+          created_at?: string | null
+          expires_at?: string | null
+          failed_count?: number | null
           id?: string
-          organization_id?: string
-          connected_by?: string
-          google_email?: string
-          access_token?: string
-          refresh_token?: string | null
-          token_expires_at?: string | null
-          scopes?: string[]
-          is_active?: boolean
-          last_used_at?: string | null
-          created_at?: string
-          updated_at?: string
+          image_count?: number | null
+          last_error?: string | null
+          max_retries?: number | null
+          next_retry_at?: string | null
+          preset_id?: string | null
+          preset_type?: string
+          processed_count?: number | null
+          product_count?: number | null
+          pushed_count?: number | null
+          retry_count?: number | null
+          status?: string | null
+          store_id?: string
+          tokens_used?: number | null
+          trigger_type?: string
+          updated_at?: string | null
         }
         Relationships: [
           {
-            foreignKeyName: "google_drive_connections_organization_id_fkey"
+            foreignKeyName: "shopify_sync_jobs_store_id_fkey"
+            columns: ["store_id"]
+            isOneToOne: false
+            referencedRelation: "shopify_stores"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      storage_connections: {
+        Row: {
+          access_token: string
+          created_at: string | null
+          id: string
+          metadata: Json | null
+          organization_id: string
+          provider: string
+          provider_email: string | null
+          provider_user_id: string | null
+          refresh_token: string | null
+          token_expires_at: string | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          access_token: string
+          created_at?: string | null
+          id?: string
+          metadata?: Json | null
+          organization_id: string
+          provider: string
+          provider_email?: string | null
+          provider_user_id?: string | null
+          refresh_token?: string | null
+          token_expires_at?: string | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          access_token?: string
+          created_at?: string | null
+          id?: string
+          metadata?: Json | null
+          organization_id?: string
+          provider?: string
+          provider_email?: string | null
+          provider_user_id?: string | null
+          refresh_token?: string | null
+          token_expires_at?: string | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "storage_connections_organization_id_fkey"
             columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      studio_generations: {
+        Row: {
+          ai_model: string
+          created_at: string | null
+          created_by: string | null
+          custom_prompt: string | null
+          error_message: string | null
+          final_prompt: string | null
+          id: string
+          is_favorite: boolean | null
+          organization_id: string | null
+          original_file_name: string | null
+          original_storage_path: string | null
+          original_url: string
+          preset_id: string | null
+          processing_time_sec: number | null
+          result_storage_path: string | null
+          result_url: string | null
+          settings_snapshot: Json
+          status: string | null
+          task_id: string | null
+          tokens_used: number | null
+        }
+        Insert: {
+          ai_model: string
+          created_at?: string | null
+          created_by?: string | null
+          custom_prompt?: string | null
+          error_message?: string | null
+          final_prompt?: string | null
+          id?: string
+          is_favorite?: boolean | null
+          organization_id?: string | null
+          original_file_name?: string | null
+          original_storage_path?: string | null
+          original_url: string
+          preset_id?: string | null
+          processing_time_sec?: number | null
+          result_storage_path?: string | null
+          result_url?: string | null
+          settings_snapshot: Json
+          status?: string | null
+          task_id?: string | null
+          tokens_used?: number | null
+        }
+        Update: {
+          ai_model?: string
+          created_at?: string | null
+          created_by?: string | null
+          custom_prompt?: string | null
+          error_message?: string | null
+          final_prompt?: string | null
+          id?: string
+          is_favorite?: boolean | null
+          organization_id?: string | null
+          original_file_name?: string | null
+          original_storage_path?: string | null
+          original_url?: string
+          preset_id?: string | null
+          processing_time_sec?: number | null
+          result_storage_path?: string | null
+          result_url?: string | null
+          settings_snapshot?: Json
+          status?: string | null
+          task_id?: string | null
+          tokens_used?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "studio_generations_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
             referencedRelation: "organizations"
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "google_drive_connections_connected_by_fkey"
-            columns: ["connected_by"]
-            referencedRelation: "users"
+            foreignKeyName: "studio_generations_preset_id_fkey"
+            columns: ["preset_id"]
+            isOneToOne: false
+            referencedRelation: "studio_presets"
             referencedColumns: ["id"]
-          }
+          },
         ]
+      }
+      studio_ideas: {
+        Row: {
+          category: string | null
+          created_at: string | null
+          display_order: number | null
+          id: string
+          is_active: boolean | null
+          text: string
+        }
+        Insert: {
+          category?: string | null
+          created_at?: string | null
+          display_order?: number | null
+          id?: string
+          is_active?: boolean | null
+          text: string
+        }
+        Update: {
+          category?: string | null
+          created_at?: string | null
+          display_order?: number | null
+          id?: string
+          is_active?: boolean | null
+          text?: string
+        }
+        Relationships: []
       }
       studio_presets: {
         Row: {
-          id: string
-          organization_id: string | null
-          name: string
-          description: string | null
-          category: string | null
-          is_system: boolean
-          is_active: boolean
-          thumbnail_url: string | null
-          // Camera settings
-          camera_lens: string
-          camera_aperture: string
-          camera_angle: string
-          camera_focus: string
-          camera_distance: string
-          // Lighting settings
-          lighting_style: string
-          lighting_key_intensity: number
-          lighting_fill_intensity: number
-          lighting_rim_intensity: number
-          lighting_direction: string
-          // Background settings
-          background_type: string
-          background_surface: string
-          background_shadow: string
-          background_reflection: number
+          ai_model: string | null
           background_color: string | null
-          // Jewelry settings
-          jewelry_metal: string
-          jewelry_finish: string
-          jewelry_sparkle: number
-          jewelry_color_pop: number
-          jewelry_detail: number
-          // Composition settings
-          composition_framing: string
-          composition_aspect_ratio: string
-          composition_padding: number
-          // AI model
-          ai_model: string
+          background_reflection: number | null
+          background_shadow: string | null
+          background_surface: string | null
+          background_type: string | null
+          camera_angle: string | null
+          camera_aperture: string | null
+          camera_distance: string | null
+          camera_focus: string | null
+          camera_lens: string | null
+          category: string | null
+          composition_aspect_ratio: string | null
+          composition_framing: string | null
+          composition_padding: number | null
+          created_at: string | null
           created_by: string | null
-          usage_count: number
-          created_at: string
-          updated_at: string
+          custom_prompt: string | null
+          description: string | null
+          id: string
+          is_active: boolean | null
+          is_system: boolean | null
+          jewelry_color_pop: number | null
+          jewelry_detail: number | null
+          jewelry_finish: string | null
+          jewelry_metal: string | null
+          jewelry_sparkle: number | null
+          lighting_direction: string | null
+          lighting_fill_intensity: number | null
+          lighting_key_intensity: number | null
+          lighting_rim_intensity: number | null
+          lighting_style: string | null
+          name: string
+          organization_id: string | null
+          thumbnail_url: string | null
+          updated_at: string | null
+          usage_count: number | null
         }
         Insert: {
-          id?: string
-          organization_id?: string | null
-          name: string
-          description?: string | null
-          category?: string | null
-          is_system?: boolean
-          is_active?: boolean
-          thumbnail_url?: string | null
-          camera_lens?: string
-          camera_aperture?: string
-          camera_angle?: string
-          camera_focus?: string
-          camera_distance?: string
-          lighting_style?: string
-          lighting_key_intensity?: number
-          lighting_fill_intensity?: number
-          lighting_rim_intensity?: number
-          lighting_direction?: string
-          background_type?: string
-          background_surface?: string
-          background_shadow?: string
-          background_reflection?: number
+          ai_model?: string | null
           background_color?: string | null
-          jewelry_metal?: string
-          jewelry_finish?: string
-          jewelry_sparkle?: number
-          jewelry_color_pop?: number
-          jewelry_detail?: number
-          composition_framing?: string
-          composition_aspect_ratio?: string
-          composition_padding?: number
-          ai_model?: string
+          background_reflection?: number | null
+          background_shadow?: string | null
+          background_surface?: string | null
+          background_type?: string | null
+          camera_angle?: string | null
+          camera_aperture?: string | null
+          camera_distance?: string | null
+          camera_focus?: string | null
+          camera_lens?: string | null
+          category?: string | null
+          composition_aspect_ratio?: string | null
+          composition_framing?: string | null
+          composition_padding?: number | null
+          created_at?: string | null
           created_by?: string | null
-          usage_count?: number
-          created_at?: string
-          updated_at?: string
+          custom_prompt?: string | null
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          is_system?: boolean | null
+          jewelry_color_pop?: number | null
+          jewelry_detail?: number | null
+          jewelry_finish?: string | null
+          jewelry_metal?: string | null
+          jewelry_sparkle?: number | null
+          lighting_direction?: string | null
+          lighting_fill_intensity?: number | null
+          lighting_key_intensity?: number | null
+          lighting_rim_intensity?: number | null
+          lighting_style?: string | null
+          name: string
+          organization_id?: string | null
+          thumbnail_url?: string | null
+          updated_at?: string | null
+          usage_count?: number | null
         }
         Update: {
-          id?: string
-          organization_id?: string | null
-          name?: string
-          description?: string | null
-          category?: string | null
-          is_system?: boolean
-          is_active?: boolean
-          thumbnail_url?: string | null
-          camera_lens?: string
-          camera_aperture?: string
-          camera_angle?: string
-          camera_focus?: string
-          camera_distance?: string
-          lighting_style?: string
-          lighting_key_intensity?: number
-          lighting_fill_intensity?: number
-          lighting_rim_intensity?: number
-          lighting_direction?: string
-          background_type?: string
-          background_surface?: string
-          background_shadow?: string
-          background_reflection?: number
+          ai_model?: string | null
           background_color?: string | null
-          jewelry_metal?: string
-          jewelry_finish?: string
-          jewelry_sparkle?: number
-          jewelry_color_pop?: number
-          jewelry_detail?: number
-          composition_framing?: string
-          composition_aspect_ratio?: string
-          composition_padding?: number
-          ai_model?: string
+          background_reflection?: number | null
+          background_shadow?: string | null
+          background_surface?: string | null
+          background_type?: string | null
+          camera_angle?: string | null
+          camera_aperture?: string | null
+          camera_distance?: string | null
+          camera_focus?: string | null
+          camera_lens?: string | null
+          category?: string | null
+          composition_aspect_ratio?: string | null
+          composition_framing?: string | null
+          composition_padding?: number | null
+          created_at?: string | null
           created_by?: string | null
-          usage_count?: number
-          created_at?: string
-          updated_at?: string
+          custom_prompt?: string | null
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          is_system?: boolean | null
+          jewelry_color_pop?: number | null
+          jewelry_detail?: number | null
+          jewelry_finish?: string | null
+          jewelry_metal?: string | null
+          jewelry_sparkle?: number | null
+          lighting_direction?: string | null
+          lighting_fill_intensity?: number | null
+          lighting_key_intensity?: number | null
+          lighting_rim_intensity?: number | null
+          lighting_style?: string | null
+          name?: string
+          organization_id?: string | null
+          thumbnail_url?: string | null
+          updated_at?: string | null
+          usage_count?: number | null
         }
         Relationships: [
           {
             foreignKeyName: "studio_presets_organization_id_fkey"
             columns: ["organization_id"]
+            isOneToOne: false
             referencedRelation: "organizations"
             referencedColumns: ["id"]
           },
+        ]
+      }
+      token_accounts: {
+        Row: {
+          balance: number | null
+          created_at: string | null
+          id: string
+          lifetime_purchased: number | null
+          lifetime_used: number | null
+          low_balance_threshold: number | null
+          organization_id: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          balance?: number | null
+          created_at?: string | null
+          id?: string
+          lifetime_purchased?: number | null
+          lifetime_used?: number | null
+          low_balance_threshold?: number | null
+          organization_id?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          balance?: number | null
+          created_at?: string | null
+          id?: string
+          lifetime_purchased?: number | null
+          lifetime_used?: number | null
+          low_balance_threshold?: number | null
+          organization_id?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
           {
-            foreignKeyName: "studio_presets_created_by_fkey"
-            columns: ["created_by"]
-            referencedRelation: "users"
+            foreignKeyName: "token_accounts_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: true
+            referencedRelation: "organizations"
             referencedColumns: ["id"]
-          }
+          },
+        ]
+      }
+      token_pricing: {
+        Row: {
+          description: string | null
+          display_name: string | null
+          id: string
+          is_active: boolean | null
+          operation: string
+          token_cost: number
+        }
+        Insert: {
+          description?: string | null
+          display_name?: string | null
+          id?: string
+          is_active?: boolean | null
+          operation: string
+          token_cost: number
+        }
+        Update: {
+          description?: string | null
+          display_name?: string | null
+          id?: string
+          is_active?: boolean | null
+          operation?: string
+          token_cost?: number
+        }
+        Relationships: []
+      }
+      token_transactions: {
+        Row: {
+          account_id: string | null
+          amount: number
+          balance_after: number | null
+          balance_before: number | null
+          created_at: string | null
+          created_by: string | null
+          description: string | null
+          id: string
+          metadata: Json | null
+          reference_id: string | null
+          reference_type: string | null
+          type: string
+        }
+        Insert: {
+          account_id?: string | null
+          amount: number
+          balance_after?: number | null
+          balance_before?: number | null
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          metadata?: Json | null
+          reference_id?: string | null
+          reference_type?: string | null
+          type: string
+        }
+        Update: {
+          account_id?: string | null
+          amount?: number
+          balance_after?: number | null
+          balance_before?: number | null
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          metadata?: Json | null
+          reference_id?: string | null
+          reference_type?: string | null
+          type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "token_transactions_account_id_fkey"
+            columns: ["account_id"]
+            isOneToOne: false
+            referencedRelation: "token_accounts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_organizations: {
+        Row: {
+          created_at: string | null
+          organization_id: string
+          role: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          organization_id: string
+          role?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          organization_id?: string
+          role?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_organizations_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
         ]
       }
     }
@@ -781,216 +1521,308 @@ export interface Database {
       [_ in never]: never
     }
     Functions: {
-      get_user_organization_ids: {
-        Args: Record<PropertyKey, never>
-        Returns: string[]
-      }
-      get_user_primary_organization: {
-        Args: Record<PropertyKey, never>
-        Returns: string
-      }
-      is_organization_owner: {
+      add_tokens: {
         Args: {
-          org_id: string
+          p_amount: number
+          p_description?: string
+          p_organization_id: string
         }
         Returns: boolean
       }
-      get_queue_page: {
-        Args: {
-          p_organization_id: string
-          p_page_size?: number
-          p_page?: number
-          p_status?: string | null
-          p_project_id?: string | null
-          p_folder_path?: string | null
-          p_search?: string | null
-        }
-        Returns: {
-          id: string
-          organization_id: string
-          project_id: string | null
-          project_name: string | null
-          file_id: string
-          file_name: string | null
-          file_url: string | null
-          status: string
-          progress: number
-          task_id: string | null
-          generated_prompt: string | null
-          error_message: string | null
-          retry_count: number
-          tokens_reserved: number
-          folder_path: string | null
-          folder_id: string | null
-          batch_id: string | null
-          ai_model: string | null
-          started_at: string
-          last_updated: string
-          total_count: number
-        }[]
-      }
-      get_queue_stats: {
-        Args: {
-          p_organization_id: string
-        }
-        Returns: {
-          total_count: number
-          queued_count: number
-          processing_count: number
-          failed_count: number
-        }[]
-      }
-      get_queue_folder_stats: {
-        Args: {
-          p_organization_id: string
-        }
-        Returns: {
-          folder_path: string
-          folder_id: string | null
-          total_count: number
-          queued_count: number
-          processing_count: number
-          failed_count: number
-          completed_pct: number
-        }[]
-      }
       bulk_insert_queue_items: {
-        Args: {
-          p_items: Json
-        }
+        Args: { p_items: Json }
         Returns: {
-          inserted_count: number
           batch_id: string
+          inserted_count: number
+        }[]
+      }
+      deduct_tokens: {
+        Args: { p_amount: number; p_organization_id: string }
+        Returns: boolean
+      }
+      get_active_jobs: {
+        Args: { p_org_id: string }
+        Returns: {
+          ai_model: string
+          attempt_count: number
+          created_at: string
+          elapsed_seconds: number
+          input_url: string
+          job_id: string
+          job_type: string
+          source: string
+          source_id: string
+          status: string
+          submitted_at: string
+        }[]
+      }
+      get_ai_job_stats: {
+        Args: { p_days?: number; p_org_id: string }
+        Returns: {
+          avg_processing_time_ms: number
+          failed_jobs: number
+          jobs_by_day: Json
+          jobs_by_model: Json
+          jobs_by_source: Json
+          pending_jobs: number
+          success_rate: number
+          successful_jobs: number
+          total_jobs: number
+          total_tokens_used: number
         }[]
       }
       get_history_page: {
         Args: {
+          p_ai_model?: string
+          p_date_from?: string
+          p_date_to?: string
           p_organization_id: string
-          p_project_id?: string | null
-          p_page_size?: number
           p_page?: number
-          p_status?: string | null
-          p_ai_model?: string | null
-          p_date_from?: string | null
-          p_date_to?: string | null
-          p_search?: string | null
+          p_page_size?: number
+          p_project_id?: string
+          p_search?: string
+          p_status?: string
         }
         Returns: {
-          id: string
-          organization_id: string
-          project_id: string | null
-          file_id: string
-          file_name: string | null
-          original_url: string | null
-          optimized_url: string | null
-          optimized_storage_path: string | null
-          status: string
-          resolution: string | null
-          tokens_used: number | null
-          processing_time_sec: number | null
-          ai_model: string | null
-          generated_prompt: string | null
-          error_message: string | null
-          started_at: string | null
+          ai_model: string
           completed_at: string
-          created_by: string | null
+          created_by: string
+          error_message: string
+          file_id: string
+          file_name: string
+          generated_prompt: string
+          id: string
+          optimized_storage_path: string
+          optimized_url: string
+          organization_id: string
+          original_url: string
+          processing_time_sec: number
+          project_id: string
+          resolution: string
+          started_at: string
+          status: string
+          tokens_used: number
           total_count: number
+        }[]
+      }
+      get_queue_folder_stats: {
+        Args: { p_organization_id: string }
+        Returns: {
+          completed_pct: number
+          failed_count: number
+          folder_id: string
+          folder_path: string
+          processing_count: number
+          queued_count: number
+          total_count: number
+        }[]
+      }
+      get_queue_page: {
+        Args: {
+          p_folder_path?: string
+          p_organization_id: string
+          p_page?: number
+          p_page_size?: number
+          p_project_id?: string
+          p_search?: string
+          p_status?: string
+        }
+        Returns: {
+          ai_model: string
+          batch_id: string
+          error_message: string
+          file_id: string
+          file_name: string
+          file_url: string
+          folder_id: string
+          folder_path: string
+          generated_prompt: string
+          id: string
+          last_updated: string
+          organization_id: string
+          progress: number
+          project_id: string
+          project_name: string
+          retry_count: number
+          started_at: string
+          status: string
+          task_id: string
+          tokens_reserved: number
+          total_count: number
+        }[]
+      }
+      get_queue_stats: {
+        Args: { p_organization_id: string }
+        Returns: {
+          failed_count: number
+          processing_count: number
+          queued_count: number
+          total_count: number
+        }[]
+      }
+      get_shopify_job_stats: {
+        Args: { p_job_id: string }
+        Returns: {
+          failed: number
+          processing: number
+          pushed: number
+          queued: number
+          ready: number
+          total: number
+        }[]
+      }
+      get_user_organization_ids: { Args: never; Returns: string[] }
+      get_user_primary_organization: { Args: never; Returns: string }
+      increment_project_failed: {
+        Args: { p_project_id: string }
+        Returns: undefined
+      }
+      increment_project_processed: {
+        Args: { p_project_id: string; p_tokens?: number }
+        Returns: undefined
+      }
+      increment_trial_completed: {
+        Args: { p_project_id: string }
+        Returns: number
+      }
+      is_organization_owner: { Args: { org_id: string }; Returns: boolean }
+      timeout_stuck_ai_jobs: {
+        Args: never
+        Returns: {
+          ai_model: string
+          job_id: string
+          old_status: string
         }[]
       }
     }
     Enums: {
       [_ in never]: never
     }
+    CompositeTypes: {
+      [_ in never]: never
+    }
   }
 }
 
-// Convenience type aliases
-export type Organization = Database['public']['Tables']['organizations']['Row']
-export type OrganizationInsert = Database['public']['Tables']['organizations']['Insert']
-export type OrganizationUpdate = Database['public']['Tables']['organizations']['Update']
+type DatabaseWithoutInternals = Omit<Database, "__InternalSupabase">
 
-export type UserOrganization = Database['public']['Tables']['user_organizations']['Row']
-export type UserOrganizationInsert = Database['public']['Tables']['user_organizations']['Insert']
+type DefaultSchema = DatabaseWithoutInternals[Extract<keyof Database, "public">]
 
-export type Project = Database['public']['Tables']['projects']['Row']
-export type ProjectInsert = Database['public']['Tables']['projects']['Insert']
-export type ProjectUpdate = Database['public']['Tables']['projects']['Update']
-
-export type PromptTemplate = Database['public']['Tables']['prompt_templates']['Row']
-export type PromptTemplateInsert = Database['public']['Tables']['prompt_templates']['Insert']
-export type PromptTemplateUpdate = Database['public']['Tables']['prompt_templates']['Update']
-
-export type StorageConnection = Database['public']['Tables']['storage_connections']['Row']
-export type StorageConnectionInsert = Database['public']['Tables']['storage_connections']['Insert']
-export type StorageConnectionUpdate = Database['public']['Tables']['storage_connections']['Update']
-
-export type ProcessingQueueItem = Database['public']['Tables']['processing_queue']['Row']
-export type ProcessingQueueInsert = Database['public']['Tables']['processing_queue']['Insert']
-export type ProcessingQueueUpdate = Database['public']['Tables']['processing_queue']['Update']
-
-export type ProcessingHistoryItem = Database['public']['Tables']['processing_history']['Row']
-export type ProcessingHistoryInsert = Database['public']['Tables']['processing_history']['Insert']
-
-export type TokenAccount = Database['public']['Tables']['token_accounts']['Row']
-export type TokenTransaction = Database['public']['Tables']['token_transactions']['Row']
-export type TokenPricing = Database['public']['Tables']['token_pricing']['Row']
-
-// Google Drive connection type
-export interface GoogleDriveConnection {
-  id: string
-  organization_id: string
-  connected_by: string
-  google_email: string
-  access_token: string
-  refresh_token: string | null
-  token_expires_at: string | null
-  scopes: string[]
-  is_active: boolean
-  last_used_at: string | null
-  created_at: string
-  updated_at: string
+export type Tables<
+  DefaultSchemaTableNameOrOptions extends
+    | keyof (DefaultSchema["Tables"] & DefaultSchema["Views"])
+    | { schema: keyof DatabaseWithoutInternals },
+  TableName extends DefaultSchemaTableNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals
+  }
+    ? keyof (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
+        DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])
+    : never = never,
+> = DefaultSchemaTableNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
 }
+  ? (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
+      DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])[TableName] extends {
+      Row: infer R
+    }
+    ? R
+    : never
+  : DefaultSchemaTableNameOrOptions extends keyof (DefaultSchema["Tables"] &
+        DefaultSchema["Views"])
+    ? (DefaultSchema["Tables"] &
+        DefaultSchema["Views"])[DefaultSchemaTableNameOrOptions] extends {
+        Row: infer R
+      }
+      ? R
+      : never
+    : never
 
-// Google Drive file type
-export interface GoogleDriveFile {
-  id: string
-  name: string
-  mimeType: string
-  thumbnailLink?: string
-  webViewLink?: string
-  size?: string
-  modifiedTime?: string
-  parents?: string[]
+export type TablesInsert<
+  DefaultSchemaTableNameOrOptions extends
+    | keyof DefaultSchema["Tables"]
+    | { schema: keyof DatabaseWithoutInternals },
+  TableName extends DefaultSchemaTableNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals
+  }
+    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
+    : never = never,
+> = DefaultSchemaTableNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
 }
+  ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
+      Insert: infer I
+    }
+    ? I
+    : never
+  : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema["Tables"]
+    ? DefaultSchema["Tables"][DefaultSchemaTableNameOrOptions] extends {
+        Insert: infer I
+      }
+      ? I
+      : never
+    : never
 
-// Organization settings type
-export interface OrganizationSettings {
-  default_resolution?: '2K' | '4K'
-  default_template_id?: string
+export type TablesUpdate<
+  DefaultSchemaTableNameOrOptions extends
+    | keyof DefaultSchema["Tables"]
+    | { schema: keyof DatabaseWithoutInternals },
+  TableName extends DefaultSchemaTableNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals
+  }
+    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
+    : never = never,
+> = DefaultSchemaTableNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
 }
+  ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
+      Update: infer U
+    }
+    ? U
+    : never
+  : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema["Tables"]
+    ? DefaultSchema["Tables"][DefaultSchemaTableNameOrOptions] extends {
+        Update: infer U
+      }
+      ? U
+      : never
+    : never
 
-// Project status type
-export type ProjectStatus = 'draft' | 'active' | 'completed' | 'archived'
+export type Enums<
+  DefaultSchemaEnumNameOrOptions extends
+    | keyof DefaultSchema["Enums"]
+    | { schema: keyof DatabaseWithoutInternals },
+  EnumName extends DefaultSchemaEnumNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals
+  }
+    ? keyof DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"]
+    : never = never,
+> = DefaultSchemaEnumNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"][EnumName]
+  : DefaultSchemaEnumNameOrOptions extends keyof DefaultSchema["Enums"]
+    ? DefaultSchema["Enums"][DefaultSchemaEnumNameOrOptions]
+    : never
 
-// Processing status types
-export type QueueStatus = 'queued' | 'processing' | 'optimizing' | 'failed'
-export type HistoryStatus = 'success' | 'failed'
+export type CompositeTypes<
+  PublicCompositeTypeNameOrOptions extends
+    | keyof DefaultSchema["CompositeTypes"]
+    | { schema: keyof DatabaseWithoutInternals },
+  CompositeTypeName extends PublicCompositeTypeNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals
+  }
+    ? keyof DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"]
+    : never = never,
+> = PublicCompositeTypeNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"][CompositeTypeName]
+  : PublicCompositeTypeNameOrOptions extends keyof DefaultSchema["CompositeTypes"]
+    ? DefaultSchema["CompositeTypes"][PublicCompositeTypeNameOrOptions]
+    : never
 
-// Storage provider types
-export type StorageProvider = 'google_drive' | 'dropbox' | 'supabase_storage'
-
-// User role types
-export type UserRole = 'owner' | 'admin' | 'member'
-
-// Token transaction types
-export type TokenTransactionType = 'purchase' | 'usage' | 'refund' | 'bonus' | 'coupon' | 'adjustment'
-
-// Template categories
-export type TemplateCategory = 'Jewelry' | 'Product' | 'Fashion' | 'Food' | 'Other'
-export type TemplateStyle = 'Premium' | 'Elegant' | 'Standard' | 'Lifestyle' | 'Minimal' | 'Classic'
-export type TemplateBackground = 'White' | 'Gradient' | 'Transparent' | 'Natural' | 'Custom'
-
-// Studio preset types
-export type StudioPreset = Database['public']['Tables']['studio_presets']['Row']
-export type StudioPresetInsert = Database['public']['Tables']['studio_presets']['Insert']
-export type StudioPresetUpdate = Database['public']['Tables']['studio_presets']['Update']
+export const Constants = {
+  public: {
+    Enums: {},
+  },
+} as const

@@ -56,12 +56,37 @@ export function ProcessingTimelineTab({ projectId }: ProcessingTimelineTabProps)
 
   if (items.length === 0) {
     return (
-      <div className="h-full flex flex-col items-center justify-center text-gray-500">
-        <Activity className="h-12 w-12 mb-3 text-gray-300" />
-        <p className="text-sm">No processing history yet</p>
-        <p className="text-xs text-gray-400 mt-1">
-          Processing events will appear here
-        </p>
+      <div className="h-full flex flex-col items-center justify-center">
+        <div className="text-center p-8 rounded-xl bg-gradient-to-b from-gray-50 to-gray-100/50 border border-dashed border-gray-200 max-w-sm">
+          <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-blue-50 flex items-center justify-center">
+            <Activity className="h-8 w-8 text-blue-400" />
+          </div>
+          <h3 className="font-medium text-gray-700 mb-1">No processing history yet</h3>
+          <p className="text-sm text-gray-500 mb-4">
+            As images are processed, a detailed timeline will appear here showing each step, processing time, and token usage.
+          </p>
+          {/* Visual preview of what timeline items look like */}
+          <div className="bg-white/80 rounded-lg p-3 border border-gray-100 text-left">
+            <div className="flex items-center gap-2 text-xs text-gray-400 mb-2">
+              <Clock className="h-3 w-3" />
+              Timeline Preview
+            </div>
+            <div className="space-y-2">
+              <div className="flex items-center gap-2">
+                <div className="w-2 h-2 rounded-full bg-green-400"></div>
+                <span className="text-xs text-gray-500">image_001.jpg - 2.3s</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <div className="w-2 h-2 rounded-full bg-green-400"></div>
+                <span className="text-xs text-gray-500">image_002.jpg - 1.8s</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <div className="w-2 h-2 rounded-full bg-gray-300"></div>
+                <span className="text-xs text-gray-400">Waiting...</span>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     )
   }
