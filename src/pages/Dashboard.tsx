@@ -74,7 +74,7 @@ export default function Dashboard() {
         .eq('organization_id', organization.id)
 
       const queued = data?.filter(item => item.status === 'queued').length || 0
-      const processing = data?.filter(item => ['processing', 'optimizing'].includes(item.status)).length || 0
+      const processing = data?.filter(item => item.status && ['processing', 'optimizing'].includes(item.status)).length || 0
 
       return { queued, processing }
     },
@@ -135,7 +135,7 @@ export default function Dashboard() {
     enabled: !!organization
   })
 
-  const isLowBalance = tokenAccount && tokenAccount.balance <= tokenAccount.low_balance_threshold
+  const isLowBalance = tokenAccount && (tokenAccount.balance || 0) <= (tokenAccount.low_balance_threshold || 0)
   const hasGoogleDrive = (driveConnections?.length || 0) > 0
   const hasProjects = (recentProjects?.length || 0) > 0
   const hasProcessedImages = (todayStats?.processed || 0) > 0

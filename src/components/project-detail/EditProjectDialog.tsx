@@ -152,7 +152,7 @@ export function EditProjectDialog({ project, open, onOpenChange, onSaved }: Edit
         ai_model: project.ai_model || 'flux-kontext-pro',
         resolution: (project.resolution as '2K' | '4K') || '2K',
         trial_count: project.trial_count || 3,
-        prompt_mode: project.prompt_mode || (project.template_id ? 'template' : project.studio_preset_id ? 'preset' : 'custom'),
+        prompt_mode: (project.prompt_mode || (project.template_id ? 'template' : project.studio_preset_id ? 'preset' : 'custom')) as 'template' | 'custom' | 'preset',
         template_id: project.template_id || '',
         studio_preset_id: project.studio_preset_id || '',
         custom_prompt: project.custom_prompt || '',

@@ -1826,3 +1826,22 @@ export const Constants = {
     Enums: {},
   },
 } as const
+
+// Convenience type aliases for common tables
+export type PromptTemplate = Tables<'prompt_templates'>
+export type ProcessingHistoryItem = Tables<'processing_history'>
+export type Project = Tables<'projects'>
+export type Organization = Tables<'organizations'>
+export type UserOrganization = Tables<'user_organizations'>
+export type GoogleDriveConnection = Tables<'google_drive_connections'>
+
+// Google Drive file type (not a database table, but used in API responses)
+export interface GoogleDriveFile {
+  id: string
+  name: string
+  mimeType: string
+  thumbnailLink?: string
+  webViewLink?: string
+  parents?: string[]
+  size?: number
+}

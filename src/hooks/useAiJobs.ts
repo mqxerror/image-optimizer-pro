@@ -76,7 +76,8 @@ export function useAiJobStats(days: number = 7) {
       })
 
       if (error) throw error
-      return data as AiJobStats
+      // RPC returns an array, get first item
+      return (data && data[0]) as AiJobStats | null
     },
     enabled: !!organization,
     staleTime: 30000 // Cache for 30 seconds
@@ -273,7 +274,7 @@ export function useRetryJob() {
           status: 'pending',
           error_message: null,
           error_code: null,
-          attempt_count: job.attempt_count + 1,
+          attempt_count: (job.attempt_count || 0) + 1,
           callback_received: false,
           completed_at: null
         })

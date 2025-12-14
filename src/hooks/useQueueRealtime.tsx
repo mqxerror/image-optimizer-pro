@@ -42,12 +42,12 @@ export function useQueueRealtime(options: UseQueueRealtimeOptions = {}) {
       .eq('id', projectId)
       .single()
 
-    if (project && project.processed_images >= project.total_images && project.status === 'active') {
+    if (project && (project.processed_images || 0) >= (project.total_images || 0) && project.status === 'active') {
       // Mark as notified to avoid duplicate toasts
       notifiedProjectsRef.current.add(projectId)
 
       // Call callback if provided
-      onProjectCompleted?.({ id: project.id, name: project.name, total_images: project.total_images })
+      onProjectCompleted?.({ id: project.id, name: project.name, total_images: project.total_images || 0 })
 
       // Invalidate project queries
       queryClient.invalidateQueries({ queryKey: ['projects'] })

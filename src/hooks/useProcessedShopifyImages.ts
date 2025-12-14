@@ -1,15 +1,6 @@
 import { useQuery } from '@tanstack/react-query'
 import { supabase } from '@/lib/supabase'
 
-interface ProcessedImageInfo {
-  shopify_image_id: string
-  shopify_product_id: string
-  status: 'queued' | 'processing' | 'completed' | 'pushed' | 'failed'
-  pushed_at: string | null
-  optimized_url: string | null
-  job_status: string
-}
-
 /**
  * Fetches all processed Shopify images for a store
  * Returns a Set of image IDs that have been AI-processed (pushed status)

@@ -203,7 +203,7 @@ export default function GoogleDriveBrowser({
 
       return {
         imageCount: images.length,
-        totalSize: images.reduce((sum, f) => sum + (parseInt(f.size || '0') || 0), 0),
+        totalSize: images.reduce((sum, f) => sum + (f.size || 0), 0),
         thumbnails: images.slice(0, 6) // First 6 images for preview
       }
     },
@@ -449,7 +449,7 @@ export default function GoogleDriveBrowser({
                     {isFolder(file.mimeType)
                       ? 'Folder'
                       : file.size
-                        ? `${(parseInt(file.size) / 1024 / 1024).toFixed(2)} MB`
+                        ? `${(file.size / 1024 / 1024).toFixed(2)} MB`
                         : 'Image'}
                   </p>
                 </div>

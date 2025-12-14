@@ -71,10 +71,10 @@ export function useQueuePagination(
         p_organization_id: organization.id,
         p_page_size: pageSize,
         p_page: page,
-        p_status: filters.status || null,
-        p_project_id: filters.projectId || null,
-        p_folder_path: filters.folderPath || null,
-        p_search: filters.search || null
+        p_status: filters.status || undefined,
+        p_project_id: filters.projectId || undefined,
+        p_folder_path: filters.folderPath || undefined,
+        p_search: filters.search || undefined
       })
 
       if (error) throw error

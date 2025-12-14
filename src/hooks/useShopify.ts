@@ -34,7 +34,7 @@ export function useShopifyStores() {
         .order('created_at', { ascending: false })
 
       if (error) throw error
-      return (data || []) as ShopifyStore[]
+      return (data || []) as unknown as ShopifyStore[]
     },
     enabled: !!user
   })
@@ -57,7 +57,7 @@ export function useShopifyStore(storeId: string | null) {
         .single()
 
       if (error) throw error
-      return data as ShopifyStore
+      return data as unknown as ShopifyStore
     },
     enabled: !!storeId && !!user
   })
@@ -473,7 +473,7 @@ export function useCreateShopifyJob() {
 
       return response.json()
     },
-    onSuccess: (data, variables) => {
+    onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ['shopify-jobs'] })
       // Auto-trigger processing after job creation
       if (data.job_id && session?.access_token) {
