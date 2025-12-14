@@ -11,6 +11,7 @@ import {
   Eye,
   Upload,
   Play,
+  Pause,
   ImageIcon
 } from 'lucide-react'
 import { Card, CardContent } from '@/components/ui/card'
@@ -31,6 +32,8 @@ import {
 import {
   useApproveShopifyJob,
   useCancelShopifyJob,
+  usePauseShopifyJob,
+  useResumeShopifyJob,
   useDiscardShopifyJob,
   usePushShopifyJob,
   useStartJobProcessing
@@ -66,6 +69,12 @@ const statusConfig: Record<string, {
     icon: Loader2,
     label: 'Processing',
     animate: true
+  },
+  paused: {
+    color: 'text-orange-600',
+    bgColor: 'bg-orange-100',
+    icon: Pause,
+    label: 'Paused'
   },
   awaiting_approval: {
     color: 'text-amber-600',
@@ -118,6 +127,8 @@ export function VisualJobCard({
 
   const approveMutation = useApproveShopifyJob()
   const cancelMutation = useCancelShopifyJob()
+  const pauseMutation = usePauseShopifyJob()
+  const resumeMutation = useResumeShopifyJob()
   const discardMutation = useDiscardShopifyJob()
   const pushMutation = usePushShopifyJob()
   const startProcessingMutation = useStartJobProcessing()
@@ -159,6 +170,24 @@ export function VisualJobCard({
     }
   }
 
+  const handlePause = async () => {
+    try {
+      await pauseMutation.mutateAsync(job.id)
+      toast({ title: 'Job paused', description: 'Processing has been paused' })
+    } catch (err) {
+      toast({ title: 'Failed to pause', description: (err as Error).message, variant: 'destructive' })
+    }
+  }
+
+  const handleResume = async () => {
+    try {
+      await resumeMutation.mutateAsync(job.id)
+      toast({ title: 'Job resumed', description: 'Processing will continue' })
+    } catch (err) {
+      toast({ title: 'Failed to resume', description: (err as Error).message, variant: 'destructive' })
+    }
+  }
+
   const handleDiscard = async () => {
     try {
       await discardMutation.mutateAsync(job.id)
@@ -179,10 +208,13 @@ export function VisualJobCard({
   }
 
   const isActive = ['pending', 'processing', 'pushing'].includes(job.status)
+  const isPaused = job.status === 'paused'
   const canStartProcessing = job.status === 'pending'
   const canApprove = job.status === 'awaiting_approval'
   const canPush = job.status === 'approved'
-  const canCancel = ['pending', 'processing'].includes(job.status)
+  const canPause = ['pending', 'processing'].includes(job.status)
+  const canResume = job.status === 'paused'
+  const canCancel = ['pending', 'processing', 'paused'].includes(job.status)
   const canDiscard = ['awaiting_approval', 'failed', 'cancelled', 'completed'].includes(job.status)
 
   return (
@@ -190,6 +222,7 @@ export function VisualJobCard({
       <Card className={cn(
         'overflow-hidden transition-all',
         isActive && 'border-blue-200 bg-blue-50/30',
+        isPaused && 'border-orange-200 bg-orange-50/30',
         isSelected && 'ring-2 ring-primary'
       )}>
         <CardContent className="p-0">
@@ -262,6 +295,43 @@ export function VisualJobCard({
                         <>
                           <Play className="h-4 w-4 mr-1" />
                           Start
+                        </>
+                      )}
+                    </Button>
+                  )}
+
+                  {canResume && (
+                    <Button
+                      size="sm"
+                      onClick={handleResume}
+                      disabled={resumeMutation.isPending}
+                      className="bg-green-600 hover:bg-green-700"
+                    >
+                      {resumeMutation.isPending ? (
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                      ) : (
+                        <>
+                          <Play className="h-4 w-4 mr-1" />
+                          Resume
+                        </>
+                      )}
+                    </Button>
+                  )}
+
+                  {canPause && (
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={handlePause}
+                      disabled={pauseMutation.isPending}
+                      className="border-orange-300 text-orange-600 hover:bg-orange-50"
+                    >
+                      {pauseMutation.isPending ? (
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                      ) : (
+                        <>
+                          <Pause className="h-4 w-4 mr-1" />
+                          Pause
                         </>
                       )}
                     </Button>
@@ -344,13 +414,13 @@ export function VisualJobCard({
                 </div>
               </div>
 
-              {/* Progress bar for active jobs */}
-              {isActive && job.image_count > 0 && (
+              {/* Progress bar for active or paused jobs */}
+              {(isActive || isPaused) && job.image_count > 0 && (
                 <div className="space-y-1.5">
-                  <Progress value={progress} className="h-2" />
+                  <Progress value={progress} className={cn("h-2", isPaused && "[&>div]:bg-orange-500")} />
                   <div className="flex justify-between text-xs text-muted-foreground">
                     <span>{job.processed_count} / {job.image_count} processed</span>
-                    <span>{progress}%</span>
+                    <span>{progress}%{isPaused && ' (paused)'}</span>
                   </div>
                 </div>
               )}

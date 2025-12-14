@@ -11,6 +11,7 @@ interface JobStatusTabsProps {
 const tabs: { id: JobStatusTab; label: string; color?: string }[] = [
   { id: 'all', label: 'All' },
   { id: 'active', label: 'Active', color: 'bg-blue-100 text-blue-700' },
+  { id: 'paused', label: 'Paused', color: 'bg-orange-100 text-orange-700' },
   { id: 'awaiting_approval', label: 'Approval', color: 'bg-amber-100 text-amber-700' },
   { id: 'completed', label: 'Completed', color: 'bg-green-100 text-green-700' },
   { id: 'failed', label: 'Failed', color: 'bg-red-100 text-red-700' },

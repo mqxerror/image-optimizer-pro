@@ -613,6 +613,78 @@ export function useCancelShopifyJob() {
   })
 }
 
+// Pause a job
+export function usePauseShopifyJob() {
+  const { session } = useAuthStore()
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: async (jobId: string) => {
+      const response = await fetch(
+        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/shopify-jobs`,
+        {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${session?.access_token}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            action: 'pause',
+            job_id: jobId
+          })
+        }
+      )
+
+      if (!response.ok) {
+        const error = await response.json()
+        throw new Error(error.error || 'Failed to pause job')
+      }
+
+      return response.json()
+    },
+    onSuccess: (_, jobId) => {
+      queryClient.invalidateQueries({ queryKey: ['shopify-jobs'] })
+      queryClient.invalidateQueries({ queryKey: ['shopify-job', jobId] })
+    }
+  })
+}
+
+// Resume a paused job
+export function useResumeShopifyJob() {
+  const { session } = useAuthStore()
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: async (jobId: string) => {
+      const response = await fetch(
+        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/shopify-jobs`,
+        {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${session?.access_token}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            action: 'resume',
+            job_id: jobId
+          })
+        }
+      )
+
+      if (!response.ok) {
+        const error = await response.json()
+        throw new Error(error.error || 'Failed to resume job')
+      }
+
+      return response.json()
+    },
+    onSuccess: (_, jobId) => {
+      queryClient.invalidateQueries({ queryKey: ['shopify-jobs'] })
+      queryClient.invalidateQueries({ queryKey: ['shopify-job', jobId] })
+    }
+  })
+}
+
 // Discard a job (delete)
 export function useDiscardShopifyJob() {
   const { session } = useAuthStore()

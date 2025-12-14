@@ -60,6 +60,7 @@ export function useJobsFiltering(options?: { storeId?: string }) {
     return {
       all: allJobs.length,
       active: allJobs.filter(j => ACTIVE_STATUSES.includes(j.status)).length,
+      paused: allJobs.filter(j => j.status === 'paused').length,
       awaiting_approval: allJobs.filter(j => j.status === 'awaiting_approval').length,
       completed: allJobs.filter(j => j.status === 'completed').length,
       failed: allJobs.filter(j => j.status === 'failed').length
@@ -73,6 +74,8 @@ export function useJobsFiltering(options?: { storeId?: string }) {
     // Filter by tab
     if (activeTab === 'active') {
       result = result.filter(j => ACTIVE_STATUSES.includes(j.status))
+    } else if (activeTab === 'paused') {
+      result = result.filter(j => j.status === 'paused')
     } else if (activeTab === 'awaiting_approval') {
       result = result.filter(j => j.status === 'awaiting_approval')
     } else if (activeTab === 'completed') {

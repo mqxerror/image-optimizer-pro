@@ -13,6 +13,7 @@ import {
   RefreshCw,
   ZoomIn,
   Package,
+  Pause,
   Image as ImageIcon
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
@@ -54,6 +55,12 @@ const statusConfig: Record<ShopifyJobStatus, {
     icon: Loader2,
     label: 'Processing',
     animate: true
+  },
+  paused: {
+    color: 'text-orange-600',
+    bgColor: 'bg-orange-100',
+    icon: Pause,
+    label: 'Paused'
   },
   awaiting_approval: {
     color: 'text-amber-600',

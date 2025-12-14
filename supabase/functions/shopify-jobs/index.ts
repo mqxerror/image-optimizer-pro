@@ -40,7 +40,7 @@ interface GetJobRequest {
 }
 
 interface UpdateJobRequest {
-  action: "approve" | "cancel" | "discard"
+  action: "approve" | "cancel" | "discard" | "pause" | "resume"
   job_id: string
 }
 
@@ -470,6 +470,90 @@ Deno.serve(async (req: Request) => {
 
       return new Response(
         JSON.stringify({ success: true, message: "Job cancelled" }),
+        { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      )
+    }
+
+    // ================================================
+    // ACTION: PAUSE JOB (stop processing temporarily)
+    // ================================================
+    if (body.action === "pause") {
+      const { job_id } = body as UpdateJobRequest
+
+      // Verify ownership
+      const { data: job } = await supabase
+        .from("shopify_sync_jobs")
+        .select(`id, status, shopify_stores!inner (user_id)`)
+        .eq("id", job_id)
+        .eq("shopify_stores.user_id", user.id)
+        .single()
+
+      if (!job) {
+        return new Response(
+          JSON.stringify({ error: "Job not found" }),
+          { status: 404, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        )
+      }
+
+      // Can only pause pending or processing jobs
+      if (!["pending", "processing"].includes(job.status)) {
+        return new Response(
+          JSON.stringify({ error: `Cannot pause job with status: ${job.status}` }),
+          { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        )
+      }
+
+      await supabase
+        .from("shopify_sync_jobs")
+        .update({ status: "paused" })
+        .eq("id", job_id)
+
+      return new Response(
+        JSON.stringify({ success: true, message: "Job paused" }),
+        { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      )
+    }
+
+    // ================================================
+    // ACTION: RESUME JOB (continue processing)
+    // ================================================
+    if (body.action === "resume") {
+      const { job_id } = body as UpdateJobRequest
+
+      // Verify ownership
+      const { data: job } = await supabase
+        .from("shopify_sync_jobs")
+        .select(`id, status, processed_count, image_count, shopify_stores!inner (user_id)`)
+        .eq("id", job_id)
+        .eq("shopify_stores.user_id", user.id)
+        .single()
+
+      if (!job) {
+        return new Response(
+          JSON.stringify({ error: "Job not found" }),
+          { status: 404, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        )
+      }
+
+      // Can only resume paused jobs
+      if (job.status !== "paused") {
+        return new Response(
+          JSON.stringify({ error: `Cannot resume job with status: ${job.status}` }),
+          { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        )
+      }
+
+      // Resume to 'processing' if there are still images to process, otherwise 'pending'
+      const hasProcessedImages = job.processed_count > 0
+      const newStatus = hasProcessedImages ? "processing" : "pending"
+
+      await supabase
+        .from("shopify_sync_jobs")
+        .update({ status: newStatus })
+        .eq("id", job_id)
+
+      return new Response(
+        JSON.stringify({ success: true, message: "Job resumed" }),
         { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       )
     }

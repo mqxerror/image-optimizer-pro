@@ -57,6 +57,7 @@ export interface ShopifySyncJob {
 export type ShopifyJobStatus =
   | 'pending'
   | 'processing'
+  | 'paused'
   | 'awaiting_approval'
   | 'approved'
   | 'pushing'

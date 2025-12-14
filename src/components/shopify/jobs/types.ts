@@ -13,12 +13,13 @@ export interface JobsFilterState {
 export interface JobStatusCount {
   all: number
   active: number
+  paused: number
   awaiting_approval: number
   completed: number
   failed: number
 }
 
-export type JobStatusTab = 'all' | 'active' | 'awaiting_approval' | 'completed' | 'failed'
+export type JobStatusTab = 'all' | 'active' | 'paused' | 'awaiting_approval' | 'completed' | 'failed'
 
 export interface VisualJobCardProps {
   job: ShopifySyncJob
