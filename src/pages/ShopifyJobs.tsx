@@ -1,10 +1,10 @@
 import { useSearchParams, Link } from 'react-router-dom'
 import {
   RefreshCw,
-  ArrowLeft,
   Briefcase
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import { Breadcrumb } from '@/components/ui/breadcrumb'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Card, CardContent } from '@/components/ui/card'
 import {
@@ -41,20 +41,21 @@ export default function ShopifyJobs() {
 
   return (
     <div className="space-y-6">
+      {/* Breadcrumb */}
+      <Breadcrumb
+        items={[
+          { label: 'Shopify', href: '/shopify' },
+          { label: 'All Jobs' }
+        ]}
+      />
+
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
-          <Button variant="ghost" size="sm" asChild>
-            <Link to="/shopify">
-              <ArrowLeft className="h-4 w-4 mr-2" />
-              Dashboard
-            </Link>
-          </Button>
+          <Briefcase className="h-6 w-6 text-gray-400" />
           <div>
-            <h1 className="text-2xl font-semibold">Optimization Jobs</h1>
-            <p className="text-sm text-muted-foreground mt-1">
-              Manage and monitor your image optimization jobs
-            </p>
+            <h1 className="text-2xl font-bold text-gray-900">Optimization Jobs</h1>
+            <p className="text-gray-500 text-sm">Manage your Shopify image optimization jobs</p>
           </div>
         </div>
         <Button variant="outline" onClick={() => refetch()}>

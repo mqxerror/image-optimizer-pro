@@ -19,6 +19,7 @@ import {
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { useAuthStore } from '@/stores/auth'
+import { CommandPalette } from '@/components/CommandPalette'
 import { useQueueRealtime } from '@/hooks/useQueueRealtime'
 import { supabase } from '@/lib/supabase'
 import { Button } from '@/components/ui/button'
@@ -103,6 +104,9 @@ export default function Layout() {
 
   return (
     <TooltipProvider>
+      {/* Command Palette - Press Cmd+K to open */}
+      <CommandPalette />
+
       <div className="min-h-screen bg-gray-50">
         {/* Skip to main content link for accessibility */}
         <a
@@ -238,11 +242,11 @@ export default function Layout() {
               <DropdownMenuContent align="start" className="w-56">
                 <DropdownMenuLabel>My Account</DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={() => navigate('/settings')}>
+                <DropdownMenuItem onClick={() => navigate('/settings/profile')}>
                   <User className="mr-2 h-4 w-4" />
-                  Settings
+                  Profile
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => navigate('/settings')}>
+                <DropdownMenuItem onClick={() => navigate('/settings/billing')}>
                   <Coins className="mr-2 h-4 w-4" />
                   Buy Tokens
                 </DropdownMenuItem>
@@ -303,7 +307,7 @@ export default function Layout() {
                             variant="outline"
                             size="sm"
                             className="flex-col h-auto py-2"
-                            onClick={() => navigate('/settings')}
+                            onClick={() => navigate('/settings/billing')}
                           >
                             <span className="font-semibold">+10</span>
                             <span className="text-xs text-muted-foreground">$10</span>
@@ -312,7 +316,7 @@ export default function Layout() {
                             variant="outline"
                             size="sm"
                             className="flex-col h-auto py-2 border-purple-200 bg-purple-50"
-                            onClick={() => navigate('/settings')}
+                            onClick={() => navigate('/settings/billing')}
                           >
                             <span className="font-semibold">+50</span>
                             <span className="text-xs text-muted-foreground">$45</span>
@@ -321,7 +325,7 @@ export default function Layout() {
                             variant="outline"
                             size="sm"
                             className="flex-col h-auto py-2"
-                            onClick={() => navigate('/settings')}
+                            onClick={() => navigate('/settings/billing')}
                           >
                             <span className="font-semibold">+100</span>
                             <span className="text-xs text-muted-foreground">$90</span>
@@ -333,7 +337,7 @@ export default function Layout() {
                         variant="default"
                         size="sm"
                         className="w-full"
-                        onClick={() => navigate('/settings')}
+                        onClick={() => navigate('/settings/billing')}
                       >
                         <CreditCard className="h-4 w-4 mr-2" />
                         View All Packages

@@ -170,7 +170,7 @@ export default function Dashboard() {
               You have {tokenAccount?.balance || 0} tokens remaining. Purchase more to continue processing.
             </p>
           </div>
-          <Button variant="outline" size="sm" onClick={() => navigate('/settings')}>
+          <Button variant="outline" size="sm" onClick={() => navigate('/settings/billing')}>
             Buy Tokens
           </Button>
         </div>
@@ -229,7 +229,7 @@ export default function Dashboard() {
                 {!hasGoogleDrive ? (
                   <Button
                     size="lg"
-                    onClick={() => navigate('/settings')}
+                    onClick={() => navigate('/settings/integrations')}
                     className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700"
                   >
                     <HardDrive className="h-4 w-4 mr-2" />
@@ -381,10 +381,10 @@ export default function Dashboard() {
             <Button
               variant="outline"
               className="w-full justify-start gap-3"
-              onClick={() => navigate('/queue')}
+              onClick={() => navigate('/activity')}
             >
               <ListTodo className="h-5 w-5" />
-              View Processing Queue
+              View Activity
               <ArrowRight className="h-4 w-4 ml-auto" />
             </Button>
           </CardContent>

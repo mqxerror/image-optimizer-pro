@@ -2,7 +2,6 @@ import { useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { formatDistanceToNow } from 'date-fns'
 import {
-  ArrowLeft,
   Store,
   Loader2,
   CheckCircle,
@@ -17,6 +16,7 @@ import {
   Image as ImageIcon
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import { Breadcrumb } from '@/components/ui/breadcrumb'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Progress } from '@/components/ui/progress'
@@ -189,15 +189,14 @@ export default function ShopifyJobDetail() {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-4">
-          <Button variant="ghost" size="sm" onClick={() => navigate('/shopify')}>
-            <ArrowLeft className="h-4 w-4 mr-2" />
-            Back
-          </Button>
-        </div>
-      </div>
+      {/* Breadcrumb */}
+      <Breadcrumb
+        items={[
+          { label: 'Shopify', href: '/shopify' },
+          { label: 'Jobs', href: '/shopify/jobs' },
+          { label: job.shop_name || `Job #${jobId?.slice(0, 8)}` }
+        ]}
+      />
 
       {/* Job info card */}
       <Card>
