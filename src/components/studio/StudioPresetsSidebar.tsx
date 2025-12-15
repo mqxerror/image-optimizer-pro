@@ -1,15 +1,26 @@
 import { useState } from 'react'
-import { useQuery } from '@tanstack/react-query'
-import { Search, Plus, Star, Sparkles, Sun, Zap, FileText, User, ChevronDown, ChevronRight, Palette } from 'lucide-react'
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import { Search, Plus, Star, Sparkles, Sun, Zap, FileText, User, ChevronDown, ChevronRight, Palette, Trash2, Loader2 } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Badge } from '@/components/ui/badge'
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog'
 import { cn } from '@/lib/utils'
 import { supabase } from '@/lib/supabase'
 import { useAuthStore } from '@/stores/auth'
 import { useFirstTimeUser } from '@/hooks/useFirstTimeUser'
+import { useToast } from '@/hooks/use-toast'
 import { ContextualHint } from '@/components/onboarding'
 import type { StudioPreset, PresetCategory, BackgroundType, LightingStyle, JewelryMetal } from '@/types/studio'
 import type { PromptTemplate } from '@/types/database'
@@ -157,14 +168,90 @@ export function StudioPresetsSidebar({
 }: StudioPresetsSidebarProps) {
   const { organization } = useAuthStore()
   const { shouldShowHint, markAsSeen } = useFirstTimeUser()
+  const { toast } = useToast()
+  const queryClient = useQueryClient()
   const [searchQuery, setSearchQuery] = useState('')
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
+  const [itemToDelete, setItemToDelete] = useState<{ type: 'preset' | 'template'; id: string; name: string } | null>(null)
 
   const showHint = shouldShowHint('preset') || shouldShowHint('template')
+
+  // Delete preset mutation
+  const deletePresetMutation = useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await supabase.from('studio_presets').delete().eq('id', id)
+      if (error) throw error
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['studio-presets'] })
+      toast({ title: 'Preset deleted' })
+      setDeleteDialogOpen(false)
+      setItemToDelete(null)
+    },
+    onError: (error) => {
+      toast({ title: 'Failed to delete', description: error.message, variant: 'destructive' })
+    }
+  })
+
+  // Delete template mutation
+  const deleteTemplateMutation = useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await supabase.from('prompt_templates').delete().eq('id', id)
+      if (error) throw error
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['prompt-templates'] })
+      queryClient.invalidateQueries({ queryKey: ['templates'] })
+      toast({ title: 'Template deleted' })
+      setDeleteDialogOpen(false)
+      setItemToDelete(null)
+    },
+    onError: (error) => {
+      toast({ title: 'Failed to delete', description: error.message, variant: 'destructive' })
+    }
+  })
+
+  // Toggle favorite mutation for presets
+  const togglePresetFavoriteMutation = useMutation({
+    mutationFn: async ({ id, isFavorite }: { id: string; isFavorite: boolean }) => {
+      const { error } = await supabase.from('studio_presets').update({ is_favorite: !isFavorite }).eq('id', id)
+      if (error) throw error
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['studio-presets'] })
+    }
+  })
+
+  // Toggle favorite mutation for templates
+  const toggleTemplateFavoriteMutation = useMutation({
+    mutationFn: async ({ id, isFavorite }: { id: string; isFavorite: boolean }) => {
+      const { error } = await supabase.from('prompt_templates').update({ is_favorite: !isFavorite }).eq('id', id)
+      if (error) throw error
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['prompt-templates'] })
+      queryClient.invalidateQueries({ queryKey: ['templates'] })
+    }
+  })
+
+  const handleDeleteClick = (type: 'preset' | 'template', id: string, name: string) => {
+    setItemToDelete({ type, id, name })
+    setDeleteDialogOpen(true)
+  }
+
+  const handleConfirmDelete = () => {
+    if (!itemToDelete) return
+    if (itemToDelete.type === 'preset') {
+      deletePresetMutation.mutate(itemToDelete.id)
+    } else {
+      deleteTemplateMutation.mutate(itemToDelete.id)
+    }
+  }
 
   const { data: presets, isLoading } = useQuery({
     queryKey: ['studio-presets', organization?.id],
     queryFn: async () => {
-      const { data, error } = await (supabase as any)
+      const { data, error } = await supabase
         .from('studio_presets')
         .select('*')
         .eq('is_active', true)
@@ -216,9 +303,10 @@ export function StudioPresetsSidebar({
     return acc
   }, {} as Record<PresetCategory, StudioPreset[]>)
 
-  const renderTemplateCard = (template: PromptTemplate) => {
+  const renderTemplateCard = (template: PromptTemplate & { is_favorite?: boolean }) => {
     const isSelected = selectedTemplateId === template.id
     const isSystem = template.is_system
+    const isFavorite = template.is_favorite || false
 
     const getTemplateGradient = () => {
       if (template.style === 'Dramatic') return 'from-gray-700 via-gray-800 to-gray-900'
@@ -229,107 +317,172 @@ export function StudioPresetsSidebar({
     }
 
     return (
-      <button
+      <div
         key={template.id}
-        onClick={() => onSelectTemplate?.(template)}
         className={cn(
-          'w-full text-left p-2.5 rounded-xl border-2 transition-all group',
+          'w-full text-left p-2.5 rounded-xl border-2 transition-all group relative',
           isSelected
             ? 'border-blue-500 bg-blue-50 shadow-sm'
             : 'border-transparent bg-white hover:border-blue-200 hover:shadow-sm'
         )}
       >
-        <div className="flex gap-3">
-          <div className={cn(
-            'w-11 h-11 rounded-lg bg-gradient-to-br flex items-center justify-center flex-shrink-0',
-            getTemplateGradient()
-          )}>
-            <FileText className="h-5 w-5 text-blue-600/70" />
-          </div>
-          <div className="flex-1 min-w-0">
-            <div className="flex items-center gap-1.5">
-              <p className="font-medium text-gray-900 text-sm truncate">{template.name}</p>
-              {isSystem && (
-                <Sparkles className="h-3 w-3 text-blue-500 flex-shrink-0" />
-              )}
+        <button
+          onClick={() => onSelectTemplate?.(template)}
+          className="w-full text-left"
+        >
+          <div className="flex gap-3">
+            <div className={cn(
+              'w-11 h-11 rounded-lg bg-gradient-to-br flex items-center justify-center flex-shrink-0',
+              getTemplateGradient()
+            )}>
+              <FileText className="h-5 w-5 text-blue-600/70" />
             </div>
-            <p className="text-[11px] text-gray-500 truncate">
-              {template.style || template.category}
-            </p>
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center gap-1.5">
+                <p className="font-medium text-gray-900 text-sm truncate">{template.name}</p>
+                {isSystem && (
+                  <Sparkles className="h-3 w-3 text-blue-500 flex-shrink-0" />
+                )}
+                {isFavorite && (
+                  <Star className="h-3 w-3 text-amber-500 fill-amber-500 flex-shrink-0" />
+                )}
+              </div>
+              <p className="text-[11px] text-gray-500 truncate">
+                {template.style || template.category}
+              </p>
+            </div>
           </div>
-        </div>
-      </button>
+        </button>
+        {/* Action buttons - visible on hover for non-system templates */}
+        {!isSystem && (
+          <div className="absolute top-1 right-1 opacity-0 group-hover:opacity-100 transition-opacity flex gap-0.5">
+            <button
+              onClick={(e) => {
+                e.stopPropagation()
+                toggleTemplateFavoriteMutation.mutate({ id: template.id, isFavorite })
+              }}
+              className="p-1 rounded hover:bg-gray-100"
+              title={isFavorite ? 'Remove from favorites' : 'Add to favorites'}
+            >
+              <Star className={cn('h-3.5 w-3.5', isFavorite ? 'text-amber-500 fill-amber-500' : 'text-gray-400')} />
+            </button>
+            <button
+              onClick={(e) => {
+                e.stopPropagation()
+                handleDeleteClick('template', template.id, template.name)
+              }}
+              className="p-1 rounded hover:bg-red-50"
+              title="Delete template"
+            >
+              <Trash2 className="h-3.5 w-3.5 text-red-500" />
+            </button>
+          </div>
+        )}
+      </div>
     )
   }
 
-  const renderPresetCard = (preset: StudioPreset) => {
+  const renderPresetCard = (preset: StudioPreset & { is_favorite?: boolean }) => {
     const gradientClass = getPresetGradient(preset)
     const isDark = preset.lighting_style === 'dramatic' || preset.background_type === 'black'
     const lightingIcon = getLightingIcon(preset.lighting_style as LightingStyle)
     const metalColor = getMetalColor(preset.jewelry_metal as JewelryMetal)
     const isSelected = selectedPresetId === preset.id
+    const isFavorite = preset.is_favorite || false
 
     return (
-      <button
+      <div
         key={preset.id}
-        onClick={() => onSelectPreset(preset)}
         className={cn(
-          'w-full text-left p-2.5 rounded-xl border-2 transition-all group',
+          'w-full text-left p-2.5 rounded-xl border-2 transition-all group relative',
           isSelected
             ? 'border-purple-500 bg-purple-50 shadow-sm'
             : 'border-transparent bg-white hover:border-purple-200 hover:shadow-sm'
         )}
       >
-        <div className="flex gap-3">
-          {preset.thumbnail_url ? (
-            <img
-              src={preset.thumbnail_url}
-              alt={preset.name}
-              className="w-11 h-11 rounded-lg object-cover bg-gray-100 flex-shrink-0"
-            />
-          ) : (
-            <div className={cn(
-              'w-11 h-11 rounded-lg bg-gradient-to-br flex items-center justify-center relative overflow-hidden flex-shrink-0',
-              gradientClass
-            )}>
-              <Sparkles className={cn('h-4 w-4', isDark ? 'text-gray-300' : 'text-gray-500')} />
-              <div className="absolute bottom-0.5 right-0.5 flex items-center gap-0.5">
-                {preset.jewelry_metal !== 'auto' && (
-                  <div className={cn('w-1.5 h-1.5 rounded-full ring-1 ring-white/50', metalColor)} />
+        <button
+          onClick={() => onSelectPreset(preset)}
+          className="w-full text-left"
+        >
+          <div className="flex gap-3">
+            {preset.thumbnail_url ? (
+              <img
+                src={preset.thumbnail_url}
+                alt={preset.name}
+                className="w-11 h-11 rounded-lg object-cover bg-gray-100 flex-shrink-0"
+              />
+            ) : (
+              <div className={cn(
+                'w-11 h-11 rounded-lg bg-gradient-to-br flex items-center justify-center relative overflow-hidden flex-shrink-0',
+                gradientClass
+              )}>
+                <Sparkles className={cn('h-4 w-4', isDark ? 'text-gray-300' : 'text-gray-500')} />
+                <div className="absolute bottom-0.5 right-0.5 flex items-center gap-0.5">
+                  {preset.jewelry_metal !== 'auto' && (
+                    <div className={cn('w-1.5 h-1.5 rounded-full ring-1 ring-white/50', metalColor)} />
+                  )}
+                  {lightingIcon && (
+                    <div className={isDark ? 'text-gray-300' : 'text-gray-500'}>
+                      {lightingIcon}
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center gap-1.5">
+                <p className="font-medium text-gray-900 text-sm truncate">{preset.name}</p>
+                {preset.is_system && (
+                  <Sparkles className="h-3 w-3 text-purple-500 flex-shrink-0" />
                 )}
-                {lightingIcon && (
-                  <div className={isDark ? 'text-gray-300' : 'text-gray-500'}>
-                    {lightingIcon}
-                  </div>
+                {isFavorite && (
+                  <Star className="h-3 w-3 text-amber-500 fill-amber-500 flex-shrink-0" />
+                )}
+              </div>
+              <div className="flex gap-1 mt-0.5 flex-wrap">
+                {preset.background_type !== 'white' && (
+                  <span className={cn(
+                    'text-[9px] px-1 py-0.5 rounded',
+                    preset.background_type === 'black' ? 'bg-gray-800 text-gray-200' : 'bg-gray-100 text-gray-600'
+                  )}>
+                    {preset.background_type}
+                  </span>
+                )}
+                {preset.lighting_style !== 'studio-3point' && (
+                  <span className="text-[9px] px-1 py-0.5 rounded bg-purple-50 text-purple-600">
+                    {preset.lighting_style}
+                  </span>
                 )}
               </div>
             </div>
-          )}
-          <div className="flex-1 min-w-0">
-            <div className="flex items-center gap-1.5">
-              <p className="font-medium text-gray-900 text-sm truncate">{preset.name}</p>
-              {preset.is_system && (
-                <Sparkles className="h-3 w-3 text-purple-500 flex-shrink-0" />
-              )}
-            </div>
-            <div className="flex gap-1 mt-0.5 flex-wrap">
-              {preset.background_type !== 'white' && (
-                <span className={cn(
-                  'text-[9px] px-1 py-0.5 rounded',
-                  preset.background_type === 'black' ? 'bg-gray-800 text-gray-200' : 'bg-gray-100 text-gray-600'
-                )}>
-                  {preset.background_type}
-                </span>
-              )}
-              {preset.lighting_style !== 'studio-3point' && (
-                <span className="text-[9px] px-1 py-0.5 rounded bg-purple-50 text-purple-600">
-                  {preset.lighting_style}
-                </span>
-              )}
-            </div>
           </div>
-        </div>
-      </button>
+        </button>
+        {/* Action buttons - visible on hover for non-system presets */}
+        {!preset.is_system && (
+          <div className="absolute top-1 right-1 opacity-0 group-hover:opacity-100 transition-opacity flex gap-0.5">
+            <button
+              onClick={(e) => {
+                e.stopPropagation()
+                togglePresetFavoriteMutation.mutate({ id: preset.id, isFavorite })
+              }}
+              className="p-1 rounded hover:bg-gray-100"
+              title={isFavorite ? 'Remove from favorites' : 'Add to favorites'}
+            >
+              <Star className={cn('h-3.5 w-3.5', isFavorite ? 'text-amber-500 fill-amber-500' : 'text-gray-400')} />
+            </button>
+            <button
+              onClick={(e) => {
+                e.stopPropagation()
+                handleDeleteClick('preset', preset.id, preset.name)
+              }}
+              className="p-1 rounded hover:bg-red-50"
+              title="Delete preset"
+            >
+              <Trash2 className="h-3.5 w-3.5 text-red-500" />
+            </button>
+          </div>
+        )}
+      </div>
     )
   }
 
@@ -476,6 +629,30 @@ export function StudioPresetsSidebar({
           )}
         </div>
       </ScrollArea>
+
+      {/* Delete Confirmation Dialog */}
+      <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete {itemToDelete?.type === 'preset' ? 'Preset' : 'Template'}</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to delete "{itemToDelete?.name}"? This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleConfirmDelete}
+              className="bg-red-600 hover:bg-red-700"
+            >
+              {(deletePresetMutation.isPending || deleteTemplateMutation.isPending) && (
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              )}
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   )
 }

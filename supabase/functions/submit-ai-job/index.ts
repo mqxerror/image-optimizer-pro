@@ -252,6 +252,9 @@ Deno.serve(async (req: Request) => {
       )
     }
 
+    // Generate callback token for this job
+    const callbackToken = crypto.randomUUID()
+
     // Create ai_jobs record (triggers reserve tokens)
     const { data: job, error: jobError } = await supabase
       .from('ai_jobs')
@@ -267,8 +270,9 @@ Deno.serve(async (req: Request) => {
         settings,
         status: 'pending',
         created_by: userId,
+        callback_token: callbackToken, // Explicitly set the callback token
       })
-      .select()
+      .select('id, callback_token')
       .single()
 
     if (jobError || !job) {
@@ -279,11 +283,10 @@ Deno.serve(async (req: Request) => {
       )
     }
 
-    console.log(`[submit-ai-job] Created job ${job.id}`)
+    console.log(`[submit-ai-job] Created job ${job.id} with token ${job.callback_token}`)
 
     // Build callback URL with security token
-    // The token is a random UUID that verifies the callback is for this specific job
-    const callbackUrl = `${supabaseUrl}/functions/v1/ai-webhook?token=${job.callback_token}`
+    const callbackUrl = `${supabaseUrl}/functions/v1/ai-webhook?token=${job.callback_token || callbackToken}`
 
     // Build request body using model config
     const requestBody = buildRequestBody(

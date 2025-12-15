@@ -13,7 +13,8 @@ import {
   Eye,
   Sparkles,
   Filter,
-  Wand2
+  Wand2,
+  Star
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -186,6 +187,23 @@ export default function Templates() {
     }
   })
 
+  // Toggle favorite mutation
+  const toggleFavoriteMutation = useMutation({
+    mutationFn: async ({ id, isFavorite }: { id: string; isFavorite: boolean }) => {
+      const { error } = await supabase.from('prompt_templates')
+        .update({ is_favorite: !isFavorite })
+        .eq('id', id)
+
+      if (error) throw error
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['templates'] })
+    },
+    onError: (error) => {
+      toast({ title: 'Error updating favorite', description: error.message, variant: 'destructive' })
+    }
+  })
+
   // AI Optimize prompt function
   const optimizePrompt = useCallback(async () => {
     setIsOptimizing(true)
@@ -289,52 +307,67 @@ export default function Templates() {
     setIsDeleteOpen(true)
   }
 
-  const TemplateCard = ({ template }: { template: PromptTemplate }) => (
-    <Card className="hover:shadow-md transition-shadow">
-      <CardHeader className="pb-3">
-        <div className="flex items-start justify-between">
-          <div className="flex-1">
-            <CardTitle className="text-lg flex items-center gap-2">
-              {template.name}
-              {template.is_system && (
-                <Badge variant="secondary" className="text-xs">
-                  <Sparkles className="h-3 w-3 mr-1" />
-                  System
-                </Badge>
+  const TemplateCard = ({ template }: { template: PromptTemplate & { is_favorite?: boolean } }) => {
+    const isFavorite = template.is_favorite || false
+
+    return (
+      <Card className="hover:shadow-md transition-shadow">
+        <CardHeader className="pb-3">
+          <div className="flex items-start justify-between">
+            <div className="flex-1">
+              <CardTitle className="text-lg flex items-center gap-2">
+                {template.name}
+                {template.is_system && (
+                  <Badge variant="secondary" className="text-xs">
+                    <Sparkles className="h-3 w-3 mr-1" />
+                    System
+                  </Badge>
+                )}
+                {isFavorite && (
+                  <Star className="h-4 w-4 text-amber-500 fill-amber-500" />
+                )}
+              </CardTitle>
+              <CardDescription className="mt-1">
+                {template.category} {template.subcategory && `/ ${template.subcategory}`}
+              </CardDescription>
+            </div>
+            <div className="flex gap-1">
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => toggleFavoriteMutation.mutate({ id: template.id, isFavorite })}
+                title={isFavorite ? 'Remove from favorites' : 'Add to favorites'}
+              >
+                <Star className={isFavorite ? 'h-4 w-4 text-amber-500 fill-amber-500' : 'h-4 w-4 text-gray-400'} />
+              </Button>
+              <Button variant="ghost" size="icon" onClick={() => handleView(template)}>
+                <Eye className="h-4 w-4" />
+              </Button>
+              {!template.is_system && (
+                <>
+                  <Button variant="ghost" size="icon" onClick={() => handleEdit(template)}>
+                    <Pencil className="h-4 w-4" />
+                  </Button>
+                  <Button variant="ghost" size="icon" onClick={() => handleDeleteConfirm(template)}>
+                    <Trash2 className="h-4 w-4 text-red-500" />
+                  </Button>
+                </>
               )}
-            </CardTitle>
-            <CardDescription className="mt-1">
-              {template.category} {template.subcategory && `/ ${template.subcategory}`}
-            </CardDescription>
+            </div>
           </div>
-          <div className="flex gap-1">
-            <Button variant="ghost" size="icon" onClick={() => handleView(template)}>
-              <Eye className="h-4 w-4" />
-            </Button>
-            {!template.is_system && (
-              <>
-                <Button variant="ghost" size="icon" onClick={() => handleEdit(template)}>
-                  <Pencil className="h-4 w-4" />
-                </Button>
-                <Button variant="ghost" size="icon" onClick={() => handleDeleteConfirm(template)}>
-                  <Trash2 className="h-4 w-4 text-red-500" />
-                </Button>
-              </>
-            )}
+        </CardHeader>
+        <CardContent>
+          <p className="text-sm text-gray-600 line-clamp-2">
+            {template.base_prompt}
+          </p>
+          <div className="flex gap-2 mt-3 flex-wrap">
+            {template.style && <Badge variant="outline">{template.style}</Badge>}
+            {template.background && <Badge variant="outline">{template.background}</Badge>}
           </div>
-        </div>
-      </CardHeader>
-      <CardContent>
-        <p className="text-sm text-gray-600 line-clamp-2">
-          {template.base_prompt}
-        </p>
-        <div className="flex gap-2 mt-3 flex-wrap">
-          {template.style && <Badge variant="outline">{template.style}</Badge>}
-          {template.background && <Badge variant="outline">{template.background}</Badge>}
-        </div>
-      </CardContent>
-    </Card>
-  )
+        </CardContent>
+      </Card>
+    )
+  }
 
   return (
     <div className="space-y-6">

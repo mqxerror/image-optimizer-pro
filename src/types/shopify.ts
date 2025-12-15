@@ -21,6 +21,7 @@ export interface ShopifyStoreSettings {
     timezone: string
   } | null
   auto_optimize_new: boolean
+  auto_approve_jobs: boolean
   default_preset_type: 'template' | 'studio_preset' | null
   default_preset_id: string | null
   notify_on_new_products: boolean

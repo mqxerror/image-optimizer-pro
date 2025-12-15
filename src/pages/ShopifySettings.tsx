@@ -12,7 +12,9 @@ import {
   AlertCircle,
   Settings2,
   ChevronRight,
-  Sparkles
+  Sparkles,
+  CheckCircle,
+  ShieldCheck
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -368,6 +370,61 @@ export default function ShopifySettings() {
               This template will be applied to all automatic and scheduled optimizations
             </p>
           </div>
+        </CardContent>
+      </Card>
+
+      {/* Approval Workflow */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <ShieldCheck className="h-5 w-5" />
+            Approval Workflow
+          </CardTitle>
+          <CardDescription>
+            Control how processed images are approved for pushing to Shopify
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="flex items-center justify-between">
+            <div className="space-y-0.5">
+              <Label className="flex items-center gap-2">
+                Auto-approve Jobs
+                {settings.auto_approve_jobs && (
+                  <span className="flex items-center gap-1 text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded-full">
+                    <CheckCircle className="h-3 w-3" />
+                    Active
+                  </span>
+                )}
+              </Label>
+              <p className="text-sm text-muted-foreground">
+                Automatically approve and push images when processing completes
+              </p>
+            </div>
+            <Switch
+              checked={settings.auto_approve_jobs ?? false}
+              onCheckedChange={(v: boolean) => updateSetting('auto_approve_jobs', v)}
+            />
+          </div>
+
+          {settings.auto_approve_jobs && (
+            <Alert className="border-green-200 bg-green-50">
+              <CheckCircle className="h-4 w-4 text-green-600" />
+              <AlertDescription className="text-green-800">
+                Jobs will automatically push optimized images to your Shopify store once processing is complete.
+                No manual approval required.
+              </AlertDescription>
+            </Alert>
+          )}
+
+          {!settings.auto_approve_jobs && (
+            <Alert className="border-blue-200 bg-blue-50">
+              <ShieldCheck className="h-4 w-4 text-blue-600" />
+              <AlertDescription className="text-blue-800">
+                Jobs will wait for your manual approval before pushing images to Shopify.
+                You can review all processed images before they go live.
+              </AlertDescription>
+            </Alert>
+          )}
         </CardContent>
       </Card>
 

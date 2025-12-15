@@ -24,7 +24,7 @@ export function useProjectQueueStats(projectId: string | undefined) {
 
       const stats = {
         queued: data?.filter(i => i.status === 'queued').length || 0,
-        processing: data?.filter(i => ['processing', 'optimizing'].includes(i.status)).length || 0,
+        processing: data?.filter(i => ['processing', 'optimizing', 'submitted'].includes(i.status)).length || 0,
         failed: data?.filter(i => i.status === 'failed').length || 0,
         total: data?.length || 0
       }

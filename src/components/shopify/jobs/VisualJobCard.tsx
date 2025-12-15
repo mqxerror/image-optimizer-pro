@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import { Link } from 'react-router-dom'
 import { formatDistanceToNow } from 'date-fns'
 import {
@@ -12,7 +12,8 @@ import {
   Upload,
   Play,
   Pause,
-  ImageIcon
+  ImageIcon,
+  Timer
 } from 'lucide-react'
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -140,6 +141,20 @@ export function VisualJobCard({
     ? Math.round((job.processed_count / job.image_count) * 100)
     : 0
 
+  // Calculate ETA for processing jobs
+  const eta = useMemo(() => {
+    if (!['processing', 'pending'].includes(job.status) || job.processed_count === 0) return null
+
+    // Average time per image: ~30 seconds (can be refined with actual metrics)
+    const averageSecondsPerImage = 30
+    const remainingImages = job.image_count - job.processed_count
+    const remainingSeconds = remainingImages * averageSecondsPerImage
+
+    if (remainingSeconds < 60) return 'Less than 1 min'
+    if (remainingSeconds < 3600) return `~${Math.ceil(remainingSeconds / 60)} min`
+    return `~${Math.round(remainingSeconds / 3600 * 10) / 10} hrs`
+  }, [job.status, job.processed_count, job.image_count])
+
   const handleApprove = async () => {
     try {
       await approveMutation.mutateAsync(job.id)
@@ -238,13 +253,17 @@ export function VisualJobCard({
             )}
 
             {/* Preview Images */}
-            <div className="w-40 h-28 flex-shrink-0 bg-gray-100 grid grid-cols-2 gap-0.5 overflow-hidden">
+            <div
+              className="w-40 h-28 flex-shrink-0 bg-gray-100 grid grid-cols-2 gap-0.5 overflow-hidden"
+              role="img"
+              aria-label={`Preview images for job from ${job.shop_name || job.shop_domain}`}
+            >
               {previewImages.length > 0 ? (
                 previewImages.slice(0, 4).map((src, idx) => (
                   <div key={idx} className="relative overflow-hidden">
                     <img
                       src={src}
-                      alt=""
+                      alt={`Job preview ${idx + 1}`}
                       className="w-full h-full object-cover"
                       loading="lazy"
                     />
@@ -252,7 +271,8 @@ export function VisualJobCard({
                 ))
               ) : (
                 <div className="col-span-2 row-span-2 flex items-center justify-center">
-                  <ImageIcon className="h-8 w-8 text-gray-300" />
+                  <ImageIcon className="h-8 w-8 text-gray-300" aria-hidden="true" />
+                  <span className="sr-only">No preview images available</span>
                 </div>
               )}
             </div>
@@ -420,7 +440,15 @@ export function VisualJobCard({
                   <Progress value={progress} className={cn("h-2", isPaused && "[&>div]:bg-orange-500")} />
                   <div className="flex justify-between text-xs text-muted-foreground">
                     <span>{job.processed_count} / {job.image_count} processed</span>
-                    <span>{progress}%{isPaused && ' (paused)'}</span>
+                    <div className="flex items-center gap-3">
+                      {eta && !isPaused && (
+                        <span className="flex items-center gap-1 text-blue-600">
+                          <Timer className="h-3 w-3" />
+                          {eta}
+                        </span>
+                      )}
+                      <span>{progress}%{isPaused && ' (paused)'}</span>
+                    </div>
                   </div>
                 </div>
               )}

@@ -1,5 +1,5 @@
 import { useState, useCallback, useMemo, useEffect } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useSearchParams, useNavigate } from 'react-router-dom'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { Wand2, Coins, ChevronDown, ChevronUp, Eye, EyeOff, Loader2, Copy, Check, PanelLeftClose, PanelLeft, Clock, ExternalLink } from 'lucide-react'
 import { STUDIO_SPACING, PANEL_TRANSITION } from '@/constants/spacing'
@@ -64,6 +64,8 @@ export default function Studio() {
   const { toast } = useToast()
   const queryClient = useQueryClient()
   const { organization, user } = useAuthStore()
+  const [searchParams] = useSearchParams()
+  const navigate = useNavigate()
 
   // First-time user experience
   const { shouldShow, markAsSeen, incrementUsage } = useFirstTimeUser()
@@ -142,6 +144,26 @@ export default function Studio() {
   useEffect(() => {
     localStorage.setItem('studioSidebarCollapsed', String(sidebarCollapsed))
   }, [sidebarCollapsed])
+
+  // Handle URL parameters for importing images from projects
+  useEffect(() => {
+    const imageParam = searchParams.get('image')
+    const nameParam = searchParams.get('name')
+
+    if (imageParam) {
+      // Set the image URL from the parameter
+      setImageUrl(imageParam)
+
+      // Show a toast notification
+      toast({
+        title: 'Image loaded',
+        description: nameParam ? `Editing: ${nameParam}` : 'Ready to enhance in Studio'
+      })
+
+      // Clear the URL parameters to avoid re-loading on refresh
+      navigate('/studio', { replace: true })
+    }
+  }, [searchParams, navigate, toast])
 
   // Generate prompt from current settings (updates live)
   const generatedPrompt = useMemo(() => {

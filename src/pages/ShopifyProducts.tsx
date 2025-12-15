@@ -1359,6 +1359,11 @@ function ProductCard({ product, selected, onToggle, onEditImages, selectedImageC
   const mainImageProcessed = mainImage ? processedImageIds.has(mainImage.id) : false
   const mainImageProcessing = mainImage ? processingImageIds.has(mainImage.id) : false
 
+  // SVG detection
+  const svgCount = product.images.filter(img => img.src.toLowerCase().includes('.svg')).length
+  const allSvg = svgCount === product.images.length && product.images.length > 0
+  const mainImageSvg = mainImage ? mainImage.src.toLowerCase().includes('.svg') : false
+
   return (
     <Card
       className={`cursor-pointer transition-all ${
@@ -1403,10 +1408,21 @@ function ProductCard({ product, selected, onToggle, onEditImages, selectedImageC
                 <img
                   src={mainImage.src}
                   alt={mainImage.alt || product.title}
-                  className="w-full h-full object-cover"
+                  className={`w-full h-full object-cover ${mainImageSvg ? 'opacity-50 grayscale' : ''}`}
                 />
+                {/* SVG overlay - not supported */}
+                {mainImageSvg && (
+                  <div className="absolute inset-0 bg-gray-500/30 flex items-center justify-center" title="SVG images are not supported for AI optimization">
+                    <div className="absolute bottom-2 left-2">
+                      <Badge className="bg-gray-600 text-white text-[10px] px-1.5 py-0.5">
+                        <AlertTriangle className="h-3 w-3 mr-1" />
+                        SVG - Not Supported
+                      </Badge>
+                    </div>
+                  </div>
+                )}
                 {/* AI Processed overlay for main image */}
-                {mainImageProcessed && (
+                {mainImageProcessed && !mainImageSvg && (
                   <div className="absolute inset-0 bg-green-500/20 flex items-center justify-center">
                     <div className="absolute bottom-2 left-2">
                       <Badge className="bg-green-600 text-white text-[10px] px-1.5 py-0.5">
@@ -1417,7 +1433,7 @@ function ProductCard({ product, selected, onToggle, onEditImages, selectedImageC
                   </div>
                 )}
                 {/* Processing indicator */}
-                {mainImageProcessing && !mainImageProcessed && (
+                {mainImageProcessing && !mainImageProcessed && !mainImageSvg && (
                   <div className="absolute inset-0 bg-blue-500/20 flex items-center justify-center">
                     <div className="absolute bottom-2 left-2">
                       <Badge className="bg-blue-600 text-white text-[10px] px-1.5 py-0.5">
@@ -1465,6 +1481,17 @@ function ProductCard({ product, selected, onToggle, onEditImages, selectedImageC
             <Badge className="bg-blue-100 text-blue-700 border-blue-200 text-xs">
               <Loader2 className="h-3 w-3 mr-1 animate-spin" />
               {processingCount} Processing
+            </Badge>
+          )}
+          {allSvg && (
+            <Badge className="bg-gray-100 text-gray-600 border-gray-300 text-xs" title="All images are SVG format which is not supported for AI optimization">
+              <AlertTriangle className="h-3 w-3 mr-1" />
+              All SVG
+            </Badge>
+          )}
+          {svgCount > 0 && !allSvg && (
+            <Badge className="bg-gray-100 text-gray-500 border-gray-200 text-xs" title={`${svgCount} SVG image${svgCount > 1 ? 's' : ''} will be skipped`}>
+              {svgCount} SVG
             </Badge>
           )}
           {product.product_type && (

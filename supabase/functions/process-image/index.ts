@@ -287,6 +287,32 @@ Deno.serve(async (req: Request) => {
 
     console.log('[process-image] Queue item:', queueItem.file_name, 'Status:', queueItem.status)
 
+    // Check file type - RAW files are too large for edge function memory limits
+    const fileName = queueItem.file_name?.toLowerCase() || ''
+    const inputFileExt = fileName.split('.').pop() || ''
+    const rawExtensions = ['cr2', 'cr3', 'nef', 'arw', 'dng', 'raw', 'orf', 'rw2', 'pef', 'srw']
+
+    if (rawExtensions.includes(inputFileExt)) {
+      console.error('[process-image] RAW file not supported:', inputFileExt)
+
+      // Mark as failed with helpful message
+      await supabase
+        .from('processing_queue')
+        .update({
+          status: 'failed',
+          error_message: `RAW files (${inputFileExt.toUpperCase()}) are not supported. Please convert to JPG/PNG first.`,
+        })
+        .eq('id', queueItemId)
+
+      return new Response(
+        JSON.stringify({
+          error: 'RAW files not supported',
+          message: `${inputFileExt.toUpperCase()} files are too large for processing. Convert to JPG/PNG first.`
+        }),
+        { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      )
+    }
+
     // Update status to processing
     await supabase
       .from('processing_queue')

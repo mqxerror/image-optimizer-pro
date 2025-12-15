@@ -6,8 +6,6 @@ import {
   FolderKanban,
   Loader2,
   Search,
-  Pencil,
-  Trash2,
   Eye,
   Play,
   Pause,
@@ -19,9 +17,13 @@ import {
   Cog,
   LayoutGrid,
   List,
-  Image as ImageIcon,
-  ArrowUpDown
+  ArrowUpDown,
+  Zap,
+  ChevronDown
 } from 'lucide-react'
+import { VisualProjectCard } from '@/components/projects/VisualProjectCard'
+import { ProjectStatusTabs, type ProjectStatusTab } from '@/components/projects/ProjectStatusTabs'
+import { useProjectPreviewImages } from '@/hooks/useProjectPreviewImages'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Card } from '@/components/ui/card'
@@ -34,14 +36,6 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@/components/ui/tooltip'
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog'
 import {
   Select,
   SelectContent,
@@ -67,8 +61,10 @@ import {
 import { useToast } from '@/hooks/use-toast'
 import { supabase } from '@/lib/supabase'
 import { useAuthStore } from '@/stores/auth'
-import { ProjectDetailDialog, EditProjectDialog } from '@/components/project-detail'
+import { UnifiedProjectModal } from '@/components/projects/UnifiedProjectModal'
 import { CreateProjectWizard } from '@/components/project-wizard'
+import { QuickCreateProject } from '@/components/project-wizard/QuickCreateProject'
+import { InsufficientTokensPrompt } from '@/components/tokens/InsufficientTokensPrompt'
 import type { Project } from '@/types/database'
 
 const statusColors: Record<string, string> = {
@@ -84,17 +80,17 @@ export default function Projects() {
   const { organization } = useAuthStore()
 
   const [searchQuery, setSearchQuery] = useState('')
-  const [statusFilter, setStatusFilter] = useState<string>('all')
+  const [statusFilter, setStatusFilter] = useState<ProjectStatusTab>('all')
   const [sortBy, setSortBy] = useState<'updated' | 'name' | 'progress' | 'created'>('updated')
   const [viewMode, setViewMode] = useState<'table' | 'grid'>(() => {
     const saved = localStorage.getItem('projectsViewMode')
     return (saved === 'grid' ? 'grid' : 'table') as 'table' | 'grid'
   })
   const [isCreateOpen, setIsCreateOpen] = useState(false)
-  const [isEditOpen, setIsEditOpen] = useState(false)
-  const [isViewOpen, setIsViewOpen] = useState(false)
-  const [isDeleteOpen, setIsDeleteOpen] = useState(false)
-  const [selectedProject, setSelectedProject] = useState<Project | null>(null)
+  const [isQuickCreateOpen, setIsQuickCreateOpen] = useState(false)
+  const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null)
+  const [isInsufficientTokensOpen, setIsInsufficientTokensOpen] = useState(false)
+  const [projectToStart, setProjectToStart] = useState<Project | null>(null)
 
   // Fetch projects
   const { data: projects, isLoading } = useQuery({
@@ -126,6 +122,10 @@ export default function Projects() {
     enabled: !!organization
   })
 
+  // Fetch preview images for all projects
+  const projectIds = useMemo(() => (projects || []).map(p => p.id), [projects])
+  const { data: previewImagesMap = {} } = useProjectPreviewImages(projectIds)
+
   // Update status mutation
   const updateStatusMutation = useMutation({
     mutationFn: async ({ id, status }: { id: string; status: string }) => {
@@ -147,8 +147,12 @@ export default function Projects() {
   })
 
   // Delete project mutation
-  const deleteMutation = useMutation({
+  const deleteProjectMutation = useMutation({
     mutationFn: async (id: string) => {
+      // Delete related records first
+      await supabase.from('processing_queue').delete().eq('project_id', id)
+      await supabase.from('processing_history').delete().eq('project_id', id)
+
       const { error } = await supabase
         .from('projects')
         .delete()
@@ -159,14 +163,18 @@ export default function Projects() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['projects'] })
       queryClient.invalidateQueries({ queryKey: ['recent-projects'] })
-      setIsDeleteOpen(false)
-      setSelectedProject(null)
-      toast({ title: 'Project deleted successfully' })
+      toast({ title: 'Project deleted' })
     },
     onError: (error) => {
       toast({ title: 'Error deleting project', description: error.message, variant: 'destructive' })
     }
   })
+
+  // Handle delete project - called after VisualProjectCard's own confirmation dialog
+  const handleDeleteProject = (project: Project) => {
+    deleteProjectMutation.mutate(project.id)
+  }
+
 
   // Calculate project stats
   const projectStats = useMemo(() => {
@@ -217,19 +225,31 @@ export default function Projects() {
     return filtered
   }, [projects, searchQuery, statusFilter, sortBy])
 
-  const handleEdit = (project: Project) => {
-    setSelectedProject(project)
-    setIsEditOpen(true)
+  // Unified modal - opens for both view and edit
+  const handleOpenProject = (project: Project) => {
+    setSelectedProjectId(project.id)
   }
 
-  const handleView = (project: Project) => {
-    setSelectedProject(project)
-    setIsViewOpen(true)
+  // Handle start project with token check
+  const handleStartProject = (project: Project) => {
+    const tokensNeeded = project.total_images - project.processed_images
+    const tokensAvailable = tokenAccount?.balance || 0
+
+    if (tokensNeeded > tokensAvailable) {
+      setProjectToStart(project)
+      setIsInsufficientTokensOpen(true)
+    } else {
+      // Sufficient tokens, start processing
+      updateStatusMutation.mutate({ id: project.id, status: 'active' })
+    }
   }
 
-  const handleDeleteConfirm = (project: Project) => {
-    setSelectedProject(project)
-    setIsDeleteOpen(true)
+  // Start with available tokens (partial processing)
+  const handleStartWithAvailableTokens = () => {
+    if (projectToStart) {
+      updateStatusMutation.mutate({ id: projectToStart.id, status: 'active' })
+      setProjectToStart(null)
+    }
   }
 
   const getProgressPercentage = (project: Project) => {
@@ -254,10 +274,32 @@ export default function Projects() {
           <h1 className="text-2xl font-bold text-gray-900">Projects</h1>
           <p className="text-gray-500 mt-1">Manage your image optimization projects</p>
         </div>
-        <Button onClick={() => setIsCreateOpen(true)} className="gap-2">
-          <Plus className="h-4 w-4" />
-          New Project
-        </Button>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button className="gap-2">
+              <Plus className="h-4 w-4" />
+              New Project
+              <ChevronDown className="h-3 w-3 ml-1" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="w-56">
+            <DropdownMenuItem onClick={() => setIsQuickCreateOpen(true)} className="gap-2">
+              <Zap className="h-4 w-4 text-amber-500" />
+              <div>
+                <div className="font-medium">Quick Create</div>
+                <div className="text-xs text-muted-foreground">Simple, fast project setup</div>
+              </div>
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem onClick={() => setIsCreateOpen(true)} className="gap-2">
+              <Cog className="h-4 w-4 text-gray-500" />
+              <div>
+                <div className="font-medium">Full Wizard</div>
+                <div className="text-xs text-muted-foreground">All options & folder selection</div>
+              </div>
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
 
       {/* Stats Summary */}
@@ -318,6 +360,19 @@ export default function Projects() {
         </Card>
       </div>
 
+      {/* Status Tabs */}
+      <ProjectStatusTabs
+        activeTab={statusFilter}
+        onTabChange={setStatusFilter}
+        counts={{
+          all: projectStats.total,
+          draft: projectStats.draft,
+          active: projectStats.active,
+          completed: projectStats.completed,
+          archived: projectStats.archived
+        }}
+      />
+
       {/* Filters */}
       <div className="flex gap-4 flex-wrap items-center">
         <div className="relative flex-1 max-w-sm">
@@ -329,18 +384,6 @@ export default function Projects() {
             className="pl-9"
           />
         </div>
-        <Select value={statusFilter} onValueChange={setStatusFilter}>
-          <SelectTrigger className="w-[150px]">
-            <SelectValue placeholder="Status" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">All Status</SelectItem>
-            <SelectItem value="draft">Draft</SelectItem>
-            <SelectItem value="active">Active</SelectItem>
-            <SelectItem value="completed">Completed</SelectItem>
-            <SelectItem value="archived">Archived</SelectItem>
-          </SelectContent>
-        </Select>
         {/* Sort Dropdown */}
         <Select value={sortBy} onValueChange={(v) => setSortBy(v as any)}>
           <SelectTrigger className="w-[150px]">
@@ -384,105 +427,20 @@ export default function Projects() {
         </div>
       ) : filteredProjects && filteredProjects.length > 0 ? (
         viewMode === 'grid' ? (
-          /* Grid View */
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+          /* Visual Cards View */
+          <div className="space-y-4">
             {filteredProjects.map(project => (
-              <Card
+              <VisualProjectCard
                 key={project.id}
-                className="overflow-hidden cursor-pointer hover:shadow-md transition-shadow group"
-                onClick={() => handleView(project)}
-              >
-                {/* Project Thumbnail/Preview */}
-                <div className="aspect-video bg-gradient-to-br from-gray-100 to-gray-200 relative flex items-center justify-center">
-                  {project.processed_images > 0 ? (
-                    <div className="absolute inset-0 bg-gradient-to-br from-purple-500/20 to-blue-500/20 flex items-center justify-center">
-                      <div className="text-center">
-                        <ImageIcon className="h-8 w-8 text-gray-400 mx-auto" />
-                        <p className="text-sm text-gray-500 mt-1">{project.processed_images} images</p>
-                      </div>
-                    </div>
-                  ) : (
-                    <div className="text-center">
-                      <FolderKanban className="h-8 w-8 text-gray-300 mx-auto" />
-                      <p className="text-xs text-gray-400 mt-1">No images yet</p>
-                    </div>
-                  )}
-                  {/* Status Badge */}
-                  <Badge className={`absolute top-2 right-2 ${statusColors[project.status]}`}>
-                    {project.status === 'active' && <Loader2 className="h-3 w-3 mr-1 animate-spin" />}
-                    {project.status}
-                  </Badge>
-                </div>
-
-                {/* Project Info */}
-                <div className="p-4">
-                  <h3 className="font-semibold text-gray-900 truncate">{project.name}</h3>
-                  <p className="text-xs text-gray-500 mt-1">
-                    {format(new Date(project.updated_at), 'MMM d, yyyy')}
-                  </p>
-
-                  {/* Progress */}
-                  <div className="mt-3">
-                    <div className="flex justify-between text-xs text-gray-500 mb-1">
-                      <span>{project.processed_images}/{project.total_images} images</span>
-                      <span>{getProgressPercentage(project)}%</span>
-                    </div>
-                    <Progress value={getProgressPercentage(project)} className="h-1.5" />
-                  </div>
-
-                  {/* Quick Actions */}
-                  <div className="mt-3 flex items-center justify-between" onClick={(e) => e.stopPropagation()}>
-                    {project.status === 'draft' && project.total_images > 0 ? (
-                      <Button
-                        size="sm"
-                        className={`text-xs h-7 ${hasInsufficientTokens(project) ? 'bg-gray-400' : 'bg-green-600 hover:bg-green-700'}`}
-                        onClick={() => {
-                          if (!hasInsufficientTokens(project)) {
-                            updateStatusMutation.mutate({ id: project.id, status: 'active' })
-                          }
-                        }}
-                        disabled={hasInsufficientTokens(project) || updateStatusMutation.isPending}
-                      >
-                        <Play className="h-3 w-3 mr-1" />
-                        Start
-                        <span className="ml-1 opacity-70">({getTokenEstimate(project)})</span>
-                      </Button>
-                    ) : project.status === 'active' ? (
-                      <Badge className="bg-blue-100 text-blue-700 text-xs">
-                        <Loader2 className="h-3 w-3 mr-1 animate-spin" />
-                        Processing
-                      </Badge>
-                    ) : (
-                      <span className="text-xs text-gray-400">{project.resolution}</span>
-                    )}
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="sm" className="h-7 w-7 p-0">
-                          <MoreHorizontal className="h-4 w-4" />
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
-                        <DropdownMenuItem onClick={() => handleView(project)}>
-                          <Eye className="h-4 w-4 mr-2" />
-                          View Details
-                        </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => handleEdit(project)}>
-                          <Pencil className="h-4 w-4 mr-2" />
-                          Edit
-                        </DropdownMenuItem>
-                        <DropdownMenuSeparator />
-                        <DropdownMenuItem
-                          className="text-red-600"
-                          onClick={() => handleDeleteConfirm(project)}
-                        >
-                          <Trash2 className="h-4 w-4 mr-2" />
-                          Delete
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  </div>
-                </div>
-              </Card>
+                project={project}
+                previewImages={previewImagesMap[project.id] || []}
+                onView={handleOpenProject}
+                onEdit={handleOpenProject}
+                onDelete={handleDeleteProject}
+                onStart={handleStartProject}
+                onPause={(p) => updateStatusMutation.mutate({ id: p.id, status: 'draft' })}
+                onArchive={(p) => updateStatusMutation.mutate({ id: p.id, status: 'archived' })}
+              />
             ))}
           </div>
         ) : (
@@ -501,7 +459,7 @@ export default function Projects() {
             </TableHeader>
             <TableBody>
               {filteredProjects.map(project => (
-                <TableRow key={project.id} className="cursor-pointer hover:bg-gray-50" onClick={() => handleView(project)}>
+                <TableRow key={project.id} className="cursor-pointer hover:bg-gray-50" onClick={() => handleOpenProject(project)}>
                   <TableCell>
                     <div className="font-medium">{project.name}</div>
                     <div className="text-xs text-gray-400">{project.resolution}</div>
@@ -575,13 +533,9 @@ export default function Projects() {
                         </Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
-                        <DropdownMenuItem onClick={() => handleView(project)}>
+                        <DropdownMenuItem onClick={() => handleOpenProject(project)}>
                           <Eye className="h-4 w-4 mr-2" />
-                          View Details
-                        </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => handleEdit(project)}>
-                          <Pencil className="h-4 w-4 mr-2" />
-                          Edit
+                          Open Project
                         </DropdownMenuItem>
                         <DropdownMenuSeparator />
                         {project.status === 'draft' && (
@@ -604,17 +558,10 @@ export default function Projects() {
                           <DropdownMenuItem
                             onClick={() => updateStatusMutation.mutate({ id: project.id, status: 'archived' })}
                           >
+                            <Archive className="h-4 w-4 mr-2" />
                             Archive
                           </DropdownMenuItem>
                         )}
-                        <DropdownMenuSeparator />
-                        <DropdownMenuItem
-                          className="text-red-600"
-                          onClick={() => handleDeleteConfirm(project)}
-                        >
-                          <Trash2 className="h-4 w-4 mr-2" />
-                          Delete
-                        </DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>
                     </div>
@@ -684,57 +631,39 @@ export default function Projects() {
         onOpenChange={setIsCreateOpen}
       />
 
-      {/* Edit Dialog */}
-      <EditProjectDialog
-        project={selectedProject}
-        open={isEditOpen}
+      {/* Quick Create Project */}
+      <QuickCreateProject
+        open={isQuickCreateOpen}
+        onOpenChange={setIsQuickCreateOpen}
+        onUseWizard={() => {
+          setIsQuickCreateOpen(false)
+          setIsCreateOpen(true)
+        }}
+      />
+
+      {/* Unified Project Modal - Combines view, edit, and management */}
+      <UnifiedProjectModal
+        projectId={selectedProjectId}
+        open={!!selectedProjectId}
         onOpenChange={(open) => {
           if (!open) {
-            setIsEditOpen(false)
-            // Only clear selectedProject if view dialog is also closed
-            if (!isViewOpen) {
-              setSelectedProject(null)
-            }
+            setSelectedProjectId(null)
           }
         }}
-        onSaved={(updatedProject) => {
-          // Update the selected project with fresh data
-          setSelectedProject(updatedProject)
+      />
+
+      {/* Insufficient Tokens Prompt */}
+      <InsufficientTokensPrompt
+        open={isInsufficientTokensOpen}
+        onOpenChange={(open) => {
+          setIsInsufficientTokensOpen(open)
+          if (!open) setProjectToStart(null)
         }}
+        tokensNeeded={projectToStart ? (projectToStart.total_images - projectToStart.processed_images) : 0}
+        tokensAvailable={tokenAccount?.balance || 0}
+        onProceedWithAvailable={handleStartWithAvailableTokens}
+        itemName="project"
       />
-
-      {/* View Dialog - Enhanced with Gallery, Timeline, and Export */}
-      <ProjectDetailDialog
-        project={selectedProject}
-        open={isViewOpen}
-        onOpenChange={setIsViewOpen}
-        onEdit={handleEdit}
-      />
-
-      {/* Delete Confirmation Dialog */}
-      <Dialog open={isDeleteOpen} onOpenChange={setIsDeleteOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Delete Project</DialogTitle>
-            <DialogDescription>
-              Are you sure you want to delete "{selectedProject?.name}"? This will also remove all associated processing history. This action cannot be undone.
-            </DialogDescription>
-          </DialogHeader>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setIsDeleteOpen(false)}>
-              Cancel
-            </Button>
-            <Button
-              variant="destructive"
-              onClick={() => selectedProject && deleteMutation.mutate(selectedProject.id)}
-              disabled={deleteMutation.isPending}
-            >
-              {deleteMutation.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              Delete
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
     </div>
   )
 }

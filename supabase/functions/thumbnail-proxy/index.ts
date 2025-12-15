@@ -50,11 +50,12 @@ Deno.serve(async (req: Request) => {
       )
     }
 
-    // Get Google token from database
+    // Get organization from user_organizations table
     const { data: orgMember } = await supabase
-      .from('organization_members')
+      .from('user_organizations')
       .select('organization_id')
       .eq('user_id', user.id)
+      .limit(1)
       .single()
 
     if (!orgMember) {
@@ -64,24 +65,26 @@ Deno.serve(async (req: Request) => {
       )
     }
 
-    const { data: integration, error: integrationError } = await supabase
-      .from('integrations')
-      .select('access_token, refresh_token, expires_at')
+    // Get Google Drive connection from google_drive_connections table
+    const { data: connection, error: connectionError } = await supabase
+      .from('google_drive_connections')
+      .select('id, access_token, refresh_token, token_expires_at')
       .eq('organization_id', orgMember.organization_id)
-      .eq('provider', 'google_drive')
+      .eq('is_active', true)
       .single()
 
-    if (integrationError || !integration) {
+    if (connectionError || !connection) {
+      console.error('No Google Drive connection found:', connectionError)
       return new Response(
         JSON.stringify({ error: 'Google Drive not connected' }),
         { status: 404, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       )
     }
 
-    let accessToken = integration.access_token
+    let accessToken = connection.access_token
 
     // Check if token needs refresh
-    if (integration.expires_at && new Date(integration.expires_at) < new Date()) {
+    if (connection.token_expires_at && new Date(connection.token_expires_at) < new Date()) {
       const clientId = Deno.env.get('GOOGLE_CLIENT_ID')
       const clientSecret = Deno.env.get('GOOGLE_CLIENT_SECRET')
 
@@ -91,7 +94,7 @@ Deno.serve(async (req: Request) => {
         body: new URLSearchParams({
           client_id: clientId!,
           client_secret: clientSecret!,
-          refresh_token: integration.refresh_token,
+          refresh_token: connection.refresh_token,
           grant_type: 'refresh_token',
         }),
       })
@@ -102,13 +105,12 @@ Deno.serve(async (req: Request) => {
 
         // Update token in database
         await supabase
-          .from('integrations')
+          .from('google_drive_connections')
           .update({
             access_token: accessToken,
-            expires_at: new Date(Date.now() + tokenData.expires_in * 1000).toISOString(),
+            token_expires_at: new Date(Date.now() + tokenData.expires_in * 1000).toISOString(),
           })
-          .eq('organization_id', orgMember.organization_id)
-          .eq('provider', 'google_drive')
+          .eq('id', connection.id)
       }
     }
 

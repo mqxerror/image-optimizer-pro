@@ -5,7 +5,6 @@ import ProtectedRoute from './components/ProtectedRoute'
 import Dashboard from './pages/Dashboard'
 import Projects from './pages/Projects'
 import Templates from './pages/Templates'
-import Settings from './pages/Settings'
 import Studio from './pages/Studio'
 import Activity from './pages/Activity'
 import Onboarding from './pages/Onboarding'
@@ -20,6 +19,14 @@ import ShopifyProducts from './pages/ShopifyProducts'
 import ShopifySettings from './pages/ShopifySettings'
 import ShopifyJobs from './pages/ShopifyJobs'
 import ShopifyJobDetail from './pages/ShopifyJobDetail'
+
+// Settings pages
+import SettingsLayout from './pages/settings/SettingsLayout'
+import SettingsIndex from './pages/settings/index'
+import ProfileSettings from './pages/settings/ProfileSettings'
+import OrganizationSettings from './pages/settings/OrganizationSettings'
+import BillingSettings from './pages/settings/BillingSettings'
+import IntegrationsSettings from './pages/settings/IntegrationsSettings'
 
 function App() {
   return (
@@ -65,7 +72,15 @@ function App() {
           <Route path="studio" element={<Studio />} />
           <Route path="projects" element={<Projects />} />
           <Route path="activity" element={<Activity />} />
-          <Route path="settings" element={<Settings />} />
+
+          {/* Settings - nested routes */}
+          <Route path="settings" element={<SettingsLayout />}>
+            <Route index element={<SettingsIndex />} />
+            <Route path="profile" element={<ProfileSettings />} />
+            <Route path="organization" element={<OrganizationSettings />} />
+            <Route path="billing" element={<BillingSettings />} />
+            <Route path="integrations" element={<IntegrationsSettings />} />
+          </Route>
 
           {/* Shopify routes */}
           <Route path="shopify" element={<Shopify />} />

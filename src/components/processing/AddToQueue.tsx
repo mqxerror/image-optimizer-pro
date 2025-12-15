@@ -86,13 +86,14 @@ export default function AddToQueue({
       for (let i = 0; i < chunks.length; i++) {
         const chunk = chunks[i]
 
-        // Prepare basic items (backwards compatible - without new columns)
+        // Prepare basic items with thumbnail URLs from Google Drive
         const basicItems = chunk.map(file => ({
           organization_id: organization.id,
           project_id: projectId,
           file_id: file.id,
           file_name: file.name,
           file_url: file.webViewLink || null,
+          thumbnail_url: file.thumbnailLink || null, // Use Google Drive thumbnail
           status: 'queued',
           progress: 0,
           tokens_reserved: 1

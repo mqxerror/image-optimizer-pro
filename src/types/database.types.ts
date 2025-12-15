@@ -20,6 +20,7 @@ export type Database = {
           attempt_count: number | null
           callback_at: string | null
           callback_received: boolean | null
+          callback_token: string | null
           completed_at: string | null
           created_at: string | null
           created_by: string | null
@@ -53,6 +54,7 @@ export type Database = {
           attempt_count?: number | null
           callback_at?: string | null
           callback_received?: boolean | null
+          callback_token?: string | null
           completed_at?: string | null
           created_at?: string | null
           created_by?: string | null
@@ -86,6 +88,7 @@ export type Database = {
           attempt_count?: number | null
           callback_at?: string | null
           callback_received?: boolean | null
+          callback_token?: string | null
           completed_at?: string | null
           created_at?: string | null
           created_by?: string | null
@@ -872,8 +875,278 @@ export type Database = {
           },
         ]
       }
+      shopify_automation_configs: {
+        Row: {
+          approval_threshold: number | null
+          auto_pause_enabled: boolean | null
+          auto_pause_threshold: number | null
+          batches_completed: number | null
+          created_at: string | null
+          daily_limit: number | null
+          daily_processed: number | null
+          daily_reset_at: string | null
+          default_ai_model: string | null
+          default_format: string | null
+          default_preset_id: string | null
+          default_quality: number | null
+          id: string
+          is_enabled: boolean | null
+          is_paused: boolean | null
+          paused_at: string | null
+          paused_reason: string | null
+          require_approval: boolean | null
+          schedule_days: string[] | null
+          schedule_enabled: boolean | null
+          schedule_frequency: string | null
+          schedule_last_run_at: string | null
+          schedule_next_run_at: string | null
+          schedule_time: string | null
+          schedule_timezone: string | null
+          store_id: string
+          updated_at: string | null
+          user_id: string
+          webhook_enabled: boolean | null
+          webhook_secret: string | null
+        }
+        Insert: {
+          approval_threshold?: number | null
+          auto_pause_enabled?: boolean | null
+          auto_pause_threshold?: number | null
+          batches_completed?: number | null
+          created_at?: string | null
+          daily_limit?: number | null
+          daily_processed?: number | null
+          daily_reset_at?: string | null
+          default_ai_model?: string | null
+          default_format?: string | null
+          default_preset_id?: string | null
+          default_quality?: number | null
+          id?: string
+          is_enabled?: boolean | null
+          is_paused?: boolean | null
+          paused_at?: string | null
+          paused_reason?: string | null
+          require_approval?: boolean | null
+          schedule_days?: string[] | null
+          schedule_enabled?: boolean | null
+          schedule_frequency?: string | null
+          schedule_last_run_at?: string | null
+          schedule_next_run_at?: string | null
+          schedule_time?: string | null
+          schedule_timezone?: string | null
+          store_id: string
+          updated_at?: string | null
+          user_id: string
+          webhook_enabled?: boolean | null
+          webhook_secret?: string | null
+        }
+        Update: {
+          approval_threshold?: number | null
+          auto_pause_enabled?: boolean | null
+          auto_pause_threshold?: number | null
+          batches_completed?: number | null
+          created_at?: string | null
+          daily_limit?: number | null
+          daily_processed?: number | null
+          daily_reset_at?: string | null
+          default_ai_model?: string | null
+          default_format?: string | null
+          default_preset_id?: string | null
+          default_quality?: number | null
+          id?: string
+          is_enabled?: boolean | null
+          is_paused?: boolean | null
+          paused_at?: string | null
+          paused_reason?: string | null
+          require_approval?: boolean | null
+          schedule_days?: string[] | null
+          schedule_enabled?: boolean | null
+          schedule_frequency?: string | null
+          schedule_last_run_at?: string | null
+          schedule_next_run_at?: string | null
+          schedule_time?: string | null
+          schedule_timezone?: string | null
+          store_id?: string
+          updated_at?: string | null
+          user_id?: string
+          webhook_enabled?: boolean | null
+          webhook_secret?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "shopify_automation_configs_store_id_fkey"
+            columns: ["store_id"]
+            isOneToOne: true
+            referencedRelation: "shopify_stores"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      shopify_automation_queue: {
+        Row: {
+          added_at: string | null
+          error_message: string | null
+          id: string
+          image_count: number | null
+          job_id: string | null
+          priority: string | null
+          processed_at: string | null
+          product_handle: string | null
+          product_title: string | null
+          shopify_product_id: string
+          source: string
+          status: string | null
+          store_id: string
+          thumbnail_url: string | null
+          user_id: string
+        }
+        Insert: {
+          added_at?: string | null
+          error_message?: string | null
+          id?: string
+          image_count?: number | null
+          job_id?: string | null
+          priority?: string | null
+          processed_at?: string | null
+          product_handle?: string | null
+          product_title?: string | null
+          shopify_product_id: string
+          source?: string
+          status?: string | null
+          store_id: string
+          thumbnail_url?: string | null
+          user_id: string
+        }
+        Update: {
+          added_at?: string | null
+          error_message?: string | null
+          id?: string
+          image_count?: number | null
+          job_id?: string | null
+          priority?: string | null
+          processed_at?: string | null
+          product_handle?: string | null
+          product_title?: string | null
+          shopify_product_id?: string
+          source?: string
+          status?: string | null
+          store_id?: string
+          thumbnail_url?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "shopify_automation_queue_store_id_fkey"
+            columns: ["store_id"]
+            isOneToOne: false
+            referencedRelation: "shopify_stores"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      shopify_automation_runs: {
+        Row: {
+          completed_at: string | null
+          config_id: string | null
+          error_message: string | null
+          id: string
+          images_failed: number | null
+          images_processed: number | null
+          images_queued: number | null
+          products_queued: number | null
+          started_at: string | null
+          status: string | null
+          store_id: string
+          trigger_type: string
+          user_id: string
+        }
+        Insert: {
+          completed_at?: string | null
+          config_id?: string | null
+          error_message?: string | null
+          id?: string
+          images_failed?: number | null
+          images_processed?: number | null
+          images_queued?: number | null
+          products_queued?: number | null
+          started_at?: string | null
+          status?: string | null
+          store_id: string
+          trigger_type: string
+          user_id: string
+        }
+        Update: {
+          completed_at?: string | null
+          config_id?: string | null
+          error_message?: string | null
+          id?: string
+          images_failed?: number | null
+          images_processed?: number | null
+          images_queued?: number | null
+          products_queued?: number | null
+          started_at?: string | null
+          status?: string | null
+          store_id?: string
+          trigger_type?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "shopify_automation_runs_store_id_fkey"
+            columns: ["store_id"]
+            isOneToOne: false
+            referencedRelation: "shopify_stores"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      shopify_excluded_products: {
+        Row: {
+          excluded_at: string | null
+          id: string
+          product_handle: string | null
+          product_title: string | null
+          reason: string | null
+          shopify_product_id: string
+          store_id: string
+          thumbnail_url: string | null
+          user_id: string
+        }
+        Insert: {
+          excluded_at?: string | null
+          id?: string
+          product_handle?: string | null
+          product_title?: string | null
+          reason?: string | null
+          shopify_product_id: string
+          store_id: string
+          thumbnail_url?: string | null
+          user_id: string
+        }
+        Update: {
+          excluded_at?: string | null
+          id?: string
+          product_handle?: string | null
+          product_title?: string | null
+          reason?: string | null
+          shopify_product_id?: string
+          store_id?: string
+          thumbnail_url?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "shopify_excluded_products_store_id_fkey"
+            columns: ["store_id"]
+            isOneToOne: false
+            referencedRelation: "shopify_stores"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       shopify_images: {
         Row: {
+          ai_job_id: string | null
           created_at: string | null
           error_message: string | null
           id: string
@@ -896,6 +1169,7 @@ export type Database = {
           updated_at: string | null
         }
         Insert: {
+          ai_job_id?: string | null
           created_at?: string | null
           error_message?: string | null
           id?: string
@@ -918,6 +1192,7 @@ export type Database = {
           updated_at?: string | null
         }
         Update: {
+          ai_job_id?: string | null
           created_at?: string | null
           error_message?: string | null
           id?: string
@@ -940,6 +1215,13 @@ export type Database = {
           updated_at?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "shopify_images_ai_job_id_fkey"
+            columns: ["ai_job_id"]
+            isOneToOne: false
+            referencedRelation: "ai_jobs"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "shopify_images_job_id_fkey"
             columns: ["job_id"]
@@ -999,9 +1281,11 @@ export type Database = {
       }
       shopify_sync_jobs: {
         Row: {
+          ai_model: string | null
           approved_at: string | null
           completed_at: string | null
           created_at: string | null
+          custom_prompt: string | null
           expires_at: string | null
           failed_count: number | null
           id: string
@@ -1022,9 +1306,11 @@ export type Database = {
           updated_at: string | null
         }
         Insert: {
+          ai_model?: string | null
           approved_at?: string | null
           completed_at?: string | null
           created_at?: string | null
+          custom_prompt?: string | null
           expires_at?: string | null
           failed_count?: number | null
           id?: string
@@ -1045,9 +1331,11 @@ export type Database = {
           updated_at?: string | null
         }
         Update: {
+          ai_model?: string | null
           approved_at?: string | null
           completed_at?: string | null
           created_at?: string | null
+          custom_prompt?: string | null
           expires_at?: string | null
           failed_count?: number | null
           id?: string
@@ -1070,6 +1358,59 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "shopify_sync_jobs_store_id_fkey"
+            columns: ["store_id"]
+            isOneToOne: false
+            referencedRelation: "shopify_stores"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      shopify_test_runs: {
+        Row: {
+          approved: boolean | null
+          completed_at: string | null
+          created_at: string | null
+          feedback: string | null
+          id: string
+          results: Json | null
+          run_id: string | null
+          selected_product_ids: string[] | null
+          status: string | null
+          store_id: string
+          test_count: number
+          user_id: string
+        }
+        Insert: {
+          approved?: boolean | null
+          completed_at?: string | null
+          created_at?: string | null
+          feedback?: string | null
+          id?: string
+          results?: Json | null
+          run_id?: string | null
+          selected_product_ids?: string[] | null
+          status?: string | null
+          store_id: string
+          test_count: number
+          user_id: string
+        }
+        Update: {
+          approved?: boolean | null
+          completed_at?: string | null
+          created_at?: string | null
+          feedback?: string | null
+          id?: string
+          results?: Json | null
+          run_id?: string | null
+          selected_product_ids?: string[] | null
+          status?: string | null
+          store_id?: string
+          test_count?: number
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "shopify_test_runs_store_id_fkey"
             columns: ["store_id"]
             isOneToOne: false
             referencedRelation: "shopify_stores"
@@ -1522,36 +1863,6 @@ export type Database = {
           },
         ]
       }
-      user_profiles: {
-        Row: {
-          id: string
-          user_id: string
-          display_name: string | null
-          avatar_url: string | null
-          email_preferences: Json | null
-          created_at: string | null
-          updated_at: string | null
-        }
-        Insert: {
-          id?: string
-          user_id: string
-          display_name?: string | null
-          avatar_url?: string | null
-          email_preferences?: Json | null
-          created_at?: string | null
-          updated_at?: string | null
-        }
-        Update: {
-          id?: string
-          user_id?: string
-          display_name?: string | null
-          avatar_url?: string | null
-          email_preferences?: Json | null
-          created_at?: string | null
-          updated_at?: string | null
-        }
-        Relationships: []
-      }
     }
     Views: {
       [_ in never]: never
@@ -1564,6 +1875,10 @@ export type Database = {
           p_organization_id: string
         }
         Returns: boolean
+      }
+      algorithm_sign: {
+        Args: { algorithm: string; secret: string; signables: string }
+        Returns: string
       }
       bulk_insert_queue_items: {
         Args: { p_items: Json }
@@ -1722,12 +2037,32 @@ export type Database = {
         Returns: number
       }
       is_organization_owner: { Args: { org_id: string }; Returns: boolean }
+      poll_ai_jobs: { Args: never; Returns: undefined }
+      sign: {
+        Args: { algorithm?: string; payload: Json; secret: string }
+        Returns: string
+      }
       timeout_stuck_ai_jobs: {
         Args: never
         Returns: {
           ai_model: string
           job_id: string
           old_status: string
+        }[]
+      }
+      try_cast_double: { Args: { inp: string }; Returns: number }
+      update_shopify_job_counts: {
+        Args: { p_job_id: string }
+        Returns: undefined
+      }
+      url_decode: { Args: { data: string }; Returns: string }
+      url_encode: { Args: { data: string }; Returns: string }
+      verify: {
+        Args: { algorithm?: string; secret: string; token: string }
+        Returns: {
+          header: Json
+          payload: Json
+          valid: boolean
         }[]
       }
     }
@@ -1862,23 +2197,3 @@ export const Constants = {
     Enums: {},
   },
 } as const
-
-// Convenience type aliases for common tables
-export type PromptTemplate = Tables<'prompt_templates'>
-export type ProcessingHistoryItem = Tables<'processing_history'>
-export type Project = Tables<'projects'>
-export type Organization = Tables<'organizations'>
-export type UserOrganization = Tables<'user_organizations'>
-export type GoogleDriveConnection = Tables<'google_drive_connections'>
-export type UserProfile = Tables<'user_profiles'>
-
-// Google Drive file type (not a database table, but used in API responses)
-export interface GoogleDriveFile {
-  id: string
-  name: string
-  mimeType: string
-  thumbnailLink?: string
-  webViewLink?: string
-  parents?: string[]
-  size?: number
-}

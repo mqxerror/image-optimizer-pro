@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import { useInView } from 'react-intersection-observer'
 import { CheckCircle, XCircle, Loader2, Image as ImageIcon } from 'lucide-react'
 import { Skeleton } from '@/components/ui/skeleton'
@@ -20,6 +20,9 @@ interface ImageGalleryTabProps {
 export function ImageGalleryTab({ projectId }: ImageGalleryTabProps) {
   const [statusFilter, setStatusFilter] = useState<StatusFilter>('all')
   const [selectedImage, setSelectedImage] = useState<ProcessingHistoryItem | null>(null)
+  const [focusedIndex, setFocusedIndex] = useState<number>(-1)
+  const gridRef = useRef<HTMLDivElement>(null)
+  const buttonRefs = useRef<Map<number, HTMLButtonElement>>(new Map())
 
   const {
     data,
@@ -54,6 +57,72 @@ export function ImageGalleryTab({ projectId }: ImageGalleryTabProps) {
       setSelectedImage(images[currentIndex + 1])
     }
   }
+
+  // Keyboard navigation for grid
+  // Calculate columns based on viewport (matches grid-cols-2 sm:grid-cols-3 md:grid-cols-4)
+  const getColumnsCount = useCallback(() => {
+    if (typeof window === 'undefined') return 4
+    if (window.innerWidth >= 768) return 4 // md breakpoint
+    if (window.innerWidth >= 640) return 3 // sm breakpoint
+    return 2
+  }, [])
+
+  const handleGridKeyDown = useCallback((e: React.KeyboardEvent) => {
+    if (images.length === 0) return
+
+    const columns = getColumnsCount()
+    let newIndex = focusedIndex
+
+    switch (e.key) {
+      case 'ArrowRight':
+        e.preventDefault()
+        newIndex = focusedIndex < images.length - 1 ? focusedIndex + 1 : focusedIndex
+        break
+      case 'ArrowLeft':
+        e.preventDefault()
+        newIndex = focusedIndex > 0 ? focusedIndex - 1 : focusedIndex
+        break
+      case 'ArrowDown':
+        e.preventDefault()
+        newIndex = focusedIndex + columns < images.length ? focusedIndex + columns : focusedIndex
+        break
+      case 'ArrowUp':
+        e.preventDefault()
+        newIndex = focusedIndex - columns >= 0 ? focusedIndex - columns : focusedIndex
+        break
+      case 'Home':
+        e.preventDefault()
+        newIndex = 0
+        break
+      case 'End':
+        e.preventDefault()
+        newIndex = images.length - 1
+        break
+      case 'Enter':
+      case ' ':
+        e.preventDefault()
+        if (focusedIndex >= 0 && focusedIndex < images.length) {
+          setSelectedImage(images[focusedIndex])
+        }
+        return
+      default:
+        return
+    }
+
+    if (newIndex !== focusedIndex && newIndex >= 0 && newIndex < images.length) {
+      setFocusedIndex(newIndex)
+      buttonRefs.current.get(newIndex)?.focus()
+    }
+  }, [focusedIndex, images, getColumnsCount])
+
+  // Store button ref for keyboard navigation
+  const setButtonRef = useCallback((index: number, el: HTMLButtonElement | null) => {
+    if (el) {
+      buttonRefs.current.set(index, el)
+    } else {
+      buttonRefs.current.delete(index)
+    }
+  }, [])
 
   if (isLoading) {
     return (
@@ -117,12 +186,23 @@ export function ImageGalleryTab({ projectId }: ImageGalleryTabProps) {
         </div>
       ) : (
         <div className="flex-1 overflow-y-auto">
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
-            {images.map((image) => (
+          <div
+            ref={gridRef}
+            className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3"
+            role="grid"
+            aria-label="Image gallery. Use arrow keys to navigate, Enter to view."
+            onKeyDown={handleGridKeyDown}
+          >
+            {images.map((image, index) => (
               <button
                 key={image.id}
+                ref={(el) => setButtonRef(index, el)}
                 onClick={() => setSelectedImage(image)}
-                className="group relative aspect-square bg-gray-100 rounded-lg overflow-hidden border hover:border-purple-400 transition-colors focus:outline-none focus:ring-2 focus:ring-purple-500"
+                onFocus={() => setFocusedIndex(index)}
+                tabIndex={focusedIndex === index || (focusedIndex === -1 && index === 0) ? 0 : -1}
+                role="gridcell"
+                aria-label={`${image.file_name || 'Image'}, ${image.status === 'success' || image.status === 'completed' ? 'successful' : 'failed'}. Press Enter to view.`}
+                className="group relative aspect-square bg-gray-100 rounded-lg overflow-hidden border hover:border-purple-400 transition-colors focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2"
               >
                 {image.optimized_url ? (
                   <img

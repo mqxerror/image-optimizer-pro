@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom'
+import { useQuery } from '@tanstack/react-query'
 import {
   LayoutDashboard,
   FolderKanban,
@@ -12,12 +13,20 @@ import {
   PanelLeftClose,
   PanelLeft,
   Activity,
-  Store
+  Store,
+  CreditCard,
+  ChevronDown
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { useAuthStore } from '@/stores/auth'
 import { useQueueRealtime } from '@/hooks/useQueueRealtime'
+import { supabase } from '@/lib/supabase'
 import { Button } from '@/components/ui/button'
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -66,6 +75,24 @@ export default function Layout() {
     showProjectCompletionToasts: true // Enable project completion toasts
   })
 
+  // Fetch token balance for header display
+  const { data: tokenAccount } = useQuery({
+    queryKey: ['token-account', organization?.id],
+    queryFn: async () => {
+      if (!organization) return null
+      const { data } = await supabase
+        .from('token_accounts')
+        .select('balance, low_balance_threshold')
+        .eq('organization_id', organization.id)
+        .single()
+      return data
+    },
+    enabled: !!organization,
+    staleTime: 30000, // Cache for 30 seconds
+  })
+
+  const isLowBalance = tokenAccount && (tokenAccount.balance || 0) <= (tokenAccount.low_balance_threshold || 5)
+
   const handleSignOut = async () => {
     await signOut()
     navigate('/auth/login')
@@ -77,6 +104,14 @@ export default function Layout() {
   return (
     <TooltipProvider>
       <div className="min-h-screen bg-gray-50">
+        {/* Skip to main content link for accessibility */}
+        <a
+          href="#main-content"
+          className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-[100] focus:bg-white focus:px-4 focus:py-2 focus:rounded-lg focus:shadow-lg focus:ring-2 focus:ring-primary focus:text-primary font-medium"
+        >
+          Skip to main content
+        </a>
+
         {/* Sidebar */}
         <div className={cn(
           "fixed inset-y-0 left-0 z-50 bg-white border-r border-gray-200 transition-all duration-300",
@@ -226,9 +261,96 @@ export default function Layout() {
           "transition-all duration-300",
           sidebarCollapsed ? "pl-16" : "pl-64"
         )}>
-          <main className={cn(
-            location.pathname === '/studio' ? '' : 'p-8'
-          )}>
+          {/* Top header bar with token balance */}
+          <header className="sticky top-0 z-40 bg-white/80 backdrop-blur-sm border-b border-gray-200">
+            <div className="flex items-center justify-end h-14 px-6 gap-4">
+              {/* Token Balance Display */}
+              {organization && (
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className={cn(
+                        "gap-2 font-medium",
+                        isLowBalance && "border-amber-300 bg-amber-50 text-amber-700 hover:bg-amber-100"
+                      )}
+                      aria-live="polite"
+                    >
+                      <Coins className={cn("h-4 w-4", isLowBalance ? "text-amber-600" : "text-purple-600")} />
+                      <span className="tabular-nums">{tokenAccount?.balance ?? '...'}</span>
+                      <span className="text-muted-foreground text-xs">tokens</span>
+                      <ChevronDown className="h-3 w-3 text-muted-foreground" />
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent align="end" className="w-64 p-4">
+                    <div className="space-y-4">
+                      <div>
+                        <p className="text-2xl font-bold">{tokenAccount?.balance ?? 0}</p>
+                        <p className="text-sm text-muted-foreground">tokens available</p>
+                      </div>
+
+                      {isLowBalance && (
+                        <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 text-sm text-amber-800">
+                          Low balance! Purchase more tokens to continue processing.
+                        </div>
+                      )}
+
+                      <div className="space-y-2">
+                        <p className="text-xs font-medium text-muted-foreground uppercase">Quick Purchase</p>
+                        <div className="grid grid-cols-3 gap-2">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="flex-col h-auto py-2"
+                            onClick={() => navigate('/settings')}
+                          >
+                            <span className="font-semibold">+10</span>
+                            <span className="text-xs text-muted-foreground">$10</span>
+                          </Button>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="flex-col h-auto py-2 border-purple-200 bg-purple-50"
+                            onClick={() => navigate('/settings')}
+                          >
+                            <span className="font-semibold">+50</span>
+                            <span className="text-xs text-muted-foreground">$45</span>
+                          </Button>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="flex-col h-auto py-2"
+                            onClick={() => navigate('/settings')}
+                          >
+                            <span className="font-semibold">+100</span>
+                            <span className="text-xs text-muted-foreground">$90</span>
+                          </Button>
+                        </div>
+                      </div>
+
+                      <Button
+                        variant="default"
+                        size="sm"
+                        className="w-full"
+                        onClick={() => navigate('/settings')}
+                      >
+                        <CreditCard className="h-4 w-4 mr-2" />
+                        View All Packages
+                      </Button>
+                    </div>
+                  </PopoverContent>
+                </Popover>
+              )}
+            </div>
+          </header>
+
+          <main
+            id="main-content"
+            className={cn(
+              location.pathname === '/studio' ? '' : 'p-8'
+            )}
+          >
             <Outlet />
           </main>
         </div>
