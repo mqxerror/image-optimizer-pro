@@ -179,7 +179,7 @@ export function PreviewPanel({
               value={templateId || '__none__'}
               onValueChange={(v) => onTemplateChange(v === '__none__' ? null : v)}
             >
-              <SelectTrigger className="h-8 sm:h-10 text-xs sm:text-sm">
+              <SelectTrigger className="h-10 text-base sm:text-sm">
                 <SelectValue placeholder="Select template..." />
               </SelectTrigger>
               <SelectContent>
@@ -201,7 +201,7 @@ export function PreviewPanel({
               placeholder="e.g., Professional product photo, clean white background..."
               rows={2}
               className={cn(
-                'resize-none text-xs sm:text-sm',
+                'resize-none text-base sm:text-sm',
                 !hasValidPrompt && 'border-red-300'
               )}
             />

@@ -529,30 +529,30 @@ export default function ShopifyProducts() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 md:space-y-6 pb-24 md:pb-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-4">
-          <Button variant="ghost" size="sm" onClick={() => navigate('/shopify')}>
-            <ArrowLeft className="h-4 w-4 mr-2" />
-            Back
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div className="flex items-center gap-2 sm:gap-4">
+          <Button variant="ghost" size="sm" onClick={() => navigate('/shopify')} className="px-2 sm:px-3">
+            <ArrowLeft className="h-4 w-4 sm:mr-2" />
+            <span className="hidden sm:inline">Back</span>
           </Button>
-          <div>
-            <h1 className="text-2xl font-bold flex items-center gap-2">
-              <Store className="h-6 w-6" />
-              {store.shop_name || store.shop_domain}
+          <div className="min-w-0 flex-1">
+            <h1 className="text-lg sm:text-2xl font-bold flex items-center gap-2 truncate">
+              <Store className="h-5 w-5 sm:h-6 sm:w-6 flex-shrink-0" />
+              <span className="truncate">{store.shop_name || store.shop_domain}</span>
             </h1>
-            <p className="text-sm text-muted-foreground">
+            <p className="text-xs sm:text-sm text-muted-foreground hidden sm:block">
               Browse and select products to optimize
             </p>
           </div>
         </div>
 
-        <div className="flex items-center gap-2">
-          <Button variant="outline" size="sm" asChild>
+        <div className="flex items-center gap-2 flex-shrink-0">
+          <Button variant="outline" size="sm" asChild className="h-8 px-2 sm:px-3">
             <Link to={`/shopify/${storeId}/settings`}>
-              <Settings className="h-4 w-4 mr-2" />
-              Settings
+              <Settings className="h-4 w-4 sm:mr-2" />
+              <span className="hidden sm:inline">Settings</span>
             </Link>
           </Button>
           <Button
@@ -560,156 +560,161 @@ export default function ShopifyProducts() {
             size="sm"
             onClick={() => refetchProducts()}
             disabled={productsLoading}
+            className="h-8 px-2 sm:px-3"
           >
-            <RefreshCw className={`h-4 w-4 mr-2 ${productsLoading ? 'animate-spin' : ''}`} />
-            Refresh
+            <RefreshCw className={`h-4 w-4 sm:mr-2 ${productsLoading ? 'animate-spin' : ''}`} />
+            <span className="hidden sm:inline">Refresh</span>
           </Button>
         </div>
       </div>
 
       {/* Product Stats */}
-      <div className="flex items-center gap-4 flex-wrap">
-        <Badge variant="secondary" className="text-sm py-1 px-3">
-          <Package className="h-4 w-4 mr-1.5" />
-          {productStats.totalProducts} products loaded
+      <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
+        <Badge variant="secondary" className="text-xs sm:text-sm py-0.5 sm:py-1 px-2 sm:px-3">
+          <Package className="h-3 w-3 sm:h-4 sm:w-4 mr-1" />
+          {productStats.totalProducts} <span className="hidden sm:inline">products</span>
         </Badge>
-        <Badge variant="secondary" className="text-sm py-1 px-3">
-          <ImageIcon className="h-4 w-4 mr-1.5" />
-          {productStats.totalImages} images
+        <Badge variant="secondary" className="text-xs sm:text-sm py-0.5 sm:py-1 px-2 sm:px-3">
+          <ImageIcon className="h-3 w-3 sm:h-4 sm:w-4 mr-1" />
+          {productStats.totalImages} <span className="hidden sm:inline">images</span>
         </Badge>
         {productStats.isFiltered && productStats.filteredProducts !== productStats.totalProducts && (
-          <Badge variant="outline" className="text-sm py-1 px-3">
-            Showing {productStats.filteredProducts} of {productStats.totalProducts}
+          <Badge variant="outline" className="text-xs sm:text-sm py-0.5 sm:py-1 px-2 sm:px-3">
+            {productStats.filteredProducts}/{productStats.totalProducts}
           </Badge>
         )}
         {hasNextPage && (
-          <Badge variant="outline" className="text-sm py-1 px-3 border-blue-300 text-blue-600 bg-blue-50">
-            <ChevronDown className="h-3 w-3 mr-1" />
-            More products available
+          <Badge variant="outline" className="text-xs sm:text-sm py-0.5 sm:py-1 px-2 sm:px-3 border-blue-300 text-blue-600 bg-blue-50">
+            <ChevronDown className="h-3 w-3 mr-0.5 sm:mr-1" />
+            <span className="hidden sm:inline">More available</span>
+            <span className="sm:hidden">More</span>
           </Badge>
         )}
         {!hasNextPage && allProducts.length > 0 && (
-          <Badge variant="outline" className="text-sm py-1 px-3 border-green-300 text-green-600 bg-green-50">
-            <CheckCircle className="h-3 w-3 mr-1" />
-            All loaded
+          <Badge variant="outline" className="text-xs sm:text-sm py-0.5 sm:py-1 px-2 sm:px-3 border-green-300 text-green-600 bg-green-50">
+            <CheckCircle className="h-3 w-3 mr-0.5 sm:mr-1" />
+            <span className="hidden sm:inline">All loaded</span>
+            <span className="sm:hidden">Done</span>
           </Badge>
         )}
       </div>
 
       {/* Filters */}
-      <div className="flex flex-col sm:flex-row gap-4">
-        <div className="relative flex-1">
+      <div className="space-y-3">
+        {/* Search - full width on mobile */}
+        <div className="relative">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
             placeholder="Search products..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-10"
+            className="pl-10 text-base"
           />
         </div>
 
-        <Select value={selectedCollection || "__all__"} onValueChange={(v) => setSelectedCollection(v === "__all__" ? "" : v)}>
-          <SelectTrigger className="w-[200px]">
-            <SelectValue placeholder="All Collections" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="__all__">All Collections</SelectItem>
-            {collections.map((collection) => (
-              <SelectItem key={collection.id} value={String(collection.id)}>
-                {collection.title}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+        {/* Filter row - scrollable on mobile */}
+        <div className="flex gap-2 overflow-x-auto pb-2 -mx-4 px-4 sm:mx-0 sm:px-0 sm:overflow-visible sm:flex-wrap">
+          <Select value={selectedCollection || "__all__"} onValueChange={(v) => setSelectedCollection(v === "__all__" ? "" : v)}>
+            <SelectTrigger className="w-[140px] sm:w-[180px] flex-shrink-0 text-sm">
+              <SelectValue placeholder="Collections" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="__all__">All Collections</SelectItem>
+              {collections.map((collection) => (
+                <SelectItem key={collection.id} value={String(collection.id)}>
+                  {collection.title}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
 
-        <Select value={selectedType || "__all__"} onValueChange={(v) => setSelectedType(v === "__all__" ? "" : v)}>
-          <SelectTrigger className="w-[200px]">
-            <SelectValue placeholder="All Types" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="__all__">All Types</SelectItem>
-            {productTypes.map((type) => (
-              <SelectItem key={type} value={type}>
-                {type}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+          <Select value={selectedType || "__all__"} onValueChange={(v) => setSelectedType(v === "__all__" ? "" : v)}>
+            <SelectTrigger className="w-[120px] sm:w-[160px] flex-shrink-0 text-sm">
+              <SelectValue placeholder="Types" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="__all__">All Types</SelectItem>
+              {productTypes.map((type) => (
+                <SelectItem key={type} value={type}>
+                  {type}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
 
-        {/* Sort Dropdown */}
-        <Select value={sortBy} onValueChange={(v) => setSortBy(v as SortOption)}>
-          <SelectTrigger className="w-[160px]">
-            <ArrowUpDown className="h-3.5 w-3.5 mr-2 text-muted-foreground" />
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="title_asc">Title (A-Z)</SelectItem>
-            <SelectItem value="title_desc">Title (Z-A)</SelectItem>
-            <SelectItem value="images_desc">Most Images</SelectItem>
-            <SelectItem value="images_asc">Fewest Images</SelectItem>
-          </SelectContent>
-        </Select>
+          {/* Sort Dropdown */}
+          <Select value={sortBy} onValueChange={(v) => setSortBy(v as SortOption)}>
+            <SelectTrigger className="w-[130px] sm:w-[150px] flex-shrink-0 text-sm">
+              <ArrowUpDown className="h-3.5 w-3.5 mr-1.5 text-muted-foreground" />
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="title_asc">Title (A-Z)</SelectItem>
+              <SelectItem value="title_desc">Title (Z-A)</SelectItem>
+              <SelectItem value="images_desc">Most Images</SelectItem>
+              <SelectItem value="images_asc">Fewest Images</SelectItem>
+            </SelectContent>
+          </Select>
 
-        {/* Grid Size Toggle */}
-        <div className="flex border rounded-lg overflow-hidden">
-          <Button
-            variant="ghost"
-            size="sm"
-            className={`rounded-none px-3 ${gridSize === 'compact' ? 'bg-gray-100' : ''}`}
-            onClick={() => setGridSize('compact')}
-            title="Compact grid - Show more products per row"
-          >
-            <Grid3X3 className="h-4 w-4" />
-          </Button>
-          <Button
-            variant="ghost"
-            size="sm"
-            className={`rounded-none px-3 ${gridSize === 'comfortable' ? 'bg-gray-100' : ''}`}
-            onClick={() => setGridSize('comfortable')}
-            title="Comfortable grid - Larger product cards"
-          >
-            <LayoutGrid className="h-4 w-4" />
-          </Button>
+          {/* Grid Size Toggle - hidden on mobile */}
+          <div className="hidden sm:flex border rounded-lg overflow-hidden flex-shrink-0">
+            <Button
+              variant="ghost"
+              size="sm"
+              className={`rounded-none px-3 ${gridSize === 'compact' ? 'bg-gray-100' : ''}`}
+              onClick={() => setGridSize('compact')}
+              title="Compact grid - Show more products per row"
+            >
+              <Grid3X3 className="h-4 w-4" />
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              className={`rounded-none px-3 ${gridSize === 'comfortable' ? 'bg-gray-100' : ''}`}
+              onClick={() => setGridSize('comfortable')}
+              title="Comfortable grid - Larger product cards"
+            >
+              <LayoutGrid className="h-4 w-4" />
+            </Button>
+          </div>
         </div>
       </div>
 
       {/* Floating Bulk Actions Toolbar */}
       {selectedProducts.size > 0 && (
-        <div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 z-50 w-full max-w-3xl px-4">
+        <div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 z-50 w-[calc(100%-2rem)] sm:w-full max-w-3xl">
           <Card className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-xl shadow-blue-500/25 border-0">
-            <CardContent className="py-3 px-4">
-              <div className="flex items-center justify-between flex-wrap gap-3">
-                <div className="flex items-center gap-3">
-                  <div className="p-2 rounded-full bg-white/20">
-                    <CheckCircle className="h-4 w-4" />
+            <CardContent className="py-2.5 sm:py-3 px-3 sm:px-4">
+              <div className="flex items-center justify-between gap-2 sm:gap-3">
+                {/* Selection info */}
+                <div className="flex items-center gap-2 min-w-0">
+                  <div className="p-1.5 sm:p-2 rounded-full bg-white/20 flex-shrink-0">
+                    <CheckCircle className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
                   </div>
-                  <span className="font-medium">
-                    {selectedProducts.size} products ({totalSelectedImages} images)
+                  <span className="font-medium text-sm sm:text-base truncate">
+                    <span className="sm:hidden">{selectedProducts.size} ({totalSelectedImages})</span>
+                    <span className="hidden sm:inline">{selectedProducts.size} products ({totalSelectedImages} images)</span>
                   </span>
                 </div>
-                <div className="flex gap-2 flex-wrap">
-                  <Button
-                    size="sm"
-                    onClick={selectAll}
-                    className="bg-white/20 hover:bg-white/30 text-white border-0"
-                  >
-                    Select All Loaded
-                  </Button>
+
+                {/* Actions */}
+                <div className="flex gap-1.5 sm:gap-2 flex-shrink-0">
                   <Button
                     size="sm"
                     onClick={clearSelection}
                     variant="ghost"
-                    className="text-white/90 hover:text-white hover:bg-white/10"
+                    className="text-white/90 hover:text-white hover:bg-white/10 h-8 px-2 sm:px-3 text-xs sm:text-sm"
                   >
                     Clear
                   </Button>
                   <Button
                     size="sm"
                     onClick={() => setOptimizationModalOpen(true)}
-                    className="bg-white text-blue-600 hover:bg-gray-100"
+                    className="bg-white text-blue-600 hover:bg-gray-100 h-8 px-2.5 sm:px-3 text-xs sm:text-sm"
                   >
-                    <Play className="h-4 w-4 mr-2" />
-                    Start Optimization
+                    <Play className="h-3.5 w-3.5 sm:h-4 sm:w-4 sm:mr-2" />
+                    <span className="hidden sm:inline">Start Optimization</span>
+                    <span className="sm:hidden ml-1">Start</span>
                   </Button>
                 </div>
               </div>
