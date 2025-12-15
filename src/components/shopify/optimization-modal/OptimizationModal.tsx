@@ -20,8 +20,14 @@ export function OptimizationModal({
   onSubmit,
   isSubmitting = false
 }: OptimizationModalProps) {
-  // Sidebar visibility
-  const [sidebarOpen, setSidebarOpen] = useState(true)
+  // Sidebar visibility - collapsed by default on mobile for better UX
+  const [sidebarOpen, setSidebarOpen] = useState(() => {
+    // Default to collapsed on mobile (< 768px)
+    if (typeof window !== 'undefined') {
+      return window.innerWidth >= 768
+    }
+    return true
+  })
 
   // Filter state
   const [filters, setFilters] = useState<FilterState>({
@@ -87,7 +93,8 @@ export function OptimizationModal({
       setSelectedModel('flux-kontext-pro')
       setTemplateId(null)
       setCustomPrompt('')
-      setSidebarOpen(true)
+      // Only auto-open sidebar on desktop
+      setSidebarOpen(window.innerWidth >= 768)
     }
     onOpenChange(newOpen)
   }
