@@ -1,6 +1,7 @@
 import { useState, useCallback, useRef } from 'react'
-import { Upload, X, Image as ImageIcon, RefreshCw } from 'lucide-react'
+import { Upload, X, Image as ImageIcon, RefreshCw, Camera } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import { MobileImageCapture } from '@/components/shared'
 
 interface ImageUploaderProps {
   imageUrl: string | null
@@ -81,8 +82,8 @@ export function ImageUploader({ imageUrl, onImageChange }: ImageUploaderProps) {
             className="w-full h-auto max-h-[400px] object-contain"
           />
         </div>
-        {/* Action buttons */}
-        <div className="absolute top-3 right-3 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+        {/* Action buttons - desktop */}
+        <div className="absolute top-3 right-3 hidden md:flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
           <Button
             variant="secondary"
             size="icon"
@@ -100,37 +101,68 @@ export function ImageUploader({ imageUrl, onImageChange }: ImageUploaderProps) {
             <X className="h-4 w-4 text-gray-300" />
           </Button>
         </div>
+        {/* Action buttons - mobile (always visible) */}
+        <div className="absolute top-3 right-3 flex md:hidden gap-2">
+          <div onClick={(e) => e.stopPropagation()}>
+            <MobileImageCapture
+              mode="studio"
+              onImageCapture={(url, file) => onImageChange(url, file)}
+              triggerLabel=""
+              triggerVariant="ghost"
+            />
+          </div>
+          <Button
+            variant="secondary"
+            size="icon"
+            className="h-8 w-8 bg-gray-900/80 hover:bg-red-900 border-gray-700"
+            onClick={handleClear}
+          >
+            <X className="h-4 w-4 text-gray-300" />
+          </Button>
+        </div>
       </div>
     )
   }
 
   return (
-    <div
-      onClick={handleClick}
-      onDrop={handleDrop}
-      onDragOver={handleDragOver}
-      onDragLeave={handleDragLeave}
-      className={`rounded-2xl border-2 border-dashed cursor-pointer transition-all flex flex-col items-center justify-center gap-4 py-16 px-8 ${
-        isDragging
-          ? 'border-purple-500 bg-purple-500/10'
-          : 'border-gray-600 bg-gray-800/30 hover:border-purple-400 hover:bg-purple-500/5'
-      }`}
-    >
-      {fileInput}
-      <div className={`p-4 rounded-full ${isDragging ? 'bg-purple-500/20' : 'bg-gray-700/50'}`}>
-        {isDragging ? (
-          <Upload className="h-10 w-10 text-purple-400" />
-        ) : (
-          <ImageIcon className="h-10 w-10 text-gray-500" />
-        )}
+    <div className="relative">
+      <div
+        onClick={handleClick}
+        onDrop={handleDrop}
+        onDragOver={handleDragOver}
+        onDragLeave={handleDragLeave}
+        className={`rounded-2xl border-2 border-dashed cursor-pointer transition-all flex flex-col items-center justify-center gap-4 py-16 px-8 ${
+          isDragging
+            ? 'border-purple-500 bg-purple-500/10'
+            : 'border-gray-600 bg-gray-800/30 hover:border-purple-400 hover:bg-purple-500/5'
+        }`}
+      >
+        {fileInput}
+        <div className={`p-4 rounded-full ${isDragging ? 'bg-purple-500/20' : 'bg-gray-700/50'}`}>
+          {isDragging ? (
+            <Upload className="h-10 w-10 text-purple-400" />
+          ) : (
+            <ImageIcon className="h-10 w-10 text-gray-500" />
+          )}
+        </div>
+        <div className="text-center">
+          <p className="font-medium text-gray-300 text-lg">
+            {isDragging ? 'Drop your image' : 'Drop image here'}
+          </p>
+          <p className="text-sm text-gray-500 mt-1">or click to browse</p>
+        </div>
+        <p className="text-xs text-gray-600">PNG, JPG up to 10MB</p>
       </div>
-      <div className="text-center">
-        <p className="font-medium text-gray-300 text-lg">
-          {isDragging ? 'Drop your image' : 'Drop image here'}
-        </p>
-        <p className="text-sm text-gray-500 mt-1">or click to browse</p>
+
+      {/* Mobile capture button */}
+      <div className="md:hidden absolute bottom-4 right-4" onClick={(e) => e.stopPropagation()}>
+        <MobileImageCapture
+          mode="studio"
+          onImageCapture={(url, file) => onImageChange(url, file)}
+          triggerLabel="Take Photo"
+          triggerVariant="default"
+        />
       </div>
-      <p className="text-xs text-gray-600">PNG, JPG up to 10MB</p>
     </div>
   )
 }
