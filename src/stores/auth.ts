@@ -42,10 +42,12 @@ export const useAuthStore = create<AuthState>()(
               user: session.user,
               session,
               isLoading: false,
-              isInitialized: true
+              // Don't set isInitialized yet - wait for organization fetch
             })
-            // Fetch user organizations in background
-            get().fetchUserOrganizations()
+            // AWAIT organization fetch to prevent race condition with ProtectedRoute
+            await get().fetchUserOrganizations()
+            // NOW mark as initialized after organization is loaded
+            set({ isInitialized: true })
           } else {
             set({
               user: null,
@@ -59,7 +61,8 @@ export const useAuthStore = create<AuthState>()(
           supabase.auth.onAuthStateChange(async (event, session) => {
             if (event === 'SIGNED_IN' && session?.user) {
               set({ user: session.user, session })
-              get().fetchUserOrganizations()
+              // Await to ensure organization is loaded before navigation
+              await get().fetchUserOrganizations()
             } else if (event === 'SIGNED_OUT') {
               set({
                 user: null,
