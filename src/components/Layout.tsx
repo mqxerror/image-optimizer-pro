@@ -258,19 +258,19 @@ export default function Layout() {
             </div>
           )}
 
-          {/* Toggle button */}
+          {/* Toggle button - touch friendly */}
           <button
             onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
             className={cn(
-              "absolute top-4 -right-3 z-10 flex h-6 w-6 items-center justify-center rounded-full border bg-white shadow-sm hover:bg-gray-50 transition-colors",
+              "absolute top-4 -right-4 z-10 flex h-8 w-8 items-center justify-center rounded-full border bg-white shadow-sm hover:bg-gray-50 transition-colors",
               "border-gray-200"
             )}
             title={sidebarCollapsed ? "Expand sidebar" : "Collapse sidebar"}
           >
             {sidebarCollapsed ? (
-              <PanelLeft className="h-3 w-3 text-gray-600" />
+              <PanelLeft className="h-4 w-4 text-gray-600" />
             ) : (
-              <PanelLeftClose className="h-3 w-3 text-gray-600" />
+              <PanelLeftClose className="h-4 w-4 text-gray-600" />
             )}
           </button>
 
@@ -288,7 +288,7 @@ export default function Layout() {
                   to={item.href}
                   data-tour={'tourId' in item ? item.tourId : undefined}
                   className={cn(
-                    'flex items-center rounded-lg text-sm font-medium transition-colors',
+                    'flex items-center rounded-lg text-sm font-medium transition-colors min-h-[44px]',
                     sidebarCollapsed ? 'justify-center p-2' : 'gap-3 px-3 py-2',
                     isActive
                       ? 'bg-primary text-primary-foreground'

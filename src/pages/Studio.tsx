@@ -1,7 +1,7 @@
 import { useState, useCallback, useMemo, useEffect } from 'react'
 import { Link, useSearchParams, useNavigate } from 'react-router-dom'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { Wand2, Coins, ChevronDown, ChevronUp, Eye, EyeOff, Loader2, Copy, Check, PanelLeftClose, PanelLeft, Clock, ExternalLink } from 'lucide-react'
+import { Wand2, Coins, ChevronDown, ChevronUp, Eye, EyeOff, Loader2, Copy, Check, PanelLeftClose, PanelLeft, Clock, ExternalLink, Menu, Settings2 } from 'lucide-react'
 import { STUDIO_SPACING, PANEL_TRANSITION } from '@/constants/spacing'
 import { getModelById } from '@/constants/aiModels'
 import { Button } from '@/components/ui/button'
@@ -126,6 +126,10 @@ export default function Studio() {
 
   // Generations sheet/modal state
   const [showGenerations, setShowGenerations] = useState(false)
+
+  // Mobile sidebars state
+  const [showMobilePresets, setShowMobilePresets] = useState(false)
+  const [showMobileSettings, setShowMobileSettings] = useState(false)
 
   // Get processing count for History button badge
   const processingCount = useGenerationsProcessingCount()
@@ -696,9 +700,31 @@ export default function Studio() {
 
 
   return (
-    <div className="h-screen flex">
-      {/* Left Sidebar - Mode-specific presets (collapsible) */}
-      <div className={`flex-shrink-0 transition-all duration-300 ${sidebarCollapsed ? 'w-12' : 'w-72'}`}>
+    <div className="h-screen flex flex-col md:flex-row">
+      {/* Mobile Header - only visible on mobile */}
+      <div className="md:hidden flex items-center justify-between px-4 py-3 bg-gray-900 border-b border-gray-700">
+        <Button
+          variant="ghost"
+          size="sm"
+          className="text-gray-300 hover:text-white"
+          onClick={() => setShowMobilePresets(true)}
+        >
+          <Menu className="h-5 w-5 mr-2" />
+          Presets
+        </Button>
+        <span className="text-white font-medium">Studio</span>
+        <Button
+          variant="ghost"
+          size="sm"
+          className="text-gray-300 hover:text-white"
+          onClick={() => setShowMobileSettings(true)}
+        >
+          <Settings2 className="h-5 w-5" />
+        </Button>
+      </div>
+
+      {/* Left Sidebar - Mode-specific presets (collapsible) - hidden on mobile */}
+      <div className={`hidden md:block flex-shrink-0 transition-all duration-300 ${sidebarCollapsed ? 'w-12' : 'w-72'}`}>
         {sidebarCollapsed ? (
           <div className="h-full bg-gray-50 border-r flex flex-col items-center py-4">
             <Button
@@ -971,9 +997,9 @@ export default function Studio() {
             </div>
           </div>
 
-          {/* Settings Panel - Quick Controls */}
+          {/* Settings Panel - Quick Controls - hidden on mobile */}
           {studioMode === 'quick' && (
-            <div className={`flex flex-col ${PANEL_TRANSITION.enter} animate-in slide-in-from-right-4`}>
+            <div className={`hidden md:flex flex-col ${PANEL_TRANSITION.enter} animate-in slide-in-from-right-4`}>
               {/* Header with mode toggle */}
               <div className={`${STUDIO_SPACING.card} border-b border-gray-200 bg-white ${STUDIO_SPACING.group}`}>
                 <div>
@@ -1012,8 +1038,8 @@ export default function Studio() {
         </div>
 
         {/* Sticky Footer - Generate Button (always visible) */}
-        <div className="flex-shrink-0 px-6 py-4 border-t border-gray-700/50 bg-gray-900/95 backdrop-blur-sm">
-          <div className="max-w-3xl mx-auto flex gap-3 items-center">
+        <div className="flex-shrink-0 px-4 md:px-6 py-3 md:py-4 border-t border-gray-700/50 bg-gray-900/95 backdrop-blur-sm">
+          <div className="max-w-3xl mx-auto flex gap-2 md:gap-3 items-center">
             {featureMode === 'single' ? (
               <>
                 <Button
@@ -1038,7 +1064,7 @@ export default function Studio() {
                 <Button
                   variant="outline"
                   size="lg"
-                  className="gap-2 bg-gray-800/50 border-gray-700 text-gray-300 hover:bg-gray-800 h-12 rounded-xl"
+                  className="hidden md:flex gap-2 bg-gray-800/50 border-gray-700 text-gray-300 hover:bg-gray-800 h-12 rounded-xl"
                 >
                   <Coins className="h-4 w-4" />
                   {getModelById(settings.aiModel)?.tokenCost || 1} {(getModelById(settings.aiModel)?.tokenCost || 1) === 1 ? 'token' : 'tokens'}
@@ -1055,20 +1081,21 @@ export default function Studio() {
                   {combineMutation.isPending ? (
                     <>
                       <Loader2 className="h-5 w-5 animate-spin" />
-                      <span>Combining...</span>
+                      <span className="hidden sm:inline">Combining...</span>
                       <span className="absolute inset-0 bg-gradient-to-r from-blue-600/50 to-amber-600/50 animate-pulse" />
                     </>
                   ) : (
                     <>
                       <Wand2 className="h-5 w-5" />
-                      <span>Combine Images</span>
+                      <span className="hidden sm:inline">Combine Images</span>
+                      <span className="sm:hidden">Combine</span>
                     </>
                   )}
                 </Button>
                 <Button
                   variant="outline"
                   size="lg"
-                  className="gap-2 bg-gray-800/50 border-gray-700 text-gray-300 hover:bg-gray-800 h-12 rounded-xl"
+                  className="hidden md:flex gap-2 bg-gray-800/50 border-gray-700 text-gray-300 hover:bg-gray-800 h-12 rounded-xl"
                 >
                   <Coins className="h-4 w-4" />
                   {getModelById(combinationSettings.ai_model)?.tokenCost || 2} tokens
@@ -1080,10 +1107,10 @@ export default function Studio() {
               variant="outline"
               size="lg"
               onClick={() => setShowGenerations(true)}
-              className="gap-2 bg-gray-800/50 border-gray-700 text-gray-300 hover:bg-gray-800 h-12 rounded-xl relative"
+              className="gap-2 bg-gray-800/50 border-gray-700 text-gray-300 hover:bg-gray-800 h-12 rounded-xl relative px-3 md:px-4"
             >
               <Clock className="h-4 w-4" />
-              History
+              <span className="hidden sm:inline">History</span>
               {processingCount > 0 && (
                 <span className="absolute -top-1 -right-1 h-5 min-w-5 px-1 bg-purple-500 text-white text-xs rounded-full flex items-center justify-center animate-pulse font-medium">
                   {processingCount}
@@ -1096,7 +1123,7 @@ export default function Studio() {
 
       {/* Generations Sheet (modal) */}
       <Sheet open={showGenerations} onOpenChange={setShowGenerations}>
-        <SheetContent side="right" className="w-[400px] sm:w-[540px] p-0 flex flex-col">
+        <SheetContent side="right" className="w-[90vw] sm:w-[400px] md:w-[540px] p-0 flex flex-col">
           <SheetHeader className="px-6 py-4 border-b">
             <SheetTitle>Generations</SheetTitle>
           </SheetHeader>
@@ -1119,6 +1146,82 @@ export default function Studio() {
               View All Activity
               <ExternalLink className="h-3.5 w-3.5" />
             </Link>
+          </div>
+        </SheetContent>
+      </Sheet>
+
+      {/* Mobile Presets Sheet */}
+      <Sheet open={showMobilePresets} onOpenChange={setShowMobilePresets}>
+        <SheetContent side="left" className="w-[85vw] max-w-[320px] p-0">
+          <SheetHeader className="px-4 py-3 border-b">
+            <SheetTitle>Presets & Templates</SheetTitle>
+          </SheetHeader>
+          <div className="h-[calc(100%-60px)] overflow-hidden">
+            {featureMode === 'single' ? (
+              <StudioPresetsSidebar
+                selectedPresetId={selectedPresetId}
+                selectedTemplateId={selectedTemplateId}
+                onSelectPreset={(preset) => {
+                  handleSelectPreset(preset)
+                  setShowMobilePresets(false)
+                }}
+                onSelectTemplate={(template) => {
+                  handleSelectTemplate(template)
+                  setShowMobilePresets(false)
+                }}
+                onCreatePreset={() => {
+                  setShowSavePresetDialog(true)
+                  setShowMobilePresets(false)
+                }}
+              />
+            ) : (
+              <CombinationPresetsSidebar
+                selectedPresetId={selectedCombinationPresetId}
+                onSelectPreset={(preset) => {
+                  handleSelectCombinationPreset(preset)
+                  setShowMobilePresets(false)
+                }}
+                onSaveCurrentSettings={() => {
+                  toast({ title: 'Coming soon', description: 'Save preset feature will be available soon' })
+                }}
+              />
+            )}
+          </div>
+        </SheetContent>
+      </Sheet>
+
+      {/* Mobile Settings Sheet */}
+      <Sheet open={showMobileSettings} onOpenChange={setShowMobileSettings}>
+        <SheetContent side="right" className="w-[85vw] max-w-[320px] p-0">
+          <SheetHeader className="px-4 py-3 border-b">
+            <SheetTitle>Settings</SheetTitle>
+          </SheetHeader>
+          <div className="h-[calc(100%-60px)] overflow-y-auto">
+            <div className="p-4">
+              <StudioModeToggle
+                mode={studioMode}
+                onChange={setStudioMode}
+              />
+            </div>
+            {featureMode === 'single' ? (
+              <QuickControls
+                lighting={quickSettings.lighting}
+                contrast={quickSettings.contrast}
+                sharpness={quickSettings.sharpness}
+                aiModel={settings.aiModel}
+                onChange={(key, value) => {
+                  setQuickSettings(prev => ({ ...prev, [key]: value }))
+                }}
+                onModelChange={(model) => {
+                  setSettings(prev => ({ ...prev, aiModel: model }))
+                }}
+              />
+            ) : (
+              <CombinationControls
+                settings={combinationSettings}
+                onChange={handleCombinationSettingsChange}
+              />
+            )}
           </div>
         </SheetContent>
       </Sheet>
