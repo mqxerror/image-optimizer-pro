@@ -8,8 +8,15 @@ interface ImageUploaderProps {
   onImageChange: (url: string | null, file?: File) => void
 }
 
+// Check if device is mobile/touch
+const isMobileDevice = () => {
+  return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ||
+    (window.matchMedia && window.matchMedia('(max-width: 768px)').matches)
+}
+
 export function ImageUploader({ imageUrl, onImageChange }: ImageUploaderProps) {
   const [isDragging, setIsDragging] = useState(false)
+  const [showMobileCapture, setShowMobileCapture] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   const handleFile = useCallback((file: File) => {
@@ -45,7 +52,12 @@ export function ImageUploader({ imageUrl, onImageChange }: ImageUploaderProps) {
   }, [])
 
   const handleClick = () => {
-    fileInputRef.current?.click()
+    // On mobile, open the capture modal instead of native file picker
+    if (isMobileDevice()) {
+      setShowMobileCapture(true)
+    } else {
+      fileInputRef.current?.click()
+    }
   }
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -75,7 +87,15 @@ export function ImageUploader({ imageUrl, onImageChange }: ImageUploaderProps) {
     return (
       <div className="relative group">
         {fileInput}
-        <div className="rounded-2xl overflow-hidden bg-gray-800/50 border border-gray-700 shadow-2xl">
+        <div
+          className="rounded-2xl overflow-hidden bg-gray-800/50 border border-gray-700 shadow-2xl cursor-pointer md:cursor-default"
+          onClick={() => {
+            // On mobile, tapping the image opens capture modal to replace
+            if (isMobileDevice()) {
+              setShowMobileCapture(true)
+            }
+          }}
+        >
           <img
             src={imageUrl}
             alt="Uploaded image"
@@ -103,23 +123,37 @@ export function ImageUploader({ imageUrl, onImageChange }: ImageUploaderProps) {
         </div>
         {/* Action buttons - mobile (always visible) */}
         <div className="absolute top-3 right-3 flex md:hidden gap-2">
-          <div onClick={(e) => e.stopPropagation()}>
-            <MobileImageCapture
-              mode="studio"
-              onImageCapture={(url, file) => onImageChange(url, file)}
-              triggerLabel=""
-              triggerVariant="ghost"
-            />
-          </div>
+          <Button
+            variant="secondary"
+            size="icon"
+            className="h-8 w-8 bg-gray-900/80 hover:bg-gray-900 border-gray-700"
+            onClick={(e) => {
+              e.stopPropagation()
+              setShowMobileCapture(true)
+            }}
+          >
+            <Camera className="h-4 w-4 text-gray-300" />
+          </Button>
           <Button
             variant="secondary"
             size="icon"
             className="h-8 w-8 bg-gray-900/80 hover:bg-red-900 border-gray-700"
-            onClick={handleClear}
+            onClick={(e) => {
+              e.stopPropagation()
+              handleClear()
+            }}
           >
             <X className="h-4 w-4 text-gray-300" />
           </Button>
         </div>
+        {/* Mobile capture modal */}
+        <MobileImageCapture
+          mode="studio"
+          onImageCapture={(url, file) => onImageChange(url, file)}
+          hideTrigger={true}
+          open={showMobileCapture}
+          onOpenChange={setShowMobileCapture}
+        />
       </div>
     )
   }
@@ -142,27 +176,36 @@ export function ImageUploader({ imageUrl, onImageChange }: ImageUploaderProps) {
           {isDragging ? (
             <Upload className="h-10 w-10 text-purple-400" />
           ) : (
-            <ImageIcon className="h-10 w-10 text-gray-500" />
+            <Camera className="h-10 w-10 text-gray-500 md:hidden" />
+          )}
+          {!isDragging && (
+            <ImageIcon className="h-10 w-10 text-gray-500 hidden md:block" />
           )}
         </div>
         <div className="text-center">
           <p className="font-medium text-gray-300 text-lg">
-            {isDragging ? 'Drop your image' : 'Drop image here'}
+            {isDragging ? 'Drop your image' : (
+              <>
+                <span className="md:hidden">Tap to capture or browse</span>
+                <span className="hidden md:inline">Drop image here</span>
+              </>
+            )}
           </p>
-          <p className="text-sm text-gray-500 mt-1">or click to browse</p>
+          <p className="text-sm text-gray-500 mt-1">
+            <span className="hidden md:inline">or click to browse</span>
+          </p>
         </div>
         <p className="text-xs text-gray-600">PNG, JPG up to 10MB</p>
       </div>
 
-      {/* Mobile capture button */}
-      <div className="md:hidden absolute bottom-4 right-4" onClick={(e) => e.stopPropagation()}>
-        <MobileImageCapture
-          mode="studio"
-          onImageCapture={(url, file) => onImageChange(url, file)}
-          triggerLabel="Take Photo"
-          triggerVariant="default"
-        />
-      </div>
+      {/* Mobile capture modal - controlled by tap on the box */}
+      <MobileImageCapture
+        mode="studio"
+        onImageCapture={(url, file) => onImageChange(url, file)}
+        hideTrigger={true}
+        open={showMobileCapture}
+        onOpenChange={setShowMobileCapture}
+      />
     </div>
   )
 }

@@ -38,6 +38,11 @@ interface MobileImageCaptureProps {
   // Trigger customization
   triggerLabel?: string
   triggerVariant?: 'default' | 'outline' | 'ghost'
+  hideTrigger?: boolean // Hide the trigger button (for controlled mode)
+
+  // Controlled mode
+  open?: boolean
+  onOpenChange?: (open: boolean) => void
 }
 
 export function MobileImageCapture({
@@ -52,9 +57,23 @@ export function MobileImageCapture({
   showStorageChoice = true,
   defaultStorage = 'supabase',
   triggerLabel,
-  triggerVariant = 'outline'
+  triggerVariant = 'outline',
+  hideTrigger = false,
+  open: controlledOpen,
+  onOpenChange: controlledOnOpenChange,
 }: MobileImageCaptureProps) {
-  const [isOpen, setIsOpen] = useState(false)
+  const [internalOpen, setInternalOpen] = useState(false)
+
+  // Support both controlled and uncontrolled modes
+  const isControlled = controlledOpen !== undefined
+  const isOpen = isControlled ? controlledOpen : internalOpen
+  const setIsOpen = (value: boolean) => {
+    if (isControlled) {
+      controlledOnOpenChange?.(value)
+    } else {
+      setInternalOpen(value)
+    }
+  }
   const [captureMode, setCaptureMode] = useState<'camera' | 'gallery'>('camera')
   const [showStorageSheet, setShowStorageSheet] = useState(false)
   const [processingMode, setProcessingMode] = useState<'immediate' | 'queue'>('immediate')
@@ -126,16 +145,18 @@ export function MobileImageCapture({
 
   return (
     <>
-      {/* Trigger Button */}
-      <Button
-        variant={triggerVariant}
-        size="sm"
-        onClick={() => setIsOpen(true)}
-        className="gap-2"
-      >
-        <Camera className="h-4 w-4" />
-        {triggerLabel || (mode === 'studio' ? 'Capture' : 'From Device')}
-      </Button>
+      {/* Trigger Button - can be hidden for controlled mode */}
+      {!hideTrigger && (
+        <Button
+          variant={triggerVariant}
+          size="sm"
+          onClick={() => setIsOpen(true)}
+          className="gap-2"
+        >
+          <Camera className="h-4 w-4" />
+          {triggerLabel || (mode === 'studio' ? 'Capture' : 'From Device')}
+        </Button>
+      )}
 
       {/* Hidden file inputs for camera/gallery access */}
       <input
