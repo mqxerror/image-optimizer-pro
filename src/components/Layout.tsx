@@ -15,7 +15,10 @@ import {
   Activity,
   Store,
   CreditCard,
-  ChevronDown
+  ChevronDown,
+  FileText,
+  Command,
+  Search
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { useAuthStore } from '@/stores/auth'
@@ -44,11 +47,12 @@ import {
   TooltipTrigger,
 } from '@/components/ui/tooltip'
 
-// Consolidated navigation (reduced from 8+ to 5 items)
+// Main navigation
 const navigation = [
   { name: 'Home', href: '/', icon: LayoutDashboard },
   { name: 'Studio', href: '/studio', icon: Wand2, highlight: true, tourId: 'nav-studio' },
   { name: 'Projects', href: '/projects', icon: FolderKanban },
+  { name: 'Templates', href: '/templates', icon: FileText },
   { name: 'Shopify', href: '/shopify', icon: Store },
   { name: 'Activity', href: '/activity', icon: Activity, tourId: 'nav-activity' },
   { name: 'Settings', href: '/settings', icon: Settings },
@@ -64,6 +68,9 @@ export default function Layout() {
     const saved = localStorage.getItem('mainSidebarCollapsed')
     return saved === 'true'
   })
+
+  // Command palette state
+  const [commandPaletteOpen, setCommandPaletteOpen] = useState(false)
 
   useEffect(() => {
     localStorage.setItem('mainSidebarCollapsed', String(sidebarCollapsed))
@@ -105,7 +112,7 @@ export default function Layout() {
   return (
     <TooltipProvider>
       {/* Command Palette - Press Cmd+K to open */}
-      <CommandPalette />
+      <CommandPalette open={commandPaletteOpen} onOpenChange={setCommandPaletteOpen} />
 
       <div className="min-h-screen bg-gray-50">
         {/* Skip to main content link for accessibility */}
@@ -268,6 +275,20 @@ export default function Layout() {
           {/* Top header bar with token balance */}
           <header className="sticky top-0 z-40 bg-white/80 backdrop-blur-sm border-b border-gray-200">
             <div className="flex items-center justify-end h-14 px-6 gap-4">
+              {/* Search / Command Palette Trigger */}
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setCommandPaletteOpen(true)}
+                className="gap-2 text-muted-foreground hover:text-foreground w-64 justify-start"
+              >
+                <Search className="h-4 w-4" />
+                <span className="flex-1 text-left">Search...</span>
+                <kbd className="pointer-events-none hidden h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium opacity-100 sm:flex">
+                  <span className="text-xs">⌘</span>K
+                </kbd>
+              </Button>
+
               {/* Token Balance Display */}
               {organization && (
                 <Popover>

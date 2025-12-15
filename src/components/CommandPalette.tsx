@@ -12,9 +12,12 @@ import {
   Puzzle,
   Building2,
   FileText,
-  Search,
   Plus,
-  LogOut
+  LogOut,
+  Briefcase,
+  Upload,
+  Sparkles,
+  RefreshCw
 } from 'lucide-react'
 import {
   CommandDialog,
@@ -36,23 +39,32 @@ interface CommandItem {
   group: 'navigation' | 'actions' | 'settings' | 'account'
 }
 
-export function CommandPalette() {
-  const [open, setOpen] = useState(false)
+interface CommandPaletteProps {
+  open?: boolean
+  onOpenChange?: (open: boolean) => void
+}
+
+export function CommandPalette({ open: controlledOpen, onOpenChange }: CommandPaletteProps) {
+  const [internalOpen, setInternalOpen] = useState(false)
   const navigate = useNavigate()
   const { signOut } = useAuthStore()
+
+  // Use controlled state if provided, otherwise internal
+  const open = controlledOpen ?? internalOpen
+  const setOpen = onOpenChange ?? setInternalOpen
 
   // Handle keyboard shortcut
   useEffect(() => {
     const down = (e: KeyboardEvent) => {
       if (e.key === 'k' && (e.metaKey || e.ctrlKey)) {
         e.preventDefault()
-        setOpen((prev) => !prev)
+        setOpen(!open)
       }
     }
 
     document.addEventListener('keydown', down)
     return () => document.removeEventListener('keydown', down)
-  }, [])
+  }, [open, setOpen])
 
   const runCommand = useCallback((command: () => void) => {
     setOpen(false)
@@ -117,6 +129,30 @@ export function CommandPalette() {
       icon: Plus,
       action: () => navigate('/projects'),
       keywords: ['new', 'create', 'project', 'add'],
+      group: 'actions'
+    },
+    {
+      id: 'new-template',
+      label: 'Create New Template',
+      icon: FileText,
+      action: () => navigate('/templates'),
+      keywords: ['new', 'create', 'template', 'prompt'],
+      group: 'actions'
+    },
+    {
+      id: 'shopify-jobs',
+      label: 'View Shopify Jobs',
+      icon: Briefcase,
+      action: () => navigate('/shopify/jobs'),
+      keywords: ['shopify', 'jobs', 'batch', 'optimization'],
+      group: 'actions'
+    },
+    {
+      id: 'open-studio',
+      label: 'Open AI Studio',
+      icon: Sparkles,
+      action: () => navigate('/studio'),
+      keywords: ['studio', 'ai', 'enhance', 'edit', 'magic'],
       group: 'actions'
     },
 
