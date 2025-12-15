@@ -79,9 +79,19 @@ export default function Studio() {
   const [selectedTemplateId, setSelectedTemplateId] = useState<string | null>(null)
   const [selectedPresetName, setSelectedPresetName] = useState<string | null>(null)
   const [selectedTemplateName, setSelectedTemplateName] = useState<string | null>(null)
-  const [promptMode, setPromptMode] = useState<'preset' | 'template' | 'custom'>('preset')
+  const [promptMode, setPromptMode] = useState<'preset' | 'template' | 'custom'>(() => {
+    // Check if there's a default prompt saved - if so, start in custom mode
+    const defaultPrompt = localStorage.getItem('studioDefaultPrompt')
+    return defaultPrompt ? 'custom' : 'preset'
+  })
   const [settings, setSettings] = useState<StudioSettings>(defaultStudioSettings)
-  const [customPrompt, setCustomPrompt] = useState('')
+  const [customPrompt, setCustomPrompt] = useState(() => {
+    // Load default prompt from localStorage if exists
+    return localStorage.getItem('studioDefaultPrompt') || ''
+  })
+  const [hasDefaultPrompt, setHasDefaultPrompt] = useState(() => {
+    return !!localStorage.getItem('studioDefaultPrompt')
+  })
   const [imageUrl, setImageUrl] = useState<string | null>(null)
   const [imageFile, setImageFile] = useState<File | null>(null)
   const [expandedSections, setExpandedSections] = useState({
@@ -179,18 +189,33 @@ export default function Studio() {
 
   // Full prompt including custom instructions
   // Full prompt logic:
+  // - Empty when no preset selected and no custom prompt (fresh start)
   // - Template mode: use ONLY the template prompt (no settings-generated prompt)
-  // - Preset/Custom mode: combine custom text with generated prompt from settings
+  // - Preset mode with selection: combine custom text with generated prompt
+  // - Custom mode: use custom text only (if provided)
   const fullPrompt = useMemo(() => {
     if (promptMode === 'template' && customPrompt) {
       // Template mode - use template prompt as-is
       return customPrompt
     }
+
+    // If no preset is selected and no custom prompt, return empty
+    // This prevents auto-generating a prompt from default settings
+    if (!selectedPresetId && !customPrompt) {
+      return ''
+    }
+
     // Preset or Custom mode - combine custom text with settings-generated prompt
-    return customPrompt
-      ? `${customPrompt}. ${generatedPrompt}`
-      : generatedPrompt
-  }, [customPrompt, generatedPrompt, promptMode])
+    if (selectedPresetId) {
+      // Preset selected - use generated prompt (optionally with custom additions)
+      return customPrompt
+        ? `${customPrompt}. ${generatedPrompt}`
+        : generatedPrompt
+    }
+
+    // Custom mode with text - just use the custom prompt
+    return customPrompt || ''
+  }, [customPrompt, generatedPrompt, promptMode, selectedPresetId])
 
   // Build combination prompt preview (mirrors edge function logic)
   const combinationPromptPreview = useMemo(() => {
@@ -330,6 +355,28 @@ export default function Studio() {
   const handleSelectIdea = useCallback((idea: string) => {
     setCustomPrompt(idea)
   }, [])
+
+  // Save current prompt as default for fast processing
+  const handleSaveAsDefault = useCallback(() => {
+    if (customPrompt.trim()) {
+      localStorage.setItem('studioDefaultPrompt', customPrompt.trim())
+      setHasDefaultPrompt(true)
+      toast({
+        title: 'Default prompt saved',
+        description: 'This prompt will load automatically when you open Studio.',
+      })
+    }
+  }, [customPrompt, toast])
+
+  // Clear the default prompt
+  const handleClearDefault = useCallback(() => {
+    localStorage.removeItem('studioDefaultPrompt')
+    setHasDefaultPrompt(false)
+    toast({
+      title: 'Default prompt cleared',
+      description: 'Studio will now open with an empty prompt.',
+    })
+  }, [toast])
 
   // Handle generation reuse
   const handleReuseGeneration = useCallback((generation: StudioGeneration) => {
@@ -920,8 +967,8 @@ export default function Studio() {
                           className="absolute right-2 top-2"
                         />
                       </div>
-                      {/* Prompt Optimizer */}
-                      <div className="flex items-center gap-3">
+                      {/* Prompt Optimizer + Save as Default */}
+                      <div className="flex items-center gap-2 flex-wrap">
                         <PromptOptimizer
                           currentPrompt={customPrompt}
                           onOptimizedPrompt={(prompt) => {
@@ -930,17 +977,36 @@ export default function Studio() {
                             setSelectedPresetId(null)
                           }}
                         />
-                        <span className="text-xs text-gray-500 hidden sm:inline">
-                          AI enhances your prompt for better results
-                        </span>
+                        {/* Save as Default / Clear Default */}
+                        {customPrompt.trim() && (
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={handleSaveAsDefault}
+                            className="h-8 text-xs text-gray-400 hover:text-white hover:bg-gray-800"
+                          >
+                            <Settings2 className="h-3.5 w-3.5 mr-1.5" />
+                            Set as Default
+                          </Button>
+                        )}
+                        {hasDefaultPrompt && (
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={handleClearDefault}
+                            className="h-8 text-xs text-gray-500 hover:text-red-400 hover:bg-gray-800"
+                          >
+                            Clear Default
+                          </Button>
+                        )}
                       </div>
                     </>
                   )}
                 </div>
               )}
 
-              {/* Generated Prompt Preview - only for non-template modes */}
-              {featureMode === 'single' && promptMode !== 'template' && (
+              {/* Generated Prompt Preview - only when there's a prompt to show */}
+              {featureMode === 'single' && promptMode !== 'template' && fullPrompt && (
                 <div className="space-y-2">
                   <div className="flex items-center justify-between">
                     <button
