@@ -4,11 +4,16 @@ import type { User, Session } from '@supabase/supabase-js'
 import { supabase } from '@/lib/supabase'
 import type { Organization, UserOrganization } from '@/types/database'
 
+// Extended type that includes organization details
+export interface UserOrganizationWithOrg extends UserOrganization {
+  organizations?: Organization
+}
+
 interface AuthState {
   user: User | null
   session: Session | null
   organization: Organization | null
-  userOrganizations: UserOrganization[]
+  userOrganizations: UserOrganizationWithOrg[]
   isLoading: boolean
   isInitialized: boolean
 
@@ -139,26 +144,22 @@ export const useAuthStore = create<AuthState>()(
         const { user } = get()
         if (!user) return
 
+        // Fetch user_organizations with embedded organization details
         const { data: userOrgs } = await supabase
           .from('user_organizations')
-          .select('*')
+          .select(`
+            *,
+            organizations (*)
+          `)
           .eq('user_id', user.id)
 
         if (userOrgs && userOrgs.length > 0) {
-          set({ userOrganizations: userOrgs })
+          set({ userOrganizations: userOrgs as UserOrganizationWithOrg[] })
 
-          // Fetch the first organization details if no org is selected
+          // Set the first organization if no org is selected
           const { organization } = get()
-          if (!organization) {
-            const { data: org } = await supabase
-              .from('organizations')
-              .select('*')
-              .eq('id', userOrgs[0].organization_id)
-              .single()
-
-            if (org) {
-              set({ organization: org })
-            }
+          if (!organization && userOrgs[0].organizations) {
+            set({ organization: userOrgs[0].organizations as Organization })
           }
         }
       }

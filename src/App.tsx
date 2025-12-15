@@ -6,6 +6,7 @@ import { Toaster } from '@/components/ui/toaster'
 const FeedbackWidget = lazy(() => import('@/components/feedback/FeedbackWidget').then(m => ({ default: m.FeedbackWidget })))
 import Layout from './components/Layout'
 import ProtectedRoute from './components/ProtectedRoute'
+import { RoleProtectedRoute } from './components/RoleProtectedRoute'
 import Dashboard from './pages/Dashboard'
 import Projects from './pages/Projects'
 import Templates from './pages/Templates'
@@ -31,6 +32,11 @@ import ProfileSettings from './pages/settings/ProfileSettings'
 import OrganizationSettings from './pages/settings/OrganizationSettings'
 import BillingSettings from './pages/settings/BillingSettings'
 import IntegrationsSettings from './pages/settings/IntegrationsSettings'
+
+// Admin pages
+import AdminLayout from './pages/admin/AdminLayout'
+import AdminOverview from './pages/admin/Overview'
+import AdminMembers from './pages/admin/Members'
 
 function App() {
   return (
@@ -84,6 +90,19 @@ function App() {
             <Route path="organization" element={<OrganizationSettings />} />
             <Route path="billing" element={<BillingSettings />} />
             <Route path="integrations" element={<IntegrationsSettings />} />
+          </Route>
+
+          {/* Admin routes - owner only */}
+          <Route
+            path="admin"
+            element={
+              <RoleProtectedRoute requireOwner>
+                <AdminLayout />
+              </RoleProtectedRoute>
+            }
+          >
+            <Route index element={<AdminOverview />} />
+            <Route path="members" element={<AdminMembers />} />
           </Route>
 
           {/* Shopify routes */}

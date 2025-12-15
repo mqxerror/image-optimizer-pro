@@ -19,12 +19,15 @@ import {
   FileText,
   Search,
   Menu,
-  X
+  X,
+  Shield
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { useAuthStore } from '@/stores/auth'
 import { CommandPalette } from '@/components/CommandPalette'
 import { useQueueRealtime } from '@/hooks/useQueueRealtime'
+import { usePermissions } from '@/hooks/usePermissions'
+import { OrganizationSwitcher } from '@/components/OrganizationSwitcher'
 import { supabase } from '@/lib/supabase'
 import { Button } from '@/components/ui/button'
 import {
@@ -54,8 +57,8 @@ import {
   TooltipTrigger,
 } from '@/components/ui/tooltip'
 
-// Main navigation
-const navigation = [
+// Base navigation items
+const baseNavigation = [
   { name: 'Home', href: '/', icon: LayoutDashboard },
   { name: 'Studio', href: '/studio', icon: Wand2, highlight: true, tourId: 'nav-studio' },
   { name: 'Projects', href: '/projects', icon: FolderKanban },
@@ -69,6 +72,12 @@ export default function Layout() {
   const location = useLocation()
   const navigate = useNavigate()
   const { user, organization, signOut } = useAuthStore()
+  const { isOwner } = usePermissions()
+
+  // Build navigation with optional admin item for owners
+  const navigation = isOwner
+    ? [...baseNavigation, { name: 'Admin', href: '/admin', icon: Shield }]
+    : baseNavigation
 
   // Sidebar collapsed state (persisted)
   const [sidebarCollapsed, setSidebarCollapsed] = useState(() => {
@@ -134,13 +143,8 @@ export default function Layout() {
             </SheetTitle>
           </SheetHeader>
 
-          {/* Organization name */}
-          {organization && (
-            <div className="px-6 py-3 border-b border-gray-100">
-              <p className="text-xs text-gray-500">Organization</p>
-              <p className="text-sm font-medium truncate">{organization.name}</p>
-            </div>
-          )}
+          {/* Organization Switcher */}
+          <OrganizationSwitcher collapsed={false} />
 
           {/* Navigation Links */}
           <nav className="flex flex-col gap-1 p-4">
@@ -250,13 +254,8 @@ export default function Layout() {
             )}
           </div>
 
-          {/* Organization name - only when expanded */}
-          {organization && !sidebarCollapsed && (
-            <div className="px-6 py-3 border-b border-gray-100">
-              <p className="text-xs text-gray-500">Organization</p>
-              <p className="text-sm font-medium truncate">{organization.name}</p>
-            </div>
-          )}
+          {/* Organization Switcher */}
+          <OrganizationSwitcher collapsed={sidebarCollapsed} />
 
           {/* Toggle button - touch friendly */}
           <button
