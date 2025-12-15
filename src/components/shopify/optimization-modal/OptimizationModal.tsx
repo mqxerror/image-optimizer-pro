@@ -103,7 +103,7 @@ export function OptimizationModal({
               // Mobile: collapsed by default, full width when open
               // Desktop: fixed width sidebar
               sidebarOpen
-                ? 'max-h-[40vh] md:max-h-none md:w-72'
+                ? 'max-h-[30vh] md:max-h-none md:w-72'
                 : 'max-h-0 md:max-h-none md:w-0'
             )}
           >

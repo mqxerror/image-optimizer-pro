@@ -69,7 +69,7 @@ export function PreviewPanel({
   return (
     <div className="flex-1 flex flex-col min-w-0 h-full">
       {/* Header */}
-      <div className="p-2 sm:p-3 border-b bg-white flex flex-col sm:flex-row sm:items-center justify-between gap-2 sm:gap-4">
+      <div className="p-2 sm:p-3 border-b bg-white flex flex-col sm:flex-row sm:items-center justify-between gap-2 sm:gap-4 flex-shrink-0">
         <div className="flex items-center justify-between sm:justify-start gap-2">
           <div className="flex items-center gap-2">
             <Button
@@ -110,8 +110,8 @@ export function PreviewPanel({
         <ThumbnailGrid images={filteredImages} maxDisplay={250} />
       </div>
 
-      {/* Settings Panel */}
-      <div className="border-t bg-gray-50 p-2.5 sm:p-4 space-y-3 sm:space-y-4">
+      {/* Settings Panel - scrollable with max height on mobile */}
+      <div className="border-t bg-gray-50 p-2 sm:p-2.5 md:p-4 space-y-2 sm:space-y-3 max-h-[35vh] md:max-h-[40vh] overflow-y-auto flex-shrink-0">
         {/* AI Model Selector */}
         <div className="space-y-2">
           <div className="flex items-center justify-between">
@@ -127,7 +127,7 @@ export function PreviewPanel({
           </div>
 
           {showModelSelector ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-1.5 sm:gap-2 max-h-[140px] sm:max-h-[180px] overflow-y-auto">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-1.5 sm:gap-2 max-h-[100px] sm:max-h-[140px] overflow-y-auto">
               {SHOPIFY_MODELS.map(model => (
                 <div
                   key={model.id}
@@ -215,8 +215,8 @@ export function PreviewPanel({
         )}
       </div>
 
-      {/* Footer Actions */}
-      <div className="p-2 sm:p-3 border-t bg-white flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2">
+      {/* Footer Actions - always visible */}
+      <div className="p-2 sm:p-3 border-t bg-white flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2 flex-shrink-0">
         <div className="text-[10px] sm:text-sm text-muted-foreground text-center sm:text-left">
           {stats.svgImagesSkipped > 0 && (
             <span className="text-amber-600">
