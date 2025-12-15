@@ -234,9 +234,9 @@ export default function Layout() {
           Skip to main content
         </a>
 
-        {/* Sidebar - hidden on mobile */}
+        {/* Sidebar - hidden on mobile, visible on desktop */}
         <div className={cn(
-          "hidden md:fixed inset-y-0 left-0 z-50 bg-white border-r border-gray-200 transition-all duration-300",
+          "hidden md:block md:fixed inset-y-0 left-0 z-50 bg-white border-r border-gray-200 transition-all duration-300",
           sidebarCollapsed ? "md:w-16" : "md:w-64"
         )}>
           {/* Header */}
