@@ -107,7 +107,20 @@ export function MobileImageCapture({
 
     if (mode === 'studio' && capturedImages.length === 1) {
       // Studio mode: pass single image to parent directly
-      onImageCapture?.(capturedImages[0].previewUrl, capturedImages[0].file)
+      // Convert blob URL to data URL so it persists after closing
+      const file = capturedImages[0].file
+
+      // Read file as data URL before closing
+      const dataUrl = await new Promise<string>((resolve) => {
+        const reader = new FileReader()
+        reader.onload = (e) => resolve(e.target?.result as string)
+        reader.readAsDataURL(file)
+      })
+
+      // Pass to parent
+      onImageCapture?.(dataUrl, file)
+
+      // Now safe to clear and close
       clearAll()
       setIsOpen(false)
     } else if (mode === 'project') {
