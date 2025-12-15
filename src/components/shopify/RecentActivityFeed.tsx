@@ -101,31 +101,34 @@ function ActivityRow({ job }: { job: ShopifySyncJob }) {
     ? Math.round((job.processed_count / job.image_count) * 100)
     : 0
 
-  // Determine the appropriate action button
+  // Determine the appropriate action button - always show a button
   const getAction = () => {
     if (job.status === 'awaiting_approval') {
       return (
-        <Button size="sm" variant="outline" asChild>
+        <Button size="sm" variant="outline" className="hidden sm:inline-flex" asChild>
           <Link to={`/shopify/jobs/${job.id}`}>Review</Link>
         </Button>
       )
     }
-    if (isActive || job.status === 'completed') {
-      return (
-        <Button size="sm" variant="ghost" asChild>
-          <Link to={`/shopify/jobs/${job.id}`}>View</Link>
-        </Button>
-      )
-    }
-    return null
+    // Always show Details/View button for all statuses
+    return (
+      <Button size="sm" variant="ghost" className="hidden sm:inline-flex" asChild>
+        <Link to={`/shopify/jobs/${job.id}`}>
+          {isActive ? 'View' : 'Details'}
+        </Link>
+      </Button>
+    )
   }
 
   return (
-    <div className={cn(
-      'flex items-center gap-4 p-3 rounded-lg border transition-colors',
-      isActive && 'bg-blue-50/50 border-blue-200',
-      !isActive && 'hover:bg-gray-50'
-    )}>
+    <Link
+      to={`/shopify/jobs/${job.id}`}
+      className={cn(
+        'flex items-center gap-3 sm:gap-4 p-2.5 sm:p-3 rounded-lg border transition-colors block',
+        isActive && 'bg-blue-50/50 border-blue-200',
+        !isActive && 'hover:bg-gray-50'
+      )}
+    >
       {/* Status Icon */}
       <div className={cn('p-2 rounded-lg', status.bgColor)}>
         <StatusIcon className={cn(
@@ -188,8 +191,12 @@ function ActivityRow({ job }: { job: ShopifySyncJob }) {
         )}
       </div>
 
-      {/* Action */}
-      {getAction()}
-    </div>
+      {/* Action - desktop only, mobile uses tap on whole row */}
+      <div className="hidden sm:block flex-shrink-0" onClick={(e) => e.preventDefault()}>
+        {getAction()}
+      </div>
+      {/* Mobile tap indicator */}
+      <ArrowRight className="h-4 w-4 text-gray-400 sm:hidden flex-shrink-0" />
+    </Link>
   )
 }

@@ -94,13 +94,17 @@ export function OptimizationModal({
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogContent className="max-w-6xl h-[85vh] p-0 overflow-hidden gap-0">
-        <div className="flex h-full">
-          {/* Left Sidebar - Filters */}
+      <DialogContent className="w-[95vw] max-w-6xl h-[90vh] md:h-[85vh] p-0 overflow-hidden gap-0">
+        <div className="flex flex-col md:flex-row h-full">
+          {/* Left Sidebar - Filters (collapsible on mobile) */}
           <div
             className={cn(
-              'border-r bg-gray-50 flex flex-col transition-all duration-200 overflow-hidden',
-              sidebarOpen ? 'w-72' : 'w-0'
+              'border-b md:border-b-0 md:border-r bg-gray-50 flex flex-col transition-all duration-200 overflow-hidden',
+              // Mobile: collapsed by default, full width when open
+              // Desktop: fixed width sidebar
+              sidebarOpen
+                ? 'max-h-[40vh] md:max-h-none md:w-72'
+                : 'max-h-0 md:max-h-none md:w-0'
             )}
           >
             {sidebarOpen && (
@@ -131,7 +135,7 @@ export function OptimizationModal({
             isSubmitting={isSubmitting}
             onCancel={handleCancel}
             sidebarOpen={sidebarOpen}
-            onToggleSidebar={() => setSidebarOpen(true)}
+            onToggleSidebar={() => setSidebarOpen(!sidebarOpen)}
           />
         </div>
       </DialogContent>

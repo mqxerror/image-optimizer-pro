@@ -780,7 +780,7 @@ export default function Studio() {
         <div className="flex-1 flex min-h-0 overflow-hidden">
           {/* Canvas Area */}
           <div className="flex-1 p-3 md:p-6 flex flex-col overflow-y-auto min-h-0">
-            <div className={`${STUDIO_SPACING.canvas} mx-auto w-full ${STUDIO_SPACING.section}`}>
+            <div className={`${STUDIO_SPACING.canvas} mx-auto w-full space-y-3 md:space-y-5`}>
               {/* Feature Mode Selector */}
               <StudioFeatureSelector
                 feature={featureMode}
