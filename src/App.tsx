@@ -1,5 +1,9 @@
+import { lazy, Suspense } from 'react'
 import { Routes, Route, Navigate } from 'react-router-dom'
 import { Toaster } from '@/components/ui/toaster'
+
+// Lazy load the feedback widget to avoid impacting initial bundle
+const FeedbackWidget = lazy(() => import('@/components/feedback/FeedbackWidget').then(m => ({ default: m.FeedbackWidget })))
 import Layout from './components/Layout'
 import ProtectedRoute from './components/ProtectedRoute'
 import Dashboard from './pages/Dashboard'
@@ -100,6 +104,10 @@ function App() {
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
       <Toaster />
+      {/* Bug report widget - lazy loaded */}
+      <Suspense fallback={null}>
+        <FeedbackWidget />
+      </Suspense>
     </>
   )
 }
