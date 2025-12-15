@@ -269,10 +269,10 @@ export default function Projects() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Projects</h1>
-          <p className="text-gray-500 mt-1">Manage your image optimization projects</p>
+          <p className="text-gray-500 mt-1 text-sm sm:text-base">Manage your image optimization projects</p>
         </div>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -303,7 +303,7 @@ export default function Projects() {
       </div>
 
       {/* Stats Summary */}
-      <div className="grid grid-cols-5 gap-3">
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3">
         <Card className="p-3 bg-gray-50 border-gray-200">
           <div className="flex items-center justify-between">
             <div>
@@ -397,8 +397,8 @@ export default function Projects() {
             <SelectItem value="progress">Progress</SelectItem>
           </SelectContent>
         </Select>
-        {/* View Toggle */}
-        <div className="flex border rounded-lg overflow-hidden">
+        {/* View Toggle - hidden on mobile (always cards on mobile) */}
+        <div className="hidden sm:flex border rounded-lg overflow-hidden">
           <Button
             variant="ghost"
             size="sm"
@@ -426,9 +426,9 @@ export default function Projects() {
           ))}
         </div>
       ) : filteredProjects && filteredProjects.length > 0 ? (
-        viewMode === 'grid' ? (
-          /* Visual Cards View */
-          <div className="space-y-4">
+        <>
+          {/* Mobile Card View - Always visible on mobile, also on desktop when grid mode */}
+          <div className={`space-y-4 ${viewMode === 'grid' ? 'block' : 'block sm:hidden'}`}>
             {filteredProjects.map(project => (
               <VisualProjectCard
                 key={project.id}
@@ -443,9 +443,9 @@ export default function Projects() {
               />
             ))}
           </div>
-        ) : (
-        /* Table View */
-        <Card>
+
+          {/* Table View - Only on desktop when table mode */}
+          <Card className={viewMode === 'table' ? 'hidden sm:block' : 'hidden'}>
           <Table>
             <TableHeader>
               <TableRow>
@@ -570,8 +570,8 @@ export default function Projects() {
               ))}
             </TableBody>
           </Table>
-        </Card>
-        )
+          </Card>
+        </>
       ) : (
         <div className="bg-white rounded-xl border border-gray-200 p-12 text-center max-w-2xl mx-auto">
           {searchQuery || statusFilter !== 'all' ? (
@@ -592,7 +592,7 @@ export default function Projects() {
               </p>
 
               {/* Feature highlights */}
-              <div className="grid grid-cols-3 gap-4 mt-8 text-left">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-8 text-left">
                 <div className="p-4 bg-gray-50 rounded-lg">
                   <div className="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center mb-2">
                     <Play className="h-4 w-4 text-green-600" />

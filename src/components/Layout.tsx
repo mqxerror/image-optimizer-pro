@@ -17,8 +17,9 @@ import {
   CreditCard,
   ChevronDown,
   FileText,
-  Command,
-  Search
+  Search,
+  Menu,
+  X
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { useAuthStore } from '@/stores/auth'
@@ -31,6 +32,12 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover'
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+} from '@/components/ui/sheet'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -71,6 +78,9 @@ export default function Layout() {
 
   // Command palette state
   const [commandPaletteOpen, setCommandPaletteOpen] = useState(false)
+
+  // Mobile navigation state
+  const [mobileNavOpen, setMobileNavOpen] = useState(false)
 
   useEffect(() => {
     localStorage.setItem('mainSidebarCollapsed', String(sidebarCollapsed))
@@ -114,6 +124,107 @@ export default function Layout() {
       {/* Command Palette - Press Cmd+K to open */}
       <CommandPalette open={commandPaletteOpen} onOpenChange={setCommandPaletteOpen} />
 
+      {/* Mobile Navigation Sheet */}
+      <Sheet open={mobileNavOpen} onOpenChange={setMobileNavOpen}>
+        <SheetContent side="left" className="w-72 p-0">
+          <SheetHeader className="border-b border-gray-200 px-6 py-4">
+            <SheetTitle className="flex items-center gap-2">
+              <ImageIcon className="h-6 w-6 text-primary" />
+              <span>Image Optimizer</span>
+            </SheetTitle>
+          </SheetHeader>
+
+          {/* Organization name */}
+          {organization && (
+            <div className="px-6 py-3 border-b border-gray-100">
+              <p className="text-xs text-gray-500">Organization</p>
+              <p className="text-sm font-medium truncate">{organization.name}</p>
+            </div>
+          )}
+
+          {/* Navigation Links */}
+          <nav className="flex flex-col gap-1 p-4">
+            {navigation.map((item) => {
+              const isActive = location.pathname === item.href
+              const isHighlight = 'highlight' in item && item.highlight
+
+              return (
+                <Link
+                  key={item.name}
+                  to={item.href}
+                  onClick={() => setMobileNavOpen(false)}
+                  className={cn(
+                    'flex items-center gap-3 px-3 py-3 rounded-lg text-sm font-medium transition-colors min-h-[44px]',
+                    isActive
+                      ? 'bg-primary text-primary-foreground'
+                      : isHighlight
+                      ? 'text-purple-700 bg-purple-50 hover:bg-purple-100 border border-purple-200'
+                      : 'text-gray-700 hover:bg-gray-100'
+                  )}
+                >
+                  <item.icon className="h-5 w-5 flex-shrink-0" />
+                  {item.name}
+                  {isHighlight && !isActive && (
+                    <span className="ml-auto text-[10px] bg-purple-600 text-white px-1.5 py-0.5 rounded-full">
+                      New
+                    </span>
+                  )}
+                </Link>
+              )
+            })}
+          </nav>
+
+          {/* User section at bottom */}
+          <div className="absolute bottom-0 left-0 right-0 border-t border-gray-200 p-4">
+            <div className="flex items-center gap-3 mb-4">
+              <Avatar className="h-10 w-10">
+                <AvatarFallback className="bg-primary text-primary-foreground text-sm">
+                  {userInitials}
+                </AvatarFallback>
+              </Avatar>
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-medium truncate">{userEmail}</p>
+              </div>
+            </div>
+            <div className="flex flex-col gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                className="w-full justify-start"
+                onClick={() => {
+                  setMobileNavOpen(false)
+                  navigate('/settings/profile')
+                }}
+              >
+                <User className="h-4 w-4 mr-2" />
+                Profile
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                className="w-full justify-start"
+                onClick={() => {
+                  setMobileNavOpen(false)
+                  navigate('/settings/billing')
+                }}
+              >
+                <Coins className="h-4 w-4 mr-2" />
+                Buy Tokens
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                className="w-full justify-start text-red-600 hover:text-red-700 hover:bg-red-50"
+                onClick={handleSignOut}
+              >
+                <LogOut className="h-4 w-4 mr-2" />
+                Sign out
+              </Button>
+            </div>
+          </div>
+        </SheetContent>
+      </Sheet>
+
       <div className="min-h-screen bg-gray-50">
         {/* Skip to main content link for accessibility */}
         <a
@@ -123,10 +234,10 @@ export default function Layout() {
           Skip to main content
         </a>
 
-        {/* Sidebar */}
+        {/* Sidebar - hidden on mobile */}
         <div className={cn(
-          "fixed inset-y-0 left-0 z-50 bg-white border-r border-gray-200 transition-all duration-300",
-          sidebarCollapsed ? "w-16" : "w-64"
+          "hidden md:fixed inset-y-0 left-0 z-50 bg-white border-r border-gray-200 transition-all duration-300",
+          sidebarCollapsed ? "md:w-16" : "md:w-64"
         )}>
           {/* Header */}
           <div className={cn(
@@ -270,21 +381,40 @@ export default function Layout() {
         {/* Main content */}
         <div className={cn(
           "transition-all duration-300",
-          sidebarCollapsed ? "pl-16" : "pl-64"
+          sidebarCollapsed ? "md:pl-16" : "md:pl-64"
         )}>
           {/* Top header bar with token balance */}
           <header className="sticky top-0 z-40 bg-white/80 backdrop-blur-sm border-b border-gray-200">
-            <div className="flex items-center justify-end h-14 px-6 gap-4">
+            <div className="flex items-center h-14 px-4 md:px-6 gap-2 md:gap-4">
+              {/* Hamburger menu - mobile only */}
+              <Button
+                variant="ghost"
+                size="sm"
+                className="md:hidden p-2"
+                onClick={() => setMobileNavOpen(true)}
+                aria-label="Open navigation menu"
+              >
+                <Menu className="h-5 w-5" />
+              </Button>
+
+              {/* Logo - mobile only */}
+              <div className="flex items-center gap-2 md:hidden">
+                <ImageIcon className="h-6 w-6 text-primary" />
+                <span className="font-semibold text-sm">Image Optimizer</span>
+              </div>
+
+              <div className="flex-1" />
+
               {/* Search / Command Palette Trigger */}
               <Button
                 variant="outline"
                 size="sm"
                 onClick={() => setCommandPaletteOpen(true)}
-                className="gap-2 text-muted-foreground hover:text-foreground w-64 justify-start"
+                className="gap-2 text-muted-foreground hover:text-foreground w-10 md:w-64 justify-center md:justify-start"
               >
                 <Search className="h-4 w-4" />
-                <span className="flex-1 text-left">Search...</span>
-                <kbd className="pointer-events-none hidden h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium opacity-100 sm:flex">
+                <span className="hidden md:block flex-1 text-left">Search...</span>
+                <kbd className="pointer-events-none hidden h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium opacity-100 md:flex">
                   <span className="text-xs">⌘</span>K
                 </kbd>
               </Button>

@@ -145,10 +145,10 @@ export default function Dashboard() {
 
   return (
     <div className="space-y-8">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Dashboard</h1>
-          <p className="text-gray-500 mt-1">Overview of your image optimization activity</p>
+          <p className="text-gray-500 mt-1 text-sm sm:text-base">Overview of your image optimization activity</p>
         </div>
         <Button
           onClick={() => navigate('/projects')}
@@ -204,19 +204,19 @@ export default function Dashboard() {
               </p>
 
               {/* Setup Progress */}
-              <div className="flex justify-center items-center gap-8 mt-8 mb-8">
+              <div className="flex justify-center items-center gap-4 sm:gap-8 mt-8 mb-8">
                 <SetupStep
                   number={1}
                   label="Connect Drive"
                   completed={hasGoogleDrive}
                 />
-                <div className="w-12 h-0.5 bg-slate-200 -mt-6" />
+                <div className="w-6 sm:w-12 h-0.5 bg-slate-200 -mt-6" />
                 <SetupStep
                   number={2}
                   label="Create Project"
                   completed={hasProjects}
                 />
-                <div className="w-12 h-0.5 bg-slate-200 -mt-6" />
+                <div className="w-6 sm:w-12 h-0.5 bg-slate-200 -mt-6" />
                 <SetupStep
                   number={3}
                   label="Process Images"
@@ -225,12 +225,12 @@ export default function Dashboard() {
               </div>
 
               {/* CTA Buttons */}
-              <div className="flex justify-center gap-3">
+              <div className="flex flex-col sm:flex-row justify-center gap-3 px-4 sm:px-0">
                 {!hasGoogleDrive ? (
                   <Button
                     size="lg"
                     onClick={() => navigate('/settings/integrations')}
-                    className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700"
+                    className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 w-full sm:w-auto"
                   >
                     <HardDrive className="h-4 w-4 mr-2" />
                     Connect Google Drive
@@ -239,7 +239,7 @@ export default function Dashboard() {
                   <Button
                     size="lg"
                     onClick={() => navigate('/projects')}
-                    className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700"
+                    className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 w-full sm:w-auto"
                   >
                     <Plus className="h-4 w-4 mr-2" />
                     Create Your First Project
@@ -249,6 +249,7 @@ export default function Dashboard() {
                   variant="outline"
                   size="lg"
                   onClick={() => navigate('/studio')}
+                  className="w-full sm:w-auto"
                 >
                   Try Studio
                   <ArrowRight className="h-4 w-4 ml-2" />
