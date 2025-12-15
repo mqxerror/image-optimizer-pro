@@ -36,6 +36,8 @@ import {
   buildPromptFromSettings,
   useGenerationsProcessingCount,
   PromptModeIndicator,
+  TemplatePromptDisplay,
+  PromptOptimizer,
 } from '@/components/studio'
 import { StudioModeToggle } from '@/components/studio/StudioModeToggle'
 import { StudioFeatureSelector, type StudioFeature } from '@/components/studio/StudioFeatureSelector'
@@ -702,11 +704,11 @@ export default function Studio() {
   return (
     <div className="h-screen flex flex-col md:flex-row">
       {/* Mobile Header - only visible on mobile */}
-      <div className="md:hidden flex items-center justify-between px-4 py-3 bg-gray-900 border-b border-gray-700">
+      <div className="md:hidden flex items-center justify-between px-3 py-2 bg-gray-900 border-b border-gray-700">
         <Button
           variant="ghost"
-          size="sm"
-          className="text-gray-300 hover:text-white"
+          size="default"
+          className="text-gray-300 hover:text-white min-h-[44px] px-3"
           onClick={() => setShowMobilePresets(true)}
         >
           <Menu className="h-5 w-5 mr-2" />
@@ -715,8 +717,8 @@ export default function Studio() {
         <span className="text-white font-medium">Studio</span>
         <Button
           variant="ghost"
-          size="sm"
-          className="text-gray-300 hover:text-white"
+          size="default"
+          className="text-gray-300 hover:text-white min-h-[44px] min-w-[44px]"
           onClick={() => setShowMobileSettings(true)}
         >
           <Settings2 className="h-5 w-5" />
@@ -776,7 +778,7 @@ export default function Studio() {
       <div className="flex-1 flex flex-col bg-gradient-to-br from-gray-900 via-gray-900 to-gray-800 min-h-0">
         <div className="flex-1 flex min-h-0 overflow-hidden">
           {/* Canvas Area */}
-          <div className="flex-1 p-6 flex flex-col overflow-y-auto min-h-0">
+          <div className="flex-1 p-3 md:p-6 flex flex-col overflow-y-auto min-h-0">
             <div className={`${STUDIO_SPACING.canvas} mx-auto w-full ${STUDIO_SPACING.section}`}>
               {/* Feature Mode Selector */}
               <StudioFeatureSelector
@@ -873,65 +875,62 @@ export default function Studio() {
               {/* Prompt Mode Indicator & Custom Prompt - only for single image mode */}
               {featureMode === 'single' && (
                 <div className="space-y-2">
-                  {/* Mode indicator */}
-                  <PromptModeIndicator
-                    mode={promptMode}
-                    selectedName={
-                      promptMode === 'template'
-                        ? selectedTemplateName
-                        : promptMode === 'preset'
-                        ? selectedPresetName
-                        : null
-                    }
-                    onClear={() => {
-                      if (promptMode === 'template') {
+                  {promptMode === 'template' ? (
+                    // Template mode - read-only display with edit option
+                    <TemplatePromptDisplay
+                      templateName={selectedTemplateName || 'Template'}
+                      prompt={customPrompt}
+                      onEditAsCustom={() => {
+                        // Keep the prompt but switch to custom mode
                         setPromptMode('custom')
                         setSelectedTemplateId(null)
                         setSelectedTemplateName(null)
-                      } else if (promptMode === 'preset') {
-                        setPromptMode('custom')
-                        setSelectedPresetId(null)
-                        setSelectedPresetName(null)
-                      }
-                    }}
-                  />
-                  <Textarea
-                    placeholder={promptMode === 'template'
-                      ? "Template prompt loaded - edit to customize..."
-                      : "Add custom instructions (optional)..."
-                    }
-                    value={customPrompt}
-                    onChange={(e) => {
-                      const newValue = e.target.value
-                      setCustomPrompt(newValue)
-                      // If user edits while in template mode, switch to custom and show toast
-                      if (promptMode === 'template' && newValue !== customPrompt) {
-                        setPromptMode('custom')
-                        setSelectedTemplateId(null)
                         toast({
-                          title: 'Switched to Custom mode',
-                          description: 'Your edits are preserved. Original template unchanged.',
-                          duration: 3000,
+                          title: 'Editing as Custom',
+                          description: 'Template copied to custom prompt. Original template unchanged.',
                         })
-                      }
-                    }}
-                    className={`bg-gray-800/50 border-gray-700 text-white placeholder:text-gray-500 resize-none rounded-xl focus:ring-purple-500 focus:border-purple-500 ${
-                      promptMode === 'template' ? 'border-blue-500/50' : ''
-                    }`}
-                    rows={promptMode === 'template' ? 4 : 2}
-                  />
-                  {/* Inline hint for template mode */}
-                  {promptMode === 'template' && (
-                    <p className="text-xs text-gray-500 flex items-center gap-1">
-                      <span className="text-yellow-500">💡</span>
-                      Edit the text above to customize. This will switch to Custom mode.
-                    </p>
+                      }}
+                    />
+                  ) : (
+                    // Preset/Custom mode - editable textarea with optimizer
+                    <>
+                      <PromptModeIndicator
+                        mode={promptMode}
+                        selectedName={promptMode === 'preset' ? selectedPresetName : null}
+                        onClear={() => {
+                          setPromptMode('custom')
+                          setSelectedPresetId(null)
+                          setSelectedPresetName(null)
+                        }}
+                      />
+                      <Textarea
+                        placeholder="Add custom instructions (optional)..."
+                        value={customPrompt}
+                        onChange={(e) => setCustomPrompt(e.target.value)}
+                        className="bg-gray-800/50 border-gray-700 text-white placeholder:text-gray-500 resize-none rounded-xl focus:ring-purple-500 focus:border-purple-500"
+                        rows={2}
+                      />
+                      {/* Prompt Optimizer */}
+                      <div className="flex items-center gap-3">
+                        <PromptOptimizer
+                          currentPrompt={customPrompt}
+                          onOptimizedPrompt={(prompt) => {
+                            setCustomPrompt(prompt)
+                            setPromptMode('custom')
+                            setSelectedPresetId(null)
+                          }}
+                        />
+                        <span className="text-xs text-gray-500 hidden sm:inline">
+                          AI enhances your prompt for better results
+                        </span>
+                      </div>
+                    </>
                   )}
                 </div>
               )}
 
-              {/* Generated Prompt Preview - only for single image mode */}
-              {featureMode === 'single' && (
+              {/* Generated Prompt Preview - only for non-template modes */}
+              {featureMode === 'single' && promptMode !== 'template' && (
                 <div className="space-y-2">
                   <div className="flex items-center justify-between">
                     <button
@@ -943,7 +942,7 @@ export default function Studio() {
                       ) : (
                         <Eye className="h-4 w-4" />
                       )}
-                      {showPromptPreview ? 'Hide' : 'View'} {promptMode === 'template' ? 'final prompt' : 'generated prompt'}
+                      {showPromptPreview ? 'Hide' : 'View'} generated prompt
                       <span className="text-xs text-gray-500">({fullPrompt.length} chars)</span>
                       {showPromptPreview ? (
                         <ChevronUp className="h-3 w-3" />
@@ -1038,7 +1037,7 @@ export default function Studio() {
         </div>
 
         {/* Sticky Footer - Generate Button (always visible) */}
-        <div className="flex-shrink-0 px-4 md:px-6 py-3 md:py-4 border-t border-gray-700/50 bg-gray-900/95 backdrop-blur-sm">
+        <div className="flex-shrink-0 px-3 md:px-6 py-3 md:py-4 border-t border-gray-700/50 bg-gray-900/95 backdrop-blur-sm pb-safe">
           <div className="max-w-3xl mx-auto flex gap-2 md:gap-3 items-center">
             {featureMode === 'single' ? (
               <>
@@ -1152,7 +1151,7 @@ export default function Studio() {
 
       {/* Mobile Presets Sheet */}
       <Sheet open={showMobilePresets} onOpenChange={setShowMobilePresets}>
-        <SheetContent side="left" className="w-[85vw] max-w-[320px] p-0">
+        <SheetContent side="left" className="w-[90vw] max-w-[360px] p-0">
           <SheetHeader className="px-4 py-3 border-b">
             <SheetTitle>Presets & Templates</SheetTitle>
           </SheetHeader>
@@ -1192,7 +1191,7 @@ export default function Studio() {
 
       {/* Mobile Settings Sheet */}
       <Sheet open={showMobileSettings} onOpenChange={setShowMobileSettings}>
-        <SheetContent side="right" className="w-[85vw] max-w-[320px] p-0">
+        <SheetContent side="right" className="w-[90vw] max-w-[360px] p-0">
           <SheetHeader className="px-4 py-3 border-b">
             <SheetTitle>Settings</SheetTitle>
           </SheetHeader>

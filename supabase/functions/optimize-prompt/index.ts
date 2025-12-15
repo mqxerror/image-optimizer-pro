@@ -9,7 +9,8 @@ const corsHeaders = {
 interface OptimizePromptRequest {
   current_prompt?: string
   jewelry_type?: string
-  optimization_goal?: string
+  optimization_goal?: 'professional' | 'creative' | 'detailed' | 'minimal'
+  use_ai?: boolean
   template_settings?: {
     background_type?: string
     lighting_style?: string
@@ -32,6 +33,96 @@ const PROMPT_TEMPLATES = {
   watch: "Transform this watch photograph into a premium product image. Clean white background with subtle reflection, enhance dial readability and crystal clarity, highlight case finish and bezel details, showcase band texture and clasp quality, and ensure accurate color representation."
 }
 
+// Quality enhancement phrases by goal
+const QUALITY_PHRASES = {
+  professional: [
+    'professional studio lighting',
+    'commercial-grade quality',
+    '8K ultra-high resolution',
+    'e-commerce ready presentation',
+    'true-to-life color accuracy',
+  ],
+  creative: [
+    'artistic composition',
+    'dramatic lighting effects',
+    'unique visual appeal',
+    'creative color grading',
+    'boutique aesthetic',
+  ],
+  detailed: [
+    'extreme macro detail',
+    'crystal-clear sharpness',
+    'every facet visible',
+    'texture-rich rendering',
+    'microscopic precision',
+  ],
+  minimal: [
+    'clean aesthetic',
+    'minimalist presentation',
+    'subtle elegance',
+    'refined simplicity',
+  ],
+}
+
+// Enhanced prompt optimization with AI-like improvements
+function optimizePromptAdvanced(prompt: string, goal: string): string {
+  const trimmedPrompt = prompt.trim()
+  const goalPhrases = QUALITY_PHRASES[goal as keyof typeof QUALITY_PHRASES] || QUALITY_PHRASES.professional
+
+  // Detect jewelry keywords
+  const jewelryTypes = ['ring', 'necklace', 'bracelet', 'earring', 'watch', 'pendant', 'chain', 'jewelry']
+  const mentionedJewelry = jewelryTypes.filter(j => trimmedPrompt.toLowerCase().includes(j))
+
+  // Detect background mentions
+  const hasBackgroundMention = /background|backdrop|surface/i.test(trimmedPrompt)
+
+  // Detect lighting mentions
+  const hasLightingMention = /light|bright|shadow|glow|shine|sparkle/i.test(trimmedPrompt)
+
+  // Build enhanced prompt
+  let enhanced = trimmedPrompt
+
+  // Add professional context if not present
+  if (!trimmedPrompt.toLowerCase().includes('professional') && !trimmedPrompt.toLowerCase().includes('commercial')) {
+    enhanced = `Professional jewelry product photography: ${enhanced}`
+  }
+
+  // Add quality phrases based on goal
+  const randomPhrases = goalPhrases.slice(0, 3).join(', ')
+  enhanced = `${enhanced}. ${randomPhrases}`
+
+  // Add background enhancement if not mentioned
+  if (!hasBackgroundMention) {
+    enhanced += '. Clean, seamless white background with subtle shadow for depth'
+  }
+
+  // Add lighting enhancement if not mentioned
+  if (!hasLightingMention) {
+    enhanced += '. Optimal three-point studio lighting to maximize sparkle and highlight details'
+  }
+
+  // Add jewelry-specific enhancements
+  if (mentionedJewelry.length > 0) {
+    if (mentionedJewelry.includes('ring') || mentionedJewelry.includes('earring')) {
+      enhanced += '. Enhance gemstone brilliance and fire'
+    }
+    if (mentionedJewelry.includes('necklace') || mentionedJewelry.includes('chain')) {
+      enhanced += '. Highlight chain texture and clasp details'
+    }
+    if (mentionedJewelry.includes('watch')) {
+      enhanced += '. Ensure dial clarity and crystal perfection'
+    }
+  } else {
+    // Generic jewelry enhancement
+    enhanced += '. Enhance metal luster and any gemstone brilliance'
+  }
+
+  // Final quality boost
+  enhanced += '. Sharp focus, vibrant colors, ready for luxury e-commerce.'
+
+  return enhanced
+}
+
 Deno.serve(async (req: Request) => {
   // Handle CORS
   if (req.method === 'OPTIONS') {
@@ -40,13 +131,15 @@ Deno.serve(async (req: Request) => {
 
   try {
     const body: OptimizePromptRequest = await req.json()
-    const { current_prompt, jewelry_type, optimization_goal, template_settings } = body
+    const { current_prompt, jewelry_type, optimization_goal = 'professional', use_ai, template_settings } = body
 
-    // Determine the best prompt based on inputs
     let optimizedPrompt: string
 
-    if (current_prompt && current_prompt.trim().length > 10) {
-      // Enhance the user's existing prompt
+    // Use AI-like enhancement if requested and prompt exists
+    if (use_ai && current_prompt && current_prompt.trim().length > 5) {
+      optimizedPrompt = optimizePromptAdvanced(current_prompt, optimization_goal)
+    } else if (current_prompt && current_prompt.trim().length > 10) {
+      // Simple enhancement for existing prompt
       optimizedPrompt = `${current_prompt.trim()} Ensure professional e-commerce quality with pure white background, optimal lighting for jewelry photography, enhanced sharpness, and true-to-life colors.`
     } else {
       // Generate based on jewelry type
@@ -87,7 +180,8 @@ Deno.serve(async (req: Request) => {
         success: true,
         optimized_prompt: optimizedPrompt,
         tokens_used: tokensUsed,
-        jewelry_type: jewelry_type || 'general'
+        jewelry_type: jewelry_type || 'general',
+        optimization_goal
       }),
       { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     )
