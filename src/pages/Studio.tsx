@@ -44,6 +44,7 @@ import { StudioFeatureSelector, type StudioFeature } from '@/components/studio/S
 import { QuickControls } from '@/components/studio/QuickControls'
 import { AdvancedPanel } from '@/components/studio/AdvancedPanel'
 import { DualImageUploader, CombinationControls, CombinationTemplates } from '@/components/studio/combination'
+import { VoiceMicButton } from '@/components/shared'
 import type {
   StudioSettings,
   StudioPreset,
@@ -903,13 +904,22 @@ export default function Studio() {
                           setSelectedPresetName(null)
                         }}
                       />
-                      <Textarea
-                        placeholder="Add custom instructions (optional)..."
-                        value={customPrompt}
-                        onChange={(e) => setCustomPrompt(e.target.value)}
-                        className="bg-gray-800/50 border-gray-700 text-white placeholder:text-gray-500 resize-none rounded-xl focus:ring-purple-500 focus:border-purple-500"
-                        rows={2}
-                      />
+                      <div className="relative">
+                        <Textarea
+                          placeholder="Add custom instructions or tap mic to speak..."
+                          value={customPrompt}
+                          onChange={(e) => setCustomPrompt(e.target.value)}
+                          className="bg-gray-800/50 border-gray-700 text-white placeholder:text-gray-500 resize-none rounded-xl focus:ring-purple-500 focus:border-purple-500 pr-10"
+                          rows={2}
+                        />
+                        <VoiceMicButton
+                          onTranscript={(text) => {
+                            setCustomPrompt(prev => prev ? `${prev} ${text}` : text)
+                            setPromptMode('custom')
+                          }}
+                          className="absolute right-2 top-2"
+                        />
+                      </div>
                       {/* Prompt Optimizer */}
                       <div className="flex items-center gap-3">
                         <PromptOptimizer
