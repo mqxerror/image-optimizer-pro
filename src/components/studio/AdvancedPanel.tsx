@@ -1,5 +1,5 @@
 import { useEffect } from 'react'
-import { X, ChevronDown, ChevronUp } from 'lucide-react'
+import { X, ChevronDown, ChevronUp, Sparkles, Settings2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { AdvancedPanelSection } from './AdvancedPanelSection'
@@ -8,7 +8,6 @@ import { LightingMixer } from './LightingMixer'
 import { BackgroundSelector } from './BackgroundSelector'
 import { JewelryEnhancements } from './JewelryEnhancements'
 import { CompositionControls } from './CompositionControls'
-import { STUDIO_SPACING } from '@/constants/spacing'
 import type { StudioSettings } from '@/types/studio'
 
 interface AdvancedPanelProps {
@@ -141,20 +140,20 @@ export function AdvancedPanel({
 
   return (
     <>
-      {/* Backdrop */}
+      {/* Backdrop with blur - higher z-index to cover mobile sheet */}
       {isOpen && (
         <div
-          className="fixed inset-0 bg-black/20 z-40 transition-opacity"
+          className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[60] transition-opacity"
           onClick={onClose}
           aria-hidden="true"
         />
       )}
 
-      {/* Fixed Panel (no dragging) */}
+      {/* Futuristic Panel - z-[70] to always be on top of mobile sheets */}
       <div
         className={`
-          fixed right-0 top-0 w-[400px] bg-white shadow-2xl z-50 overflow-hidden
-          transition-transform duration-300 ease-out
+          fixed right-0 top-0 w-full sm:w-[420px] z-[70] overflow-hidden
+          transition-transform duration-500 ease-out
           ${isOpen ? 'translate-x-0' : 'translate-x-full'}
         `}
         style={{
@@ -164,70 +163,103 @@ export function AdvancedPanel({
         aria-modal="true"
         aria-labelledby="advanced-panel-title"
       >
-        {/* Panel Header */}
-        <div className="flex items-center justify-between p-4 border-b bg-gradient-to-r from-blue-50 to-indigo-50">
-          <div className="flex items-center gap-2 flex-1">
-            <div>
-              <h2 id="advanced-panel-title" className="text-lg font-semibold text-gray-900">
-                Advanced Settings
-              </h2>
-              <p className="text-xs text-gray-500 mt-0.5">Full control over all parameters</p>
+        {/* Gradient background */}
+        <div className="absolute inset-0 bg-gradient-to-br from-gray-900 via-gray-900 to-gray-800" />
+
+        {/* Animated glow effect */}
+        <div className="absolute top-0 right-0 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 pointer-events-none" />
+        <div className="absolute bottom-0 left-0 w-64 h-64 bg-blue-500/10 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2 pointer-events-none" />
+
+        {/* Content */}
+        <div className="relative h-full flex flex-col">
+          {/* Panel Header */}
+          <div className="flex items-center justify-between p-4 border-b border-gray-700/50 bg-gray-900/80 backdrop-blur-md">
+            <div className="flex items-center gap-3 flex-1">
+              <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-purple-500 to-blue-600 flex items-center justify-center shadow-lg shadow-purple-500/20">
+                <Settings2 className="h-5 w-5 text-white" />
+              </div>
+              <div>
+                <h2 id="advanced-panel-title" className="text-lg font-semibold text-white">
+                  Advanced Mode
+                </h2>
+                <p className="text-xs text-gray-400 mt-0.5 flex items-center gap-1">
+                  <Sparkles className="h-3 w-3 text-purple-400" />
+                  Full control over all parameters
+                </p>
+              </div>
+            </div>
+            <div className="flex items-center gap-2">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={toggleAllSections}
+                className="text-gray-400 hover:text-white hover:bg-gray-800/80 h-9 px-3 text-xs rounded-lg"
+                title={allExpanded ? "Collapse all sections" : "Expand all sections"}
+              >
+                {allExpanded ? (
+                  <>
+                    <ChevronUp className="h-3.5 w-3.5 mr-1.5" />
+                    Collapse
+                  </>
+                ) : (
+                  <>
+                    <ChevronDown className="h-3.5 w-3.5 mr-1.5" />
+                    Expand
+                  </>
+                )}
+              </Button>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={onClose}
+                className="text-gray-400 hover:text-white hover:bg-gray-800/80 shrink-0 h-9 w-9 rounded-lg"
+                aria-label="Close advanced settings"
+              >
+                <X className="h-5 w-5" />
+              </Button>
             </div>
           </div>
-          <div className="flex items-center gap-1">
+
+          {/* Quick info bar */}
+          <div className="px-4 py-3 bg-gradient-to-r from-purple-500/10 via-blue-500/10 to-purple-500/10 border-b border-gray-700/30">
+            <p className="text-xs text-gray-400 text-center">
+              Configure camera, lighting, background, jewelry, and composition settings
+            </p>
+          </div>
+
+          {/* Scrollable Content */}
+          <ScrollArea className="flex-1">
+            <div className="p-4 space-y-3">
+              {/* Render sections in order */}
+              {sectionOrder.map((sectionId) => {
+                const section = sectionsConfig[sectionId]
+                if (!section) return null
+
+                return (
+                  <AdvancedPanelSection
+                    key={sectionId}
+                    title={section.title}
+                    icon={section.icon}
+                    isExpanded={expandedSections[sectionId] ?? section.defaultExpanded}
+                    onToggle={() => onToggleSection(sectionId)}
+                  >
+                    {section.component}
+                  </AdvancedPanelSection>
+                )
+              })}
+            </div>
+          </ScrollArea>
+
+          {/* Footer */}
+          <div className="p-4 border-t border-gray-700/50 bg-gray-900/80 backdrop-blur-md">
             <Button
-              variant="ghost"
-              size="sm"
-              onClick={toggleAllSections}
-              className="hover:bg-white/80 h-8 px-2 text-xs"
-              title={allExpanded ? "Collapse all sections" : "Expand all sections"}
-            >
-              {allExpanded ? (
-                <>
-                  <ChevronUp className="h-3.5 w-3.5 mr-1" />
-                  Collapse All
-                </>
-              ) : (
-                <>
-                  <ChevronDown className="h-3.5 w-3.5 mr-1" />
-                  Expand All
-                </>
-              )}
-            </Button>
-            <Button
-              variant="ghost"
-              size="icon"
               onClick={onClose}
-              className="hover:bg-white/80 shrink-0 h-8 w-8"
-              aria-label="Close advanced settings"
+              className="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-500 hover:to-blue-500 text-white h-11 rounded-xl font-medium shadow-lg shadow-purple-500/20 transition-all hover:shadow-purple-500/30"
             >
-              <X className="h-5 w-5" />
+              Apply Settings
             </Button>
           </div>
         </div>
-
-        {/* Scrollable Content */}
-        <ScrollArea className="h-[calc(100vh-73px)]">
-          <div className={`${STUDIO_SPACING.panel} ${STUDIO_SPACING.control}`}>
-            {/* Render sections in order */}
-            {sectionOrder.map((sectionId) => {
-              const section = sectionsConfig[sectionId]
-              if (!section) return null
-
-              return (
-                <AdvancedPanelSection
-                  key={sectionId}
-                  title={section.title}
-                  icon={section.icon}
-                  isExpanded={expandedSections[sectionId] ?? section.defaultExpanded}
-                  onToggle={() => onToggleSection(sectionId)}
-                >
-                  {section.component}
-                </AdvancedPanelSection>
-              )
-            })}
-          </div>
-        </ScrollArea>
       </div>
     </>
   )

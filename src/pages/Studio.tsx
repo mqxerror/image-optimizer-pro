@@ -43,6 +43,7 @@ import { StudioModeToggle } from '@/components/studio/StudioModeToggle'
 import { StudioFeatureSelector, type StudioFeature } from '@/components/studio/StudioFeatureSelector'
 import { QuickControls } from '@/components/studio/QuickControls'
 import { AdvancedPanel } from '@/components/studio/AdvancedPanel'
+import { AdvancedControls } from '@/components/studio/AdvancedControls'
 import { DualImageUploader, CombinationControls, CombinationTemplates } from '@/components/studio/combination'
 import { VoiceMicButton } from '@/components/shared'
 import type {
@@ -278,14 +279,25 @@ export default function Studio() {
     }
   }, [quickSettings, studioMode])
 
-  // Open/close advanced panel based on mode
+  // Check if we're on mobile (used for panel behavior)
+  const [isMobile, setIsMobile] = useState(false)
+
   useEffect(() => {
-    if (studioMode === 'advanced') {
+    const checkMobile = () => setIsMobile(window.innerWidth < 768)
+    checkMobile()
+    window.addEventListener('resize', checkMobile)
+    return () => window.removeEventListener('resize', checkMobile)
+  }, [])
+
+  // Open/close advanced panel based on mode (desktop only)
+  // On mobile, advanced controls are shown inside the mobile settings sheet
+  useEffect(() => {
+    if (studioMode === 'advanced' && !isMobile) {
       setAdvancedPanelOpen(true)
-    } else {
+    } else if (studioMode === 'quick') {
       setAdvancedPanelOpen(false)
     }
-  }, [studioMode])
+  }, [studioMode, isMobile])
 
   // Welcome modal handlers
   const handleWelcomeClose = useCallback(() => {
@@ -1265,36 +1277,68 @@ export default function Studio() {
         </SheetContent>
       </Sheet>
 
-      {/* Mobile Settings Sheet */}
+      {/* Mobile Settings Sheet - Single panel for both Quick and Advanced modes */}
       <Sheet open={showMobileSettings} onOpenChange={setShowMobileSettings}>
-        <SheetContent side="right" className="w-[90vw] max-w-[360px] p-0">
-          <SheetHeader className="px-4 py-3 border-b">
-            <SheetTitle>Settings</SheetTitle>
+        <SheetContent
+          side="right"
+          className={`w-[90vw] max-w-[400px] p-0 ${studioMode === 'advanced' ? 'bg-gray-900' : ''}`}
+        >
+          <SheetHeader className={`px-4 py-3 border-b ${
+            studioMode === 'advanced'
+              ? 'bg-gray-900 border-gray-700/50'
+              : ''
+          }`}>
+            <SheetTitle className={studioMode === 'advanced' ? 'text-white' : ''}>
+              {studioMode === 'advanced' ? 'Advanced Settings' : 'Settings'}
+            </SheetTitle>
           </SheetHeader>
-          <div className="h-[calc(100%-60px)] overflow-y-auto">
-            <div className="p-4">
-              <StudioModeToggle
-                mode={studioMode}
-                onChange={setStudioMode}
-              />
-            </div>
-            {featureMode === 'single' ? (
-              <QuickControls
-                lighting={quickSettings.lighting}
-                contrast={quickSettings.contrast}
-                sharpness={quickSettings.sharpness}
-                aiModel={settings.aiModel}
-                onChange={(key, value) => {
-                  setQuickSettings(prev => ({ ...prev, [key]: value }))
-                }}
-                onModelChange={(model) => {
-                  setSettings(prev => ({ ...prev, aiModel: model }))
-                }}
-              />
+
+          {/* Mode Toggle */}
+          <div className={`p-4 border-b ${
+            studioMode === 'advanced'
+              ? 'bg-gray-900 border-gray-700/50'
+              : 'border-gray-200'
+          }`}>
+            <StudioModeToggle
+              mode={studioMode}
+              onChange={setStudioMode}
+            />
+          </div>
+
+          {/* Content based on mode */}
+          <div className={`h-[calc(100%-120px)] overflow-y-auto ${
+            studioMode === 'advanced' ? 'bg-gray-900' : ''
+          }`}>
+            {studioMode === 'quick' ? (
+              // Quick Mode Controls
+              featureMode === 'single' ? (
+                <QuickControls
+                  lighting={quickSettings.lighting}
+                  contrast={quickSettings.contrast}
+                  sharpness={quickSettings.sharpness}
+                  aiModel={settings.aiModel}
+                  onChange={(key, value) => {
+                    setQuickSettings(prev => ({ ...prev, [key]: value }))
+                  }}
+                  onModelChange={(model) => {
+                    setSettings(prev => ({ ...prev, aiModel: model }))
+                  }}
+                />
+              ) : (
+                <CombinationControls
+                  settings={combinationSettings}
+                  onChange={handleCombinationSettingsChange}
+                />
+              )
             ) : (
-              <CombinationControls
-                settings={combinationSettings}
-                onChange={handleCombinationSettingsChange}
+              // Advanced Mode Controls - inside the same sheet
+              <AdvancedControls
+                settings={settings}
+                onSettingsChange={setSettings}
+                expandedSections={expandedSections}
+                onToggleSection={toggleSection}
+                darkTheme={true}
+                maxHeight="calc(100vh - 180px)"
               />
             )}
           </div>

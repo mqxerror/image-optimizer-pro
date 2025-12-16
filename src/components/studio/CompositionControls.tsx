@@ -1,4 +1,3 @@
-import { Grid3X3 } from 'lucide-react'
 import { Label } from '@/components/ui/label'
 import type { CompositionSettings, CompositionFraming, AspectRatio } from '@/types/studio'
 
@@ -29,68 +28,67 @@ export function CompositionControls({ settings, onChange }: CompositionControlsP
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center gap-2 text-gray-700">
-        <Grid3X3 className="h-4 w-4" />
-        <span className="text-sm font-medium">Composition</span>
+      <div>
+        <Label className="text-xs text-gray-400 mb-2 block">Framing</Label>
+        <div className="flex flex-wrap gap-1.5">
+          {framingOptions.map(option => (
+            <button
+              key={option.value}
+              onClick={() => updateSetting('framing', option.value)}
+              className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-all ${
+                settings.framing === option.value
+                  ? 'bg-gradient-to-r from-purple-500 to-purple-600 text-white shadow-md shadow-purple-500/20'
+                  : 'bg-gray-700/50 text-gray-300 hover:bg-gray-600/50 hover:text-white border border-gray-600/50'
+              }`}
+            >
+              {option.label}
+            </button>
+          ))}
+        </div>
       </div>
 
-      <div className="space-y-4">
-        <div>
-          <Label className="text-xs text-gray-500 mb-1.5 block">Framing</Label>
-          <div className="flex flex-wrap gap-1.5">
-            {framingOptions.map(option => (
-              <button
-                key={option.value}
-                onClick={() => updateSetting('framing', option.value)}
-                className={`px-3 py-1.5 text-xs font-medium rounded-full transition-colors ${
-                  settings.framing === option.value
-                    ? 'bg-purple-600 text-white'
-                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                }`}
-              >
-                {option.label}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        <div>
-          <Label className="text-xs text-gray-500 mb-1.5 block">Aspect Ratio</Label>
-          <div className="flex flex-wrap gap-2">
-            {aspectOptions.map(option => (
-              <button
-                key={option.value}
-                onClick={() => updateSetting('aspectRatio', option.value)}
-                className={`flex flex-col items-center gap-1 p-2 rounded-lg transition-all ${
+      <div>
+        <Label className="text-xs text-gray-400 mb-2 block">Aspect Ratio</Label>
+        <div className="flex flex-wrap gap-2">
+          {aspectOptions.map(option => (
+            <button
+              key={option.value}
+              onClick={() => updateSetting('aspectRatio', option.value)}
+              className={`flex flex-col items-center gap-1.5 p-2 rounded-xl transition-all ${
+                settings.aspectRatio === option.value
+                  ? 'ring-2 ring-purple-500 ring-offset-2 ring-offset-gray-900 bg-gray-800/80'
+                  : 'bg-gray-800/50 hover:bg-gray-700/50'
+              }`}
+            >
+              <div
+                className={`rounded-sm transition-colors ${
                   settings.aspectRatio === option.value
-                    ? 'ring-2 ring-purple-500 ring-offset-1 bg-white'
-                    : 'bg-gray-100 hover:bg-gray-200'
+                    ? 'border-2 border-purple-400'
+                    : 'border-2 border-gray-500'
                 }`}
-              >
-                <div
-                  className="border-2 border-gray-400 rounded-sm"
-                  style={{ width: option.width, height: option.height }}
-                />
-                <span className="text-xs text-gray-600">{option.label}</span>
-              </button>
-            ))}
-          </div>
+                style={{ width: option.width, height: option.height }}
+              />
+              <span className={`text-xs ${settings.aspectRatio === option.value ? 'text-white' : 'text-gray-400'}`}>
+                {option.label}
+              </span>
+            </button>
+          ))}
         </div>
+      </div>
 
-        <div className="space-y-1">
-          <div className="flex justify-between text-xs">
-            <span className="text-gray-500">Padding</span>
-            <span className="text-gray-700 font-medium">{settings.padding}%</span>
-          </div>
-          <input
-            type="range"
-            min={0}
-            max={50}
-            value={settings.padding}
-            onChange={(e) => updateSetting('padding', Number(e.target.value))}
-            className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-purple-600"
-          />
+      <div className="space-y-2">
+        <div className="flex justify-between text-xs">
+          <span className="text-gray-400">Padding</span>
+          <span className="text-white font-medium">{settings.padding}%</span>
         </div>
+        <input
+          type="range"
+          min={0}
+          max={50}
+          value={settings.padding}
+          onChange={(e) => updateSetting('padding', Number(e.target.value))}
+          className="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer accent-purple-500"
+        />
       </div>
     </div>
   )

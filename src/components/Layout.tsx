@@ -20,7 +20,8 @@ import {
   Search,
   Menu,
   X,
-  Shield
+  Shield,
+  HelpCircle
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { useAuthStore } from '@/stores/auth'
@@ -28,6 +29,8 @@ import { CommandPalette } from '@/components/CommandPalette'
 import { useQueueRealtime } from '@/hooks/useQueueRealtime'
 import { usePermissions } from '@/hooks/usePermissions'
 import { OrganizationSwitcher } from '@/components/OrganizationSwitcher'
+import { GuidedTour } from '@/components/GuidedTour'
+import { useTour } from '@/hooks/useTour'
 import { supabase } from '@/lib/supabase'
 import { Button } from '@/components/ui/button'
 import {
@@ -57,27 +60,49 @@ import {
   TooltipTrigger,
 } from '@/components/ui/tooltip'
 
-// Base navigation items
-const baseNavigation = [
-  { name: 'Home', href: '/', icon: LayoutDashboard },
-  { name: 'Studio', href: '/studio', icon: Wand2, highlight: true, tourId: 'nav-studio' },
-  { name: 'Projects', href: '/projects', icon: FolderKanban },
-  { name: 'Templates', href: '/templates', icon: FileText },
-  { name: 'Shopify', href: '/shopify', icon: Store },
-  { name: 'Activity', href: '/activity', icon: Activity, tourId: 'nav-activity' },
-  { name: 'Settings', href: '/settings', icon: Settings },
+import { Permission } from '@/types/roles'
+
+// Navigation item type with optional permission requirement
+interface NavItem {
+  name: string
+  href: string
+  icon: React.ComponentType<{ className?: string }>
+  highlight?: boolean
+  tourId?: string
+  requiresPermission?: keyof Permission
+  ownerOnly?: boolean
+}
+
+// Base navigation items with permission requirements
+const baseNavigation: NavItem[] = [
+  { name: 'Home', href: '/', icon: LayoutDashboard, tourId: 'nav-home' },
+  { name: 'Studio', href: '/studio', icon: Wand2, highlight: true, tourId: 'nav-studio', requiresPermission: 'canProcessImages' },
+  { name: 'Projects', href: '/projects', icon: FolderKanban, tourId: 'nav-projects', requiresPermission: 'canViewContent' },
+  { name: 'Templates', href: '/templates', icon: FileText, tourId: 'nav-templates', requiresPermission: 'canViewContent' },
+  { name: 'Shopify', href: '/shopify', icon: Store, tourId: 'nav-shopify', requiresPermission: 'canViewContent' },
+  { name: 'Activity', href: '/activity', icon: Activity, tourId: 'nav-activity', requiresPermission: 'canViewContent' },
+  { name: 'Settings', href: '/settings', icon: Settings, tourId: 'nav-settings' },
 ]
 
 export default function Layout() {
   const location = useLocation()
   const navigate = useNavigate()
   const { user, organization, signOut } = useAuthStore()
-  const { isOwner } = usePermissions()
+  const { isOwner, can } = usePermissions()
+
+  const { startTour, hasCompletedTour } = useTour()
 
   // Build navigation with optional admin item for owners
-  const navigation = isOwner
-    ? [...baseNavigation, { name: 'Admin', href: '/admin', icon: Shield }]
+  const navigation: NavItem[] = isOwner
+    ? [...baseNavigation, { name: 'Admin', href: '/admin', icon: Shield, ownerOnly: true, tourId: 'nav-admin' }]
     : baseNavigation
+
+  // Check if nav item is accessible
+  const isNavItemAccessible = (item: NavItem): boolean => {
+    if (item.ownerOnly && !isOwner) return false
+    if (item.requiresPermission && !can(item.requiresPermission)) return false
+    return true
+  }
 
   // Sidebar collapsed state (persisted)
   const [sidebarCollapsed, setSidebarCollapsed] = useState(() => {
@@ -130,6 +155,9 @@ export default function Layout() {
 
   return (
     <TooltipProvider>
+      {/* Guided Tour for first-time users */}
+      <GuidedTour />
+
       {/* Command Palette - Press Cmd+K to open */}
       <CommandPalette open={commandPaletteOpen} onOpenChange={setCommandPaletteOpen} />
 
@@ -151,6 +179,22 @@ export default function Layout() {
             {navigation.map((item) => {
               const isActive = location.pathname === item.href
               const isHighlight = 'highlight' in item && item.highlight
+              const isAccessible = isNavItemAccessible(item)
+
+              if (!isAccessible) {
+                return (
+                  <div
+                    key={item.name}
+                    className="flex items-center gap-3 px-3 py-3 rounded-lg text-sm font-medium min-h-[44px] text-gray-400 cursor-not-allowed"
+                  >
+                    <item.icon className="h-5 w-5 flex-shrink-0" />
+                    {item.name}
+                    <span className="ml-auto text-[10px] bg-gray-200 text-gray-500 px-1.5 py-0.5 rounded-full">
+                      Restricted
+                    </span>
+                  </div>
+                )
+              }
 
               return (
                 <Link
@@ -229,7 +273,7 @@ export default function Layout() {
         </SheetContent>
       </Sheet>
 
-      <div className="min-h-screen bg-gray-50">
+      <div className="min-h-screen bg-gray-50" data-tour="welcome">
         {/* Skip to main content link for accessibility */}
         <a
           href="#main-content"
@@ -280,6 +324,34 @@ export default function Layout() {
             {navigation.map((item) => {
               const isActive = location.pathname === item.href
               const isHighlight = 'highlight' in item && item.highlight
+              const isAccessible = isNavItemAccessible(item)
+
+              // Disabled state for inaccessible items
+              if (!isAccessible) {
+                const disabledContent = (
+                  <div
+                    className={cn(
+                      'flex items-center rounded-lg text-sm font-medium min-h-[44px] text-gray-400 cursor-not-allowed',
+                      sidebarCollapsed ? 'justify-center p-2' : 'gap-3 px-3 py-2'
+                    )}
+                  >
+                    <item.icon className="h-5 w-5 flex-shrink-0" />
+                    {!sidebarCollapsed && item.name}
+                  </div>
+                )
+
+                return (
+                  <Tooltip key={item.name}>
+                    <TooltipTrigger asChild>
+                      {disabledContent}
+                    </TooltipTrigger>
+                    <TooltipContent side="right">
+                      <p>{item.name}</p>
+                      <p className="text-xs text-muted-foreground">Requires higher permission</p>
+                    </TooltipContent>
+                  </Tooltip>
+                )
+              }
 
               const linkContent = (
                 <Link
@@ -337,6 +409,7 @@ export default function Layout() {
               <DropdownMenuTrigger asChild>
                 <Button
                   variant="ghost"
+                  data-tour="user-menu"
                   className={cn(
                     "w-full",
                     sidebarCollapsed ? "justify-center p-2" : "justify-start gap-3 px-3"
@@ -368,6 +441,12 @@ export default function Layout() {
                   Buy Tokens
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
+                {hasCompletedTour && (
+                  <DropdownMenuItem onClick={startTour}>
+                    <HelpCircle className="mr-2 h-4 w-4" />
+                    Restart Tour
+                  </DropdownMenuItem>
+                )}
                 <DropdownMenuItem onClick={handleSignOut} className="text-red-600">
                   <LogOut className="mr-2 h-4 w-4" />
                   Sign out
@@ -425,6 +504,7 @@ export default function Layout() {
                     <Button
                       variant="outline"
                       size="sm"
+                      data-tour="token-display"
                       className={cn(
                         "gap-2 font-medium",
                         isLowBalance && "border-amber-300 bg-amber-50 text-amber-700 hover:bg-amber-100"

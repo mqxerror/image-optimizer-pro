@@ -1,4 +1,3 @@
-import { Camera } from 'lucide-react'
 import { Label } from '@/components/ui/label'
 import type { CameraSettings, CameraLens, CameraAperture, CameraAngle, CameraFocus } from '@/types/studio'
 
@@ -49,10 +48,10 @@ function ChipGroup<T extends string>({
         <button
           key={option.value}
           onClick={() => onChange(option.value)}
-          className={`px-3 py-1.5 text-xs font-medium rounded-full transition-colors ${
+          className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-all ${
             value === option.value
-              ? 'bg-purple-600 text-white'
-              : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+              ? 'bg-gradient-to-r from-purple-500 to-purple-600 text-white shadow-md shadow-purple-500/20'
+              : 'bg-gray-700/50 text-gray-300 hover:bg-gray-600/50 hover:text-white border border-gray-600/50'
           }`}
         >
           {option.label}
@@ -69,14 +68,9 @@ export function CameraControls({ settings, onChange }: CameraControlsProps) {
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center gap-2 text-gray-700">
-        <Camera className="h-4 w-4" />
-        <span className="text-sm font-medium">Camera</span>
-      </div>
-
       <div className="space-y-3">
         <div>
-          <Label className="text-xs text-gray-500 mb-1.5 block">Lens</Label>
+          <Label className="text-xs text-gray-400 mb-2 block">Lens</Label>
           <ChipGroup
             options={lensOptions}
             value={settings.lens}
@@ -85,7 +79,7 @@ export function CameraControls({ settings, onChange }: CameraControlsProps) {
         </div>
 
         <div>
-          <Label className="text-xs text-gray-500 mb-1.5 block">Aperture</Label>
+          <Label className="text-xs text-gray-400 mb-2 block">Aperture</Label>
           <ChipGroup
             options={apertureOptions}
             value={settings.aperture}
@@ -94,7 +88,7 @@ export function CameraControls({ settings, onChange }: CameraControlsProps) {
         </div>
 
         <div>
-          <Label className="text-xs text-gray-500 mb-1.5 block">Angle</Label>
+          <Label className="text-xs text-gray-400 mb-2 block">Angle</Label>
           <ChipGroup
             options={angleOptions}
             value={settings.angle}
@@ -103,7 +97,7 @@ export function CameraControls({ settings, onChange }: CameraControlsProps) {
         </div>
 
         <div>
-          <Label className="text-xs text-gray-500 mb-1.5 block">Focus</Label>
+          <Label className="text-xs text-gray-400 mb-2 block">Focus</Label>
           <ChipGroup
             options={focusOptions}
             value={settings.focus}
