@@ -25,6 +25,7 @@ import ShopifyProducts from './pages/ShopifyProducts'
 import ShopifySettings from './pages/ShopifySettings'
 import ShopifyJobs from './pages/ShopifyJobs'
 import ShopifyJobDetail from './pages/ShopifyJobDetail'
+import Landing from './pages/Landing'
 
 // Settings pages
 import SettingsLayout from './pages/settings/SettingsLayout'
@@ -44,6 +45,9 @@ function App() {
   return (
     <ErrorBoundary>
       <Routes>
+        {/* Public landing page */}
+        <Route path="/landing" element={<Landing />} />
+
         {/* Auth routes */}
         <Route path="/auth/login" element={<Login />} />
         <Route path="/auth/register" element={<Register />} />

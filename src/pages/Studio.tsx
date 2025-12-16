@@ -147,6 +147,22 @@ export default function Studio() {
   // Mobile generate confirmation sheet
   const [showGenerateConfirm, setShowGenerateConfirm] = useState(false)
 
+  // Screenshot mode - hides chrome for clean marketing captures
+  const screenshotMode = searchParams.get('screenshot') === 'true'
+
+  // Demo mode - loads sample images for showcasing
+  const demoMode = searchParams.get('demo') === 'true'
+
+  // Demo images for each feature mode
+  const demoImages = {
+    single: 'https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?w=800&q=80',
+    combination: {
+      model: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=800&q=80',
+      jewelry: 'https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?w=400&q=80',
+    },
+    edit: 'https://images.unsplash.com/photo-1605100804763-247f67b3557e?w=800&q=80',
+  }
+
   // Get processing count for History button badge
   const processingCount = useGenerationsProcessingCount()
 
@@ -184,6 +200,32 @@ export default function Studio() {
       navigate('/studio', { replace: true })
     }
   }, [searchParams, navigate, toast])
+
+  // Load demo images when demo mode is active
+  useEffect(() => {
+    if (demoMode) {
+      // Set feature mode from URL if provided
+      const featureParam = searchParams.get('feature')
+      if (featureParam === 'enhance' || featureParam === 'single') {
+        setFeatureMode('single')
+        setImageUrl(demoImages.single)
+        setCustomPrompt('Professional jewelry photography with soft studio lighting')
+      } else if (featureParam === 'combine' || featureParam === 'combination') {
+        setFeatureMode('combination')
+        setDualImages({
+          model: { url: demoImages.combination.model, file: null, isUploading: false, analysis: null },
+          jewelry: { url: demoImages.combination.jewelry, file: null, isUploading: false, analysis: null },
+        })
+      } else if (featureParam === 'edit') {
+        setFeatureMode('edit')
+        setImageUrl(demoImages.edit)
+      } else {
+        // Default to single mode for demo
+        setImageUrl(demoImages.single)
+        setCustomPrompt('Professional jewelry photography with soft studio lighting')
+      }
+    }
+  }, [demoMode, searchParams])
 
   // Generate prompt from current settings (updates live)
   const generatedPrompt = useMemo(() => {
@@ -758,30 +800,32 @@ export default function Studio() {
 
   return (
     <div className="h-screen flex flex-col md:flex-row">
-      {/* Mobile Header - only visible on mobile */}
-      <div className="md:hidden flex items-center justify-between px-3 py-2 bg-gray-900 border-b border-gray-700">
-        <Button
-          variant="ghost"
-          size="default"
-          className="text-gray-300 hover:text-white min-h-[44px] px-3"
-          onClick={() => setShowMobilePresets(true)}
-        >
-          <Menu className="h-5 w-5 mr-2" />
-          Presets
-        </Button>
-        <span className="text-white font-medium">Studio</span>
-        <Button
-          variant="ghost"
-          size="default"
-          className="text-gray-300 hover:text-white min-h-[44px] min-w-[44px]"
-          onClick={() => setShowMobileSettings(true)}
-        >
-          <Settings2 className="h-5 w-5" />
-        </Button>
-      </div>
+      {/* Mobile Header - only visible on mobile, hidden in screenshot mode */}
+      {!screenshotMode && (
+        <div className="md:hidden flex items-center justify-between px-3 py-2 bg-gray-900 border-b border-gray-700">
+          <Button
+            variant="ghost"
+            size="default"
+            className="text-gray-300 hover:text-white min-h-[44px] px-3"
+            onClick={() => setShowMobilePresets(true)}
+          >
+            <Menu className="h-5 w-5 mr-2" />
+            Presets
+          </Button>
+          <span className="text-white font-medium">Studio</span>
+          <Button
+            variant="ghost"
+            size="default"
+            className="text-gray-300 hover:text-white min-h-[44px] min-w-[44px]"
+            onClick={() => setShowMobileSettings(true)}
+          >
+            <Settings2 className="h-5 w-5" />
+          </Button>
+        </div>
+      )}
 
-      {/* Left Sidebar - Mode-specific presets (collapsible) - hidden on mobile */}
-      <div className={`hidden md:block flex-shrink-0 transition-all duration-300 ${sidebarCollapsed ? 'w-12' : 'w-72'}`}>
+      {/* Left Sidebar - Mode-specific presets (collapsible) - hidden on mobile and in screenshot mode */}
+      <div className={`hidden ${screenshotMode ? '' : 'md:block'} flex-shrink-0 transition-all duration-300 ${sidebarCollapsed ? 'w-12' : 'w-72'}`}>
         {sidebarCollapsed ? (
           <div className="h-full bg-gray-50 border-r flex flex-col items-center py-4">
             <Button
@@ -1154,7 +1198,8 @@ export default function Studio() {
           </div>
         </div>
 
-        {/* Sticky Footer - Generate Button (always visible) */}
+        {/* Sticky Footer - Generate Button (hidden in screenshot mode) */}
+        {!screenshotMode && (
         <div className="flex-shrink-0 px-3 md:px-6 py-3 md:py-4 border-t border-gray-700/50 bg-gray-900/95 backdrop-blur-sm pb-safe">
           <div className="max-w-3xl mx-auto flex gap-2 md:gap-3 items-center">
             {featureMode === 'single' ? (
@@ -1271,6 +1316,7 @@ export default function Studio() {
             </Button>
           </div>
         </div>
+        )}
       </div>
 
       {/* Generations Sheet (modal) */}
