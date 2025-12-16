@@ -1107,14 +1107,13 @@ export default function Studio() {
             </div>
           </div>
 
-          {/* Settings Panel - hidden on mobile */}
-          <div className={`hidden md:flex flex-col w-80 flex-shrink-0 h-full max-h-[calc(100vh-80px)] ${PANEL_TRANSITION.enter} animate-in slide-in-from-right-4 bg-slate-900 border-l border-slate-700/50`}>
+          {/* Settings Panel - Light chrome with subtle border */}
+          <div className={`hidden md:flex flex-col w-80 flex-shrink-0 h-full max-h-[calc(100vh-80px)] ${PANEL_TRANSITION.enter} animate-in slide-in-from-right-4 bg-white border-l border-slate-200`}>
             {/* Compact mode toggle only */}
-            <div className="flex-shrink-0 p-3 border-b border-slate-700/50">
+            <div className="flex-shrink-0 p-3 border-b border-slate-100">
               <StudioModeToggle
                 mode={studioMode}
                 onChange={setStudioMode}
-                darkTheme
               />
             </div>
             {/* Conditional Controls based on mode and feature */}
@@ -1137,13 +1136,11 @@ export default function Studio() {
                         composition: { ...prev.composition, aspectRatio: ratio }
                       }))
                     }}
-                    darkTheme
                   />
                 ) : (
                   <CombinationControls
                     settings={combinationSettings}
                     onChange={handleCombinationSettingsChange}
-                    darkTheme
                   />
                 )
               ) : (
@@ -1151,7 +1148,6 @@ export default function Studio() {
                 <AdvancedTabs
                   settings={settings}
                   onSettingsChange={setSettings}
-                  darkTheme
                 />
               )}
             </div>
@@ -1346,28 +1342,20 @@ export default function Studio() {
         </SheetContent>
       </Sheet>
 
-      {/* Mobile Settings Sheet - Single panel for both Quick and Advanced modes */}
+      {/* Mobile Settings Sheet - Light theme for consistency */}
       <Sheet open={showMobileSettings} onOpenChange={setShowMobileSettings}>
         <SheetContent
           side="right"
-          className={`w-[90vw] max-w-[400px] p-0 ${studioMode === 'advanced' ? 'bg-gray-900' : ''}`}
+          className="w-[90vw] max-w-[400px] p-0 bg-white"
         >
-          <SheetHeader className={`px-4 py-3 border-b ${
-            studioMode === 'advanced'
-              ? 'bg-gray-900 border-gray-700/50'
-              : ''
-          }`}>
-            <SheetTitle className={studioMode === 'advanced' ? 'text-white' : ''}>
+          <SheetHeader className="px-4 py-3 border-b border-slate-100">
+            <SheetTitle>
               {studioMode === 'advanced' ? 'Advanced Settings' : 'Settings'}
             </SheetTitle>
           </SheetHeader>
 
           {/* Mode Toggle */}
-          <div className={`p-4 border-b ${
-            studioMode === 'advanced'
-              ? 'bg-gray-900 border-gray-700/50'
-              : 'border-gray-200'
-          }`}>
+          <div className="p-4 border-b border-slate-100">
             <StudioModeToggle
               mode={studioMode}
               onChange={setStudioMode}
@@ -1375,9 +1363,7 @@ export default function Studio() {
           </div>
 
           {/* Content based on mode */}
-          <div className={`h-[calc(100%-120px)] overflow-y-auto ${
-            studioMode === 'advanced' ? 'bg-gray-900' : ''
-          }`}>
+          <div className="h-[calc(100%-120px)] overflow-y-auto">
             {studioMode === 'quick' ? (
               // Quick Mode Controls
               featureMode === 'single' ? (
@@ -1409,7 +1395,6 @@ export default function Studio() {
               <AdvancedTabs
                 settings={settings}
                 onSettingsChange={setSettings}
-                darkTheme={true}
               />
             )}
           </div>

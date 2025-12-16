@@ -7,8 +7,8 @@ interface StudioModeToggleProps {
 }
 
 export function StudioModeToggle({ mode, onChange, darkTheme = false }: StudioModeToggleProps) {
-  // Auto-detect dark theme based on current mode (advanced = dark)
-  const isDark = darkTheme || mode === 'advanced'
+  // Use dark theme only if explicitly passed, don't auto-detect
+  const isDark = darkTheme
 
   return (
     <div
