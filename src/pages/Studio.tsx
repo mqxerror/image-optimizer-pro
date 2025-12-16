@@ -1107,11 +1107,18 @@ export default function Studio() {
                   contrast={quickSettings.contrast}
                   sharpness={quickSettings.sharpness}
                   aiModel={settings.aiModel}
+                  aspectRatio={settings.composition.aspectRatio}
                   onChange={(key, value) => {
                     setQuickSettings(prev => ({ ...prev, [key]: value }))
                   }}
                   onModelChange={(model) => {
                     setSettings(prev => ({ ...prev, aiModel: model }))
+                  }}
+                  onAspectRatioChange={(ratio) => {
+                    setSettings(prev => ({
+                      ...prev,
+                      composition: { ...prev.composition, aspectRatio: ratio }
+                    }))
                   }}
                 />
               ) : (
@@ -1317,11 +1324,18 @@ export default function Studio() {
                   contrast={quickSettings.contrast}
                   sharpness={quickSettings.sharpness}
                   aiModel={settings.aiModel}
+                  aspectRatio={settings.composition.aspectRatio}
                   onChange={(key, value) => {
                     setQuickSettings(prev => ({ ...prev, [key]: value }))
                   }}
                   onModelChange={(model) => {
                     setSettings(prev => ({ ...prev, aiModel: model }))
+                  }}
+                  onAspectRatioChange={(ratio) => {
+                    setSettings(prev => ({
+                      ...prev,
+                      composition: { ...prev.composition, aspectRatio: ratio }
+                    }))
                   }}
                 />
               ) : (
