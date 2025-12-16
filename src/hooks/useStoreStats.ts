@@ -1,5 +1,6 @@
 import { useQuery } from '@tanstack/react-query'
 import { useAuthStore } from '@/stores/auth'
+import { queryKeys } from '@/lib/queryKeys'
 import type { ShopifySyncJob } from '@/types/shopify'
 
 export interface StoreStats {
@@ -14,7 +15,7 @@ export function useStoreStats(storeId: string) {
   const { session } = useAuthStore()
 
   return useQuery({
-    queryKey: ['store-stats', storeId],
+    queryKey: queryKeys.shopify.storeStats(storeId),
     queryFn: async (): Promise<StoreStats> => {
       // Fetch jobs for this store to calculate stats
       const response = await fetch(
@@ -103,7 +104,7 @@ export function useAllStoresStats() {
   const { session, user } = useAuthStore()
 
   return useQuery({
-    queryKey: ['all-stores-stats', user?.id],
+    queryKey: queryKeys.shopify.allStoresStats(user?.id ?? ''),
     queryFn: async () => {
       // Fetch all jobs for counts
       const response = await fetch(

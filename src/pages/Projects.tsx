@@ -276,7 +276,10 @@ export default function Projects() {
             <p className="text-gray-500 mt-0.5 text-sm">Manage your image optimization projects</p>
           </div>
         </div>
-        <Button className="gap-2 shadow-sm" onClick={() => setIsCreateOpen(true)}>
+        <Button
+          className="gap-2 bg-gradient-to-r from-purple-600 to-violet-600 hover:from-purple-700 hover:to-violet-700 text-white shadow-lg shadow-purple-500/30 ring-2 ring-purple-400/50 hover:ring-purple-500/60 transition-all hover:shadow-purple-500/40"
+          onClick={() => setIsCreateOpen(true)}
+        >
           <Plus className="h-4 w-4" />
           New Project
         </Button>
@@ -602,7 +605,11 @@ export default function Projects() {
                 </div>
               </div>
 
-              <Button className="mt-8 gap-2" size="lg" onClick={() => setIsCreateOpen(true)}>
+              <Button
+                className="mt-8 gap-2 bg-gradient-to-r from-purple-600 to-violet-600 hover:from-purple-700 hover:to-violet-700 text-white shadow-lg shadow-purple-500/30 ring-2 ring-purple-400/50 hover:ring-purple-500/60 transition-all hover:shadow-purple-500/40"
+                size="lg"
+                onClick={() => setIsCreateOpen(true)}
+              >
                 <Plus className="h-4 w-4" />
                 Create Project
               </Button>

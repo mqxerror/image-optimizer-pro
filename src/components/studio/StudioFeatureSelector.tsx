@@ -1,7 +1,7 @@
-import { Image, Users, Coins } from 'lucide-react'
+import { Image, Users, Coins, Wand2 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
-export type StudioFeature = 'single' | 'combination'
+export type StudioFeature = 'single' | 'combination' | 'edit'
 
 interface StudioFeatureSelectorProps {
   feature: StudioFeature
@@ -12,12 +12,12 @@ interface StudioFeatureSelectorProps {
 export function StudioFeatureSelector({ feature, onChange, className }: StudioFeatureSelectorProps) {
   return (
     <div className={cn("bg-gray-800/50 rounded-xl p-1 border border-gray-700", className)}>
-      <div className="grid grid-cols-2 gap-1">
+      <div className="grid grid-cols-3 gap-1">
         {/* Single Image Mode */}
         <button
           onClick={() => onChange('single')}
           className={cn(
-            'flex flex-col items-center gap-1.5 px-4 py-3 rounded-lg transition-all',
+            'flex flex-col items-center gap-1.5 px-3 py-3 rounded-lg transition-all',
             feature === 'single'
               ? 'bg-purple-600 text-white shadow-lg'
               : 'text-gray-400 hover:text-gray-200 hover:bg-gray-700/50'
@@ -25,7 +25,7 @@ export function StudioFeatureSelector({ feature, onChange, className }: StudioFe
         >
           <Image className="h-5 w-5" />
           <div className="text-center">
-            <span className="text-sm font-medium block">Single Image</span>
+            <span className="text-sm font-medium block">AI Enhance</span>
             <span className="text-[10px] opacity-70 flex items-center justify-center gap-1 mt-0.5">
               <Coins className="h-2.5 w-2.5" />
               1 token
@@ -37,7 +37,7 @@ export function StudioFeatureSelector({ feature, onChange, className }: StudioFe
         <button
           onClick={() => onChange('combination')}
           className={cn(
-            'flex flex-col items-center gap-1.5 px-4 py-3 rounded-lg transition-all',
+            'flex flex-col items-center gap-1.5 px-3 py-3 rounded-lg transition-all',
             feature === 'combination'
               ? 'bg-gradient-to-r from-blue-600 to-amber-600 text-white shadow-lg'
               : 'text-gray-400 hover:text-gray-200 hover:bg-gray-700/50'
@@ -45,10 +45,33 @@ export function StudioFeatureSelector({ feature, onChange, className }: StudioFe
         >
           <Users className="h-5 w-5" />
           <div className="text-center">
-            <span className="text-sm font-medium block">Model + Jewelry</span>
+            <span className="text-sm font-medium block">Combine</span>
             <span className="text-[10px] opacity-70 flex items-center justify-center gap-1 mt-0.5">
               <Coins className="h-2.5 w-2.5" />
               2 tokens
+            </span>
+          </div>
+        </button>
+
+        {/* Edit Mode */}
+        <button
+          onClick={() => onChange('edit')}
+          className={cn(
+            'flex flex-col items-center gap-1.5 px-3 py-3 rounded-lg transition-all relative',
+            feature === 'edit'
+              ? 'bg-gradient-to-r from-green-600 to-teal-600 text-white shadow-lg'
+              : 'text-gray-400 hover:text-gray-200 hover:bg-gray-700/50'
+          )}
+        >
+          <span className="absolute -top-1 -right-1 text-[8px] bg-green-500 text-white px-1.5 py-0.5 rounded-full font-bold">
+            NEW
+          </span>
+          <Wand2 className="h-5 w-5" />
+          <div className="text-center">
+            <span className="text-sm font-medium block">Edit</span>
+            <span className="text-[10px] opacity-70 flex items-center justify-center gap-1 mt-0.5">
+              <Coins className="h-2.5 w-2.5" />
+              0.5-2 tokens
             </span>
           </div>
         </button>

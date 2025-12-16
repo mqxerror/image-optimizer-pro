@@ -1,11 +1,12 @@
 import { NavLink } from 'react-router-dom'
-import { User, Building2, CreditCard, Puzzle } from 'lucide-react'
+import { User, Building2, CreditCard, Puzzle, Users, Gift } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 interface NavItem {
   name: string
   href: string
   icon: React.ComponentType<{ className?: string }>
+  badge?: string
 }
 
 interface NavGroup {
@@ -24,6 +25,7 @@ const settingsNav: NavGroup[] = [
     group: 'Organization',
     items: [
       { name: 'General', href: '/settings/organization', icon: Building2 },
+      { name: 'Team', href: '/settings/team', icon: Users, badge: 'New' },
       { name: 'Billing & Tokens', href: '/settings/billing', icon: CreditCard }
     ]
   },
@@ -90,7 +92,12 @@ export function SettingsSidebar() {
                       )}>
                         <item.icon className={cn("h-4 w-4", isActive ? "text-purple-600" : "text-gray-500")} />
                       </div>
-                      <span>{item.name}</span>
+                      <span className="flex-1">{item.name}</span>
+                      {item.badge && (
+                        <span className="text-[10px] bg-green-500 text-white px-1.5 py-0.5 rounded-full font-bold">
+                          {item.badge}
+                        </span>
+                      )}
                     </>
                   )}
                 </NavLink>

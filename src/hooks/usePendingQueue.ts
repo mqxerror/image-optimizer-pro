@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useAuthStore } from '@/stores/auth'
+import { queryKeys } from '@/lib/queryKeys'
 import type { QueueItem, QueueFilters, ExcludedProduct } from '@/components/shopify/scheduling-modal/types'
 
 export function usePendingQueue(storeId: string, filters: QueueFilters = {}) {
@@ -8,7 +9,7 @@ export function usePendingQueue(storeId: string, filters: QueueFilters = {}) {
 
   // Fetch queue items
   const queueQuery = useQuery({
-    queryKey: ['automation-queue', storeId, filters],
+    queryKey: queryKeys.automation.queue(storeId, filters),
     queryFn: async (): Promise<{ items: QueueItem[]; total: number }> => {
       const response = await fetch(
         `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/shopify-automation`,
@@ -63,7 +64,7 @@ export function usePendingQueue(storeId: string, filters: QueueFilters = {}) {
       return response.json()
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['automation-queue', storeId] })
+      queryClient.invalidateQueries({ queryKey: queryKeys.automation.queue(storeId) })
     }
   })
 
@@ -93,7 +94,7 @@ export function usePendingQueue(storeId: string, filters: QueueFilters = {}) {
       return response.json()
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['automation-queue', storeId] })
+      queryClient.invalidateQueries({ queryKey: queryKeys.automation.queue(storeId) })
     }
   })
 
@@ -130,7 +131,7 @@ export function usePendingQueue(storeId: string, filters: QueueFilters = {}) {
       return response.json()
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['automation-queue', storeId] })
+      queryClient.invalidateQueries({ queryKey: queryKeys.automation.queue(storeId) })
     }
   })
 
@@ -167,8 +168,8 @@ export function usePendingQueue(storeId: string, filters: QueueFilters = {}) {
       return response.json()
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['automation-queue', storeId] })
-      queryClient.invalidateQueries({ queryKey: ['excluded-products', storeId] })
+      queryClient.invalidateQueries({ queryKey: queryKeys.automation.queue(storeId) })
+      queryClient.invalidateQueries({ queryKey: queryKeys.automation.excluded(storeId) })
     }
   })
 
@@ -198,8 +199,8 @@ export function usePendingQueue(storeId: string, filters: QueueFilters = {}) {
       return response.json()
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['automation-queue', storeId] })
-      queryClient.invalidateQueries({ queryKey: ['automation-history', storeId] })
+      queryClient.invalidateQueries({ queryKey: queryKeys.automation.queue(storeId) })
+      queryClient.invalidateQueries({ queryKey: queryKeys.automation.history(storeId) })
     }
   })
 
@@ -228,7 +229,7 @@ export function useExcludedProducts(storeId: string) {
   const queryClient = useQueryClient()
 
   const excludedQuery = useQuery({
-    queryKey: ['excluded-products', storeId],
+    queryKey: queryKeys.automation.excluded(storeId),
     queryFn: async (): Promise<ExcludedProduct[]> => {
       const response = await fetch(
         `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/shopify-automation`,
@@ -281,7 +282,7 @@ export function useExcludedProducts(storeId: string) {
       return response.json()
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['excluded-products', storeId] })
+      queryClient.invalidateQueries({ queryKey: queryKeys.automation.excluded(storeId) })
     }
   })
 

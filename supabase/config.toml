@@ -71,5 +71,14 @@ verify_jwt = true
 [functions.shopify-automation]
 verify_jwt = true
 
+[functions.stripe]
+verify_jwt = true
+
+[functions.stripe-webhook]
+verify_jwt = false
+
+[functions.image-process]
+verify_jwt = true
+
 [analytics]
 enabled = false

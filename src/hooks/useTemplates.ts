@@ -1,6 +1,7 @@
 import { useQuery } from '@tanstack/react-query'
 import { supabase } from '@/lib/supabase'
 import { useAuthStore } from '@/stores/auth'
+import { queryKeys } from '@/lib/queryKeys'
 import type { PromptTemplate } from '@/types/database'
 
 // Fetch all templates for the organization
@@ -8,7 +9,7 @@ export function useTemplates() {
   const { organization } = useAuthStore()
 
   return useQuery({
-    queryKey: ['templates', organization?.id],
+    queryKey: queryKeys.templates.list(organization?.id ?? ''),
     queryFn: async () => {
       if (!organization) return []
 
@@ -28,7 +29,7 @@ export function useTemplates() {
 // Fetch a single template
 export function useTemplate(templateId: string | null) {
   return useQuery({
-    queryKey: ['template', templateId],
+    queryKey: queryKeys.templates.detail(templateId ?? ''),
     queryFn: async () => {
       if (!templateId) return null
 

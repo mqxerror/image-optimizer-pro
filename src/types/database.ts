@@ -20,6 +20,7 @@ export type Database = {
           attempt_count: number | null
           callback_at: string | null
           callback_received: boolean | null
+          callback_token: string | null
           completed_at: string | null
           created_at: string | null
           created_by: string | null
@@ -53,6 +54,7 @@ export type Database = {
           attempt_count?: number | null
           callback_at?: string | null
           callback_received?: boolean | null
+          callback_token?: string | null
           completed_at?: string | null
           created_at?: string | null
           created_by?: string | null
@@ -86,6 +88,7 @@ export type Database = {
           attempt_count?: number | null
           callback_at?: string | null
           callback_received?: boolean | null
+          callback_token?: string | null
           completed_at?: string | null
           created_at?: string | null
           created_by?: string | null
@@ -184,6 +187,95 @@ export type Database = {
           task_id_path?: string[] | null
           token_cost?: number | null
           updated_at?: string | null
+        }
+        Relationships: []
+      }
+      appsumo_licenses: {
+        Row: {
+          code: string
+          created_at: string | null
+          id: string
+          is_active: boolean | null
+          max_stores: number | null
+          max_team_members: number | null
+          organization_id: string
+          redeemed_at: string | null
+          redeemed_by: string
+          tier: number
+          tokens_monthly: number
+        }
+        Insert: {
+          code: string
+          created_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          max_stores?: number | null
+          max_team_members?: number | null
+          organization_id: string
+          redeemed_at?: string | null
+          redeemed_by: string
+          tier?: number
+          tokens_monthly?: number
+        }
+        Update: {
+          code?: string
+          created_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          max_stores?: number | null
+          max_team_members?: number | null
+          organization_id?: string
+          redeemed_at?: string | null
+          redeemed_by?: string
+          tier?: number
+          tokens_monthly?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "appsumo_licenses_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      bug_reports: {
+        Row: {
+          created_at: string | null
+          id: string
+          message: string
+          metadata: Json | null
+          page_url: string | null
+          screenshot_url: string | null
+          status: string | null
+          updated_at: string | null
+          user_agent: string | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          message: string
+          metadata?: Json | null
+          page_url?: string | null
+          screenshot_url?: string | null
+          status?: string | null
+          updated_at?: string | null
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          message?: string
+          metadata?: Json | null
+          page_url?: string | null
+          screenshot_url?: string | null
+          status?: string | null
+          updated_at?: string | null
+          user_agent?: string | null
+          user_id?: string | null
         }
         Relationships: []
       }
@@ -438,6 +530,181 @@ export type Database = {
           },
         ]
       }
+      image_processing_jobs: {
+        Row: {
+          completed_at: string | null
+          created_at: string | null
+          created_by: string | null
+          error_message: string | null
+          failed_images: number | null
+          id: string
+          input_urls: Json
+          operation: string
+          options: Json | null
+          organization_id: string
+          output_urls: Json | null
+          pipeline_id: string | null
+          processed_images: number | null
+          started_at: string | null
+          status: string
+          tokens_used: number | null
+          total_images: number | null
+        }
+        Insert: {
+          completed_at?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          error_message?: string | null
+          failed_images?: number | null
+          id?: string
+          input_urls?: Json
+          operation: string
+          options?: Json | null
+          organization_id: string
+          output_urls?: Json | null
+          pipeline_id?: string | null
+          processed_images?: number | null
+          started_at?: string | null
+          status?: string
+          tokens_used?: number | null
+          total_images?: number | null
+        }
+        Update: {
+          completed_at?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          error_message?: string | null
+          failed_images?: number | null
+          id?: string
+          input_urls?: Json
+          operation?: string
+          options?: Json | null
+          organization_id?: string
+          output_urls?: Json | null
+          pipeline_id?: string | null
+          processed_images?: number | null
+          started_at?: string | null
+          status?: string
+          tokens_used?: number | null
+          total_images?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "image_processing_jobs_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "image_processing_jobs_pipeline_id_fkey"
+            columns: ["pipeline_id"]
+            isOneToOne: false
+            referencedRelation: "processing_pipelines"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      image_processing_results: {
+        Row: {
+          created_at: string | null
+          error_message: string | null
+          id: string
+          input_url: string
+          job_id: string
+          operations: Json | null
+          output_url: string | null
+          processing_time_ms: number | null
+          status: string
+          tokens_used: number | null
+        }
+        Insert: {
+          created_at?: string | null
+          error_message?: string | null
+          id?: string
+          input_url: string
+          job_id: string
+          operations?: Json | null
+          output_url?: string | null
+          processing_time_ms?: number | null
+          status?: string
+          tokens_used?: number | null
+        }
+        Update: {
+          created_at?: string | null
+          error_message?: string | null
+          id?: string
+          input_url?: string
+          job_id?: string
+          operations?: Json | null
+          output_url?: string | null
+          processing_time_ms?: number | null
+          status?: string
+          tokens_used?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "image_processing_results_job_id_fkey"
+            columns: ["job_id"]
+            isOneToOne: false
+            referencedRelation: "image_processing_jobs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      organization_invitations: {
+        Row: {
+          accepted_at: string | null
+          accepted_by: string | null
+          created_at: string | null
+          email: string
+          expires_at: string
+          groups: string[] | null
+          id: string
+          invited_by: string
+          message: string | null
+          organization_id: string
+          role: string
+          token: string
+        }
+        Insert: {
+          accepted_at?: string | null
+          accepted_by?: string | null
+          created_at?: string | null
+          email: string
+          expires_at?: string
+          groups?: string[] | null
+          id?: string
+          invited_by: string
+          message?: string | null
+          organization_id: string
+          role?: string
+          token?: string
+        }
+        Update: {
+          accepted_at?: string | null
+          accepted_by?: string | null
+          created_at?: string | null
+          email?: string
+          expires_at?: string
+          groups?: string[] | null
+          id?: string
+          invited_by?: string
+          message?: string | null
+          organization_id?: string
+          role?: string
+          token?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "organization_invitations_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       organizations: {
         Row: {
           created_at: string | null
@@ -558,6 +825,53 @@ export type Database = {
             columns: ["project_id"]
             isOneToOne: false
             referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      processing_pipelines: {
+        Row: {
+          created_at: string | null
+          created_by: string | null
+          description: string | null
+          id: string
+          is_default: boolean | null
+          name: string
+          organization_id: string
+          output_config: Json
+          steps: Json
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          is_default?: boolean | null
+          name: string
+          organization_id: string
+          output_config?: Json
+          steps?: Json
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          is_default?: boolean | null
+          name?: string
+          organization_id?: string
+          output_config?: Json
+          steps?: Json
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "processing_pipelines_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
             referencedColumns: ["id"]
           },
         ]
@@ -872,8 +1186,278 @@ export type Database = {
           },
         ]
       }
+      shopify_automation_configs: {
+        Row: {
+          approval_threshold: number | null
+          auto_pause_enabled: boolean | null
+          auto_pause_threshold: number | null
+          batches_completed: number | null
+          created_at: string | null
+          daily_limit: number | null
+          daily_processed: number | null
+          daily_reset_at: string | null
+          default_ai_model: string | null
+          default_format: string | null
+          default_preset_id: string | null
+          default_quality: number | null
+          id: string
+          is_enabled: boolean | null
+          is_paused: boolean | null
+          paused_at: string | null
+          paused_reason: string | null
+          require_approval: boolean | null
+          schedule_days: string[] | null
+          schedule_enabled: boolean | null
+          schedule_frequency: string | null
+          schedule_last_run_at: string | null
+          schedule_next_run_at: string | null
+          schedule_time: string | null
+          schedule_timezone: string | null
+          store_id: string
+          updated_at: string | null
+          user_id: string
+          webhook_enabled: boolean | null
+          webhook_secret: string | null
+        }
+        Insert: {
+          approval_threshold?: number | null
+          auto_pause_enabled?: boolean | null
+          auto_pause_threshold?: number | null
+          batches_completed?: number | null
+          created_at?: string | null
+          daily_limit?: number | null
+          daily_processed?: number | null
+          daily_reset_at?: string | null
+          default_ai_model?: string | null
+          default_format?: string | null
+          default_preset_id?: string | null
+          default_quality?: number | null
+          id?: string
+          is_enabled?: boolean | null
+          is_paused?: boolean | null
+          paused_at?: string | null
+          paused_reason?: string | null
+          require_approval?: boolean | null
+          schedule_days?: string[] | null
+          schedule_enabled?: boolean | null
+          schedule_frequency?: string | null
+          schedule_last_run_at?: string | null
+          schedule_next_run_at?: string | null
+          schedule_time?: string | null
+          schedule_timezone?: string | null
+          store_id: string
+          updated_at?: string | null
+          user_id: string
+          webhook_enabled?: boolean | null
+          webhook_secret?: string | null
+        }
+        Update: {
+          approval_threshold?: number | null
+          auto_pause_enabled?: boolean | null
+          auto_pause_threshold?: number | null
+          batches_completed?: number | null
+          created_at?: string | null
+          daily_limit?: number | null
+          daily_processed?: number | null
+          daily_reset_at?: string | null
+          default_ai_model?: string | null
+          default_format?: string | null
+          default_preset_id?: string | null
+          default_quality?: number | null
+          id?: string
+          is_enabled?: boolean | null
+          is_paused?: boolean | null
+          paused_at?: string | null
+          paused_reason?: string | null
+          require_approval?: boolean | null
+          schedule_days?: string[] | null
+          schedule_enabled?: boolean | null
+          schedule_frequency?: string | null
+          schedule_last_run_at?: string | null
+          schedule_next_run_at?: string | null
+          schedule_time?: string | null
+          schedule_timezone?: string | null
+          store_id?: string
+          updated_at?: string | null
+          user_id?: string
+          webhook_enabled?: boolean | null
+          webhook_secret?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "shopify_automation_configs_store_id_fkey"
+            columns: ["store_id"]
+            isOneToOne: true
+            referencedRelation: "shopify_stores"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      shopify_automation_queue: {
+        Row: {
+          added_at: string | null
+          error_message: string | null
+          id: string
+          image_count: number | null
+          job_id: string | null
+          priority: string | null
+          processed_at: string | null
+          product_handle: string | null
+          product_title: string | null
+          shopify_product_id: string
+          source: string
+          status: string | null
+          store_id: string
+          thumbnail_url: string | null
+          user_id: string
+        }
+        Insert: {
+          added_at?: string | null
+          error_message?: string | null
+          id?: string
+          image_count?: number | null
+          job_id?: string | null
+          priority?: string | null
+          processed_at?: string | null
+          product_handle?: string | null
+          product_title?: string | null
+          shopify_product_id: string
+          source?: string
+          status?: string | null
+          store_id: string
+          thumbnail_url?: string | null
+          user_id: string
+        }
+        Update: {
+          added_at?: string | null
+          error_message?: string | null
+          id?: string
+          image_count?: number | null
+          job_id?: string | null
+          priority?: string | null
+          processed_at?: string | null
+          product_handle?: string | null
+          product_title?: string | null
+          shopify_product_id?: string
+          source?: string
+          status?: string | null
+          store_id?: string
+          thumbnail_url?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "shopify_automation_queue_store_id_fkey"
+            columns: ["store_id"]
+            isOneToOne: false
+            referencedRelation: "shopify_stores"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      shopify_automation_runs: {
+        Row: {
+          completed_at: string | null
+          config_id: string | null
+          error_message: string | null
+          id: string
+          images_failed: number | null
+          images_processed: number | null
+          images_queued: number | null
+          products_queued: number | null
+          started_at: string | null
+          status: string | null
+          store_id: string
+          trigger_type: string
+          user_id: string
+        }
+        Insert: {
+          completed_at?: string | null
+          config_id?: string | null
+          error_message?: string | null
+          id?: string
+          images_failed?: number | null
+          images_processed?: number | null
+          images_queued?: number | null
+          products_queued?: number | null
+          started_at?: string | null
+          status?: string | null
+          store_id: string
+          trigger_type: string
+          user_id: string
+        }
+        Update: {
+          completed_at?: string | null
+          config_id?: string | null
+          error_message?: string | null
+          id?: string
+          images_failed?: number | null
+          images_processed?: number | null
+          images_queued?: number | null
+          products_queued?: number | null
+          started_at?: string | null
+          status?: string | null
+          store_id?: string
+          trigger_type?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "shopify_automation_runs_store_id_fkey"
+            columns: ["store_id"]
+            isOneToOne: false
+            referencedRelation: "shopify_stores"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      shopify_excluded_products: {
+        Row: {
+          excluded_at: string | null
+          id: string
+          product_handle: string | null
+          product_title: string | null
+          reason: string | null
+          shopify_product_id: string
+          store_id: string
+          thumbnail_url: string | null
+          user_id: string
+        }
+        Insert: {
+          excluded_at?: string | null
+          id?: string
+          product_handle?: string | null
+          product_title?: string | null
+          reason?: string | null
+          shopify_product_id: string
+          store_id: string
+          thumbnail_url?: string | null
+          user_id: string
+        }
+        Update: {
+          excluded_at?: string | null
+          id?: string
+          product_handle?: string | null
+          product_title?: string | null
+          reason?: string | null
+          shopify_product_id?: string
+          store_id?: string
+          thumbnail_url?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "shopify_excluded_products_store_id_fkey"
+            columns: ["store_id"]
+            isOneToOne: false
+            referencedRelation: "shopify_stores"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       shopify_images: {
         Row: {
+          ai_job_id: string | null
           created_at: string | null
           error_message: string | null
           id: string
@@ -896,6 +1480,7 @@ export type Database = {
           updated_at: string | null
         }
         Insert: {
+          ai_job_id?: string | null
           created_at?: string | null
           error_message?: string | null
           id?: string
@@ -918,6 +1503,7 @@ export type Database = {
           updated_at?: string | null
         }
         Update: {
+          ai_job_id?: string | null
           created_at?: string | null
           error_message?: string | null
           id?: string
@@ -940,6 +1526,13 @@ export type Database = {
           updated_at?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "shopify_images_ai_job_id_fkey"
+            columns: ["ai_job_id"]
+            isOneToOne: false
+            referencedRelation: "ai_jobs"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "shopify_images_job_id_fkey"
             columns: ["job_id"]
@@ -999,9 +1592,11 @@ export type Database = {
       }
       shopify_sync_jobs: {
         Row: {
+          ai_model: string | null
           approved_at: string | null
           completed_at: string | null
           created_at: string | null
+          custom_prompt: string | null
           expires_at: string | null
           failed_count: number | null
           id: string
@@ -1022,9 +1617,11 @@ export type Database = {
           updated_at: string | null
         }
         Insert: {
+          ai_model?: string | null
           approved_at?: string | null
           completed_at?: string | null
           created_at?: string | null
+          custom_prompt?: string | null
           expires_at?: string | null
           failed_count?: number | null
           id?: string
@@ -1045,9 +1642,11 @@ export type Database = {
           updated_at?: string | null
         }
         Update: {
+          ai_model?: string | null
           approved_at?: string | null
           completed_at?: string | null
           created_at?: string | null
+          custom_prompt?: string | null
           expires_at?: string | null
           failed_count?: number | null
           id?: string
@@ -1070,6 +1669,59 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "shopify_sync_jobs_store_id_fkey"
+            columns: ["store_id"]
+            isOneToOne: false
+            referencedRelation: "shopify_stores"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      shopify_test_runs: {
+        Row: {
+          approved: boolean | null
+          completed_at: string | null
+          created_at: string | null
+          feedback: string | null
+          id: string
+          results: Json | null
+          run_id: string | null
+          selected_product_ids: string[] | null
+          status: string | null
+          store_id: string
+          test_count: number
+          user_id: string
+        }
+        Insert: {
+          approved?: boolean | null
+          completed_at?: string | null
+          created_at?: string | null
+          feedback?: string | null
+          id?: string
+          results?: Json | null
+          run_id?: string | null
+          selected_product_ids?: string[] | null
+          status?: string | null
+          store_id: string
+          test_count: number
+          user_id: string
+        }
+        Update: {
+          approved?: boolean | null
+          completed_at?: string | null
+          created_at?: string | null
+          feedback?: string | null
+          id?: string
+          results?: Json | null
+          run_id?: string | null
+          selected_product_ids?: string[] | null
+          status?: string | null
+          store_id?: string
+          test_count?: number
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "shopify_test_runs_store_id_fkey"
             columns: ["store_id"]
             isOneToOne: false
             referencedRelation: "shopify_stores"
@@ -1129,6 +1781,77 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      stripe_customers: {
+        Row: {
+          created_at: string | null
+          email: string | null
+          id: string
+          name: string | null
+          organization_id: string
+          stripe_customer_id: string
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          email?: string | null
+          id?: string
+          name?: string | null
+          organization_id: string
+          stripe_customer_id: string
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          email?: string | null
+          id?: string
+          name?: string | null
+          organization_id?: string
+          stripe_customer_id?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "stripe_customers_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: true
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      stripe_webhook_events: {
+        Row: {
+          created_at: string | null
+          data: Json
+          error: string | null
+          id: string
+          processed: boolean | null
+          processed_at: string | null
+          stripe_event_id: string
+          type: string
+        }
+        Insert: {
+          created_at?: string | null
+          data: Json
+          error?: string | null
+          id?: string
+          processed?: boolean | null
+          processed_at?: string | null
+          stripe_event_id: string
+          type: string
+        }
+        Update: {
+          created_at?: string | null
+          data?: Json
+          error?: string | null
+          id?: string
+          processed?: boolean | null
+          processed_at?: string | null
+          stripe_event_id?: string
+          type?: string
+        }
+        Relationships: []
       }
       studio_generations: {
         Row: {
@@ -1372,6 +2095,110 @@ export type Database = {
           },
         ]
       }
+      subscription_plans: {
+        Row: {
+          created_at: string | null
+          display_name: string
+          features: Json | null
+          id: string
+          is_active: boolean | null
+          max_stores: number | null
+          max_team_members: number | null
+          price_monthly_cents: number
+          price_yearly_cents: number
+          sort_order: number | null
+          stripe_monthly_price_id: string | null
+          stripe_yearly_price_id: string | null
+          tokens_monthly: number
+        }
+        Insert: {
+          created_at?: string | null
+          display_name: string
+          features?: Json | null
+          id: string
+          is_active?: boolean | null
+          max_stores?: number | null
+          max_team_members?: number | null
+          price_monthly_cents: number
+          price_yearly_cents: number
+          sort_order?: number | null
+          stripe_monthly_price_id?: string | null
+          stripe_yearly_price_id?: string | null
+          tokens_monthly: number
+        }
+        Update: {
+          created_at?: string | null
+          display_name?: string
+          features?: Json | null
+          id?: string
+          is_active?: boolean | null
+          max_stores?: number | null
+          max_team_members?: number | null
+          price_monthly_cents?: number
+          price_yearly_cents?: number
+          sort_order?: number | null
+          stripe_monthly_price_id?: string | null
+          stripe_yearly_price_id?: string | null
+          tokens_monthly?: number
+        }
+        Relationships: []
+      }
+      subscriptions: {
+        Row: {
+          cancel_at_period_end: boolean | null
+          canceled_at: string | null
+          created_at: string | null
+          current_period_end: string | null
+          current_period_start: string | null
+          id: string
+          organization_id: string
+          plan_id: string
+          status: string
+          stripe_price_id: string
+          stripe_subscription_id: string
+          tokens_per_period: number
+          updated_at: string | null
+        }
+        Insert: {
+          cancel_at_period_end?: boolean | null
+          canceled_at?: string | null
+          created_at?: string | null
+          current_period_end?: string | null
+          current_period_start?: string | null
+          id?: string
+          organization_id: string
+          plan_id: string
+          status?: string
+          stripe_price_id: string
+          stripe_subscription_id: string
+          tokens_per_period?: number
+          updated_at?: string | null
+        }
+        Update: {
+          cancel_at_period_end?: boolean | null
+          canceled_at?: string | null
+          created_at?: string | null
+          current_period_end?: string | null
+          current_period_start?: string | null
+          id?: string
+          organization_id?: string
+          plan_id?: string
+          status?: string
+          stripe_price_id?: string
+          stripe_subscription_id?: string
+          tokens_per_period?: number
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "subscriptions_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       token_accounts: {
         Row: {
           balance: number | null
@@ -1413,6 +2240,45 @@ export type Database = {
           },
         ]
       }
+      token_packages: {
+        Row: {
+          created_at: string | null
+          description: string | null
+          display_name: string
+          id: string
+          is_active: boolean | null
+          is_popular: boolean | null
+          price_cents: number
+          sort_order: number | null
+          stripe_price_id: string | null
+          tokens: number
+        }
+        Insert: {
+          created_at?: string | null
+          description?: string | null
+          display_name: string
+          id: string
+          is_active?: boolean | null
+          is_popular?: boolean | null
+          price_cents: number
+          sort_order?: number | null
+          stripe_price_id?: string | null
+          tokens: number
+        }
+        Update: {
+          created_at?: string | null
+          description?: string | null
+          display_name?: string
+          id?: string
+          is_active?: boolean | null
+          is_popular?: boolean | null
+          price_cents?: number
+          sort_order?: number | null
+          stripe_price_id?: string | null
+          tokens?: number
+        }
+        Relationships: []
+      }
       token_pricing: {
         Row: {
           description: string | null
@@ -1439,6 +2305,62 @@ export type Database = {
           token_cost?: number
         }
         Relationships: []
+      }
+      token_purchases: {
+        Row: {
+          amount_cents: number
+          completed_at: string | null
+          created_at: string | null
+          created_by: string | null
+          currency: string | null
+          id: string
+          organization_id: string
+          package_id: string
+          refunded_at: string | null
+          status: string
+          stripe_checkout_session_id: string | null
+          stripe_payment_intent_id: string | null
+          tokens_amount: number
+        }
+        Insert: {
+          amount_cents: number
+          completed_at?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          currency?: string | null
+          id?: string
+          organization_id: string
+          package_id: string
+          refunded_at?: string | null
+          status?: string
+          stripe_checkout_session_id?: string | null
+          stripe_payment_intent_id?: string | null
+          tokens_amount: number
+        }
+        Update: {
+          amount_cents?: number
+          completed_at?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          currency?: string | null
+          id?: string
+          organization_id?: string
+          package_id?: string
+          refunded_at?: string | null
+          status?: string
+          stripe_checkout_session_id?: string | null
+          stripe_payment_intent_id?: string | null
+          tokens_amount?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "token_purchases_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       token_transactions: {
         Row: {
@@ -1493,6 +2415,88 @@ export type Database = {
           },
         ]
       }
+      user_group_members: {
+        Row: {
+          added_at: string | null
+          added_by: string | null
+          group_id: string
+          id: string
+          user_id: string
+        }
+        Insert: {
+          added_at?: string | null
+          added_by?: string | null
+          group_id: string
+          id?: string
+          user_id: string
+        }
+        Update: {
+          added_at?: string | null
+          added_by?: string | null
+          group_id?: string
+          id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_group_members_group_id_fkey"
+            columns: ["group_id"]
+            isOneToOne: false
+            referencedRelation: "user_groups"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_groups: {
+        Row: {
+          allowed_features: string[] | null
+          color: string | null
+          created_at: string | null
+          created_by: string | null
+          description: string | null
+          id: string
+          name: string
+          organization_id: string
+          token_limit_daily: number | null
+          token_limit_monthly: number | null
+          updated_at: string | null
+        }
+        Insert: {
+          allowed_features?: string[] | null
+          color?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          name: string
+          organization_id: string
+          token_limit_daily?: number | null
+          token_limit_monthly?: number | null
+          updated_at?: string | null
+        }
+        Update: {
+          allowed_features?: string[] | null
+          color?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          name?: string
+          organization_id?: string
+          token_limit_daily?: number | null
+          token_limit_monthly?: number | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_groups_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_organizations: {
         Row: {
           created_at: string | null
@@ -1524,39 +2528,75 @@ export type Database = {
       }
       user_profiles: {
         Row: {
-          id: string
-          user_id: string
-          display_name: string | null
           avatar_url: string | null
-          email_preferences: Json | null
           created_at: string | null
+          display_name: string | null
+          email_preferences: Json | null
+          id: string
           updated_at: string | null
+          user_id: string
         }
         Insert: {
-          id?: string
-          user_id: string
-          display_name?: string | null
           avatar_url?: string | null
-          email_preferences?: Json | null
           created_at?: string | null
+          display_name?: string | null
+          email_preferences?: Json | null
+          id?: string
           updated_at?: string | null
+          user_id: string
         }
         Update: {
-          id?: string
-          user_id?: string
-          display_name?: string | null
           avatar_url?: string | null
-          email_preferences?: Json | null
           created_at?: string | null
+          display_name?: string | null
+          email_preferences?: Json | null
+          id?: string
           updated_at?: string | null
+          user_id?: string
         }
         Relationships: []
+      }
+      user_token_usage: {
+        Row: {
+          date: string
+          id: string
+          operation_count: number
+          organization_id: string
+          tokens_used: number
+          user_id: string
+        }
+        Insert: {
+          date?: string
+          id?: string
+          operation_count?: number
+          organization_id: string
+          tokens_used?: number
+          user_id: string
+        }
+        Update: {
+          date?: string
+          id?: string
+          operation_count?: number
+          organization_id?: string
+          tokens_used?: number
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_token_usage_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
+      accept_invitation: { Args: { p_token: string }; Returns: Json }
       add_tokens: {
         Args: {
           p_amount: number
@@ -1565,12 +2605,43 @@ export type Database = {
         }
         Returns: boolean
       }
+      algorithm_sign: {
+        Args: { algorithm: string; secret: string; signables: string }
+        Returns: string
+      }
       bulk_insert_queue_items: {
         Args: { p_items: Json }
         Returns: {
           batch_id: string
           inserted_count: number
         }[]
+      }
+      credit_appsumo_tokens: {
+        Args: {
+          p_description?: string
+          p_license_id: string
+          p_org_id: string
+          p_tokens: number
+        }
+        Returns: undefined
+      }
+      credit_subscription_tokens: {
+        Args: {
+          p_description?: string
+          p_org_id: string
+          p_subscription_id: string
+          p_tokens: number
+        }
+        Returns: undefined
+      }
+      credit_tokens_from_purchase: {
+        Args: {
+          p_description?: string
+          p_org_id: string
+          p_purchase_id: string
+          p_tokens: number
+        }
+        Returns: undefined
       }
       deduct_tokens: {
         Args: { p_amount: number; p_organization_id: string }
@@ -1639,6 +2710,17 @@ export type Database = {
           status: string
           tokens_used: number
           total_count: number
+        }[]
+      }
+      get_organization_members: {
+        Args: { org_id: string }
+        Returns: {
+          avatar_url: string
+          display_name: string
+          email: string
+          joined_at: string
+          role: string
+          user_id: string
         }[]
       }
       get_queue_folder_stats: {
@@ -1722,12 +2804,36 @@ export type Database = {
         Returns: number
       }
       is_organization_owner: { Args: { org_id: string }; Returns: boolean }
+      poll_ai_jobs: { Args: never; Returns: undefined }
+      sign: {
+        Args: { algorithm?: string; payload: Json; secret: string }
+        Returns: string
+      }
       timeout_stuck_ai_jobs: {
         Args: never
         Returns: {
           ai_model: string
           job_id: string
           old_status: string
+        }[]
+      }
+      track_user_token_usage: {
+        Args: { p_org_id: string; p_tokens: number; p_user_id: string }
+        Returns: undefined
+      }
+      try_cast_double: { Args: { inp: string }; Returns: number }
+      update_shopify_job_counts: {
+        Args: { p_job_id: string }
+        Returns: undefined
+      }
+      url_decode: { Args: { data: string }; Returns: string }
+      url_encode: { Args: { data: string }; Returns: string }
+      verify: {
+        Args: { algorithm?: string; secret: string; token: string }
+        Returns: {
+          header: Json
+          payload: Json
+          valid: boolean
         }[]
       }
     }
@@ -1863,22 +2969,26 @@ export const Constants = {
   },
 } as const
 
-// Convenience type aliases for common tables
-export type PromptTemplate = Tables<'prompt_templates'>
-export type ProcessingHistoryItem = Tables<'processing_history'>
-export type Project = Tables<'projects'>
-export type Organization = Tables<'organizations'>
-export type UserOrganization = Tables<'user_organizations'>
-export type GoogleDriveConnection = Tables<'google_drive_connections'>
-export type UserProfile = Tables<'user_profiles'>
-
-// Google Drive file type (not a database table, but used in API responses)
-export interface GoogleDriveFile {
+// Convenience type exports
+export type Organization = Database['public']['Tables']['organizations']['Row']
+export type Project = Database['public']['Tables']['projects']['Row']
+export type PromptTemplate = Database['public']['Tables']['prompt_templates']['Row']
+export type ProcessingHistoryItem = Database['public']['Tables']['processing_history']['Row']
+export type UserOrganization = Database['public']['Tables']['user_organizations']['Row']
+export type GoogleDriveConnection = Database['public']['Tables']['google_drive_connections']['Row']
+export type GoogleDriveFile = {
   id: string
   name: string
   mimeType: string
   thumbnailLink?: string
+  webContentLink?: string
   webViewLink?: string
+  size?: string
+  modifiedTime?: string
   parents?: string[]
-  size?: number
+}
+
+// Extended types with relations
+export interface UserOrganizationWithOrg extends UserOrganization {
+  organizations: Organization
 }

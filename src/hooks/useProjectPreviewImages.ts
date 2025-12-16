@@ -1,5 +1,6 @@
 import { useQuery } from '@tanstack/react-query'
 import { supabase } from '@/lib/supabase'
+import { queryKeys } from '@/lib/queryKeys'
 
 /**
  * Fetches preview images for multiple projects
@@ -7,7 +8,7 @@ import { supabase } from '@/lib/supabase'
  */
 export function useProjectPreviewImages(projectIds: string[]) {
   return useQuery({
-    queryKey: ['project-preview-images', projectIds],
+    queryKey: queryKeys.projects.previewImages(projectIds),
     queryFn: async () => {
       if (projectIds.length === 0) return {}
 
@@ -52,7 +53,7 @@ export function useProjectPreviewImages(projectIds: string[]) {
  */
 export function useProjectPreviewImagesForOne(projectId: string | undefined) {
   return useQuery({
-    queryKey: ['project-preview-images-single', projectId],
+    queryKey: queryKeys.projects.previewImagesSingle(projectId ?? ''),
     queryFn: async () => {
       if (!projectId) return []
 

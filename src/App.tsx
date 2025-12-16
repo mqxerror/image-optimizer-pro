@@ -1,6 +1,7 @@
 import { lazy, Suspense } from 'react'
 import { Routes, Route, Navigate } from 'react-router-dom'
 import { Toaster } from '@/components/ui/toaster'
+import { ErrorBoundary } from '@/components/error'
 
 // Lazy load the feedback widget to avoid impacting initial bundle
 const FeedbackWidget = lazy(() => import('@/components/feedback/FeedbackWidget').then(m => ({ default: m.FeedbackWidget })))
@@ -32,6 +33,7 @@ import ProfileSettings from './pages/settings/ProfileSettings'
 import OrganizationSettings from './pages/settings/OrganizationSettings'
 import BillingSettings from './pages/settings/BillingSettings'
 import IntegrationsSettings from './pages/settings/IntegrationsSettings'
+import TeamSettings from './pages/settings/TeamSettings'
 
 // Admin pages
 import AdminLayout from './pages/admin/AdminLayout'
@@ -40,7 +42,7 @@ import AdminMembers from './pages/admin/Members'
 
 function App() {
   return (
-    <>
+    <ErrorBoundary>
       <Routes>
         {/* Auth routes */}
         <Route path="/auth/login" element={<Login />} />
@@ -74,7 +76,9 @@ function App() {
           path="/"
           element={
             <ProtectedRoute>
-              <Layout />
+              <ErrorBoundary>
+                <Layout />
+              </ErrorBoundary>
             </ProtectedRoute>
           }
         >
@@ -88,6 +92,7 @@ function App() {
             <Route index element={<SettingsIndex />} />
             <Route path="profile" element={<ProfileSettings />} />
             <Route path="organization" element={<OrganizationSettings />} />
+            <Route path="team" element={<TeamSettings />} />
             <Route path="billing" element={<BillingSettings />} />
             <Route path="integrations" element={<IntegrationsSettings />} />
           </Route>
@@ -127,7 +132,7 @@ function App() {
       <Suspense fallback={null}>
         <FeedbackWidget />
       </Suspense>
-    </>
+    </ErrorBoundary>
   )
 }
 

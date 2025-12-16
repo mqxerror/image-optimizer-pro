@@ -50,7 +50,10 @@ export default function Shopify() {
             </p>
           </div>
         </div>
-        <Button onClick={() => setConnectDialogOpen(true)} className="gap-2 shadow-sm">
+        <Button
+          onClick={() => setConnectDialogOpen(true)}
+          className="gap-2 bg-gradient-to-r from-purple-600 to-violet-600 hover:from-purple-700 hover:to-violet-700 text-white shadow-lg shadow-purple-500/30 ring-2 ring-purple-400/50 hover:ring-purple-500/60 transition-all hover:shadow-purple-500/40"
+        >
           <Plus className="h-4 w-4" />
           Connect Store
         </Button>
@@ -152,7 +155,10 @@ export default function Shopify() {
               <p className="text-sm text-gray-500 mb-6 text-center max-w-sm">
                 Connect your Shopify store to start optimizing product images automatically.
               </p>
-              <Button onClick={() => setConnectDialogOpen(true)} className="gap-2 shadow-sm">
+              <Button
+                onClick={() => setConnectDialogOpen(true)}
+                className="gap-2 bg-gradient-to-r from-purple-600 to-violet-600 hover:from-purple-700 hover:to-violet-700 text-white shadow-lg shadow-purple-500/30 ring-2 ring-purple-400/50 hover:ring-purple-500/60 transition-all hover:shadow-purple-500/40"
+              >
                 <Plus className="h-4 w-4" />
                 Connect Your First Store
               </Button>

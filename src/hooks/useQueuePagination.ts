@@ -1,6 +1,7 @@
 import { useQuery } from '@tanstack/react-query'
 import { supabase } from '@/lib/supabase'
 import { useAuthStore } from '@/stores/auth'
+import { queryKeys } from '@/lib/queryKeys'
 
 export interface QueueItem {
   id: string
@@ -63,7 +64,7 @@ export function useQueuePagination(
   const { pageSize = 50, filters = {} } = options
 
   return useQuery({
-    queryKey: ['queue-page', organization?.id, page, pageSize, filters],
+    queryKey: queryKeys.queue.page(organization?.id ?? '', page, pageSize, filters),
     queryFn: async () => {
       if (!organization) return { items: [], totalCount: 0 }
 
@@ -97,7 +98,7 @@ export function useQueueStats() {
   const { organization } = useAuthStore()
 
   return useQuery({
-    queryKey: ['queue-stats', organization?.id],
+    queryKey: queryKeys.queue.stats(organization?.id ?? ''),
     queryFn: async () => {
       if (!organization) return null
 
@@ -120,7 +121,7 @@ export function useQueueFolderStats() {
   const { organization } = useAuthStore()
 
   return useQuery({
-    queryKey: ['queue-folder-stats', organization?.id],
+    queryKey: queryKeys.queue.folderStats(organization?.id ?? ''),
     queryFn: async () => {
       if (!organization) return []
 

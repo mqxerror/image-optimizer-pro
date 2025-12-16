@@ -40,6 +40,7 @@ import {
   PromptOptimizer,
   GenerateConfirmSheet,
   PromptDiff,
+  EditMode,
 } from '@/components/studio'
 import { StudioModeToggle } from '@/components/studio/StudioModeToggle'
 import { StudioFeatureSelector, type StudioFeature } from '@/components/studio/StudioFeatureSelector'
@@ -841,7 +842,11 @@ export default function Studio() {
               />
 
               {/* Image Upload Area - Conditional based on feature mode */}
-              {featureMode === 'single' ? (
+              {featureMode === 'edit' ? (
+                <div className="bg-gray-800/50 rounded-2xl border border-gray-700 overflow-hidden">
+                  <EditMode imageUrl={imageUrl} onImageChange={handleImageChange} />
+                </div>
+              ) : featureMode === 'single' ? (
                 <>
                   <div className="w-full">
                     <ImageUploader imageUrl={imageUrl} onImageChange={handleImageChange} />

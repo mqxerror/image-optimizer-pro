@@ -2,6 +2,7 @@ import { useQuery } from '@tanstack/react-query'
 import { useEffect } from 'react'
 import { supabase } from '@/lib/supabase'
 import { useAuthStore } from '@/stores/auth'
+import { queryKeys } from '@/lib/queryKeys'
 
 export type ActivitySource = 'queue' | 'studio' | 'combination' | 'history'
 export type ActivityStatus = 'pending' | 'processing' | 'success' | 'failed' | 'timeout'
@@ -85,7 +86,7 @@ export function useActivityData(options: UseActivityDataOptions = {}) {
 
   // Always fetch ALL items - stats need the full picture
   const query = useQuery({
-    queryKey: ['activity-data', organization?.id, limit],
+    queryKey: queryKeys.activity.data(organization?.id ?? '', limit),
     queryFn: async (): Promise<ActivityItem[]> => {
       if (!organization) return []
 

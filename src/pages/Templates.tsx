@@ -382,7 +382,10 @@ export default function Templates() {
             <p className="text-gray-500 mt-0.5 text-sm">Manage AI prompt templates for image optimization</p>
           </div>
         </div>
-        <Button onClick={() => { reset(); setIsCreateOpen(true) }} className="gap-2 shadow-sm">
+        <Button
+          onClick={() => { reset(); setIsCreateOpen(true) }}
+          className="gap-2 bg-gradient-to-r from-purple-600 to-violet-600 hover:from-purple-700 hover:to-violet-700 text-white shadow-lg shadow-purple-500/30 ring-2 ring-purple-400/50 hover:ring-purple-500/60 transition-all hover:shadow-purple-500/40"
+        >
           <Plus className="h-4 w-4" />
           New Template
         </Button>

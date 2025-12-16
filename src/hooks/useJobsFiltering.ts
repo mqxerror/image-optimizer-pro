@@ -1,6 +1,7 @@
 import { useMemo, useState, useCallback } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { useAuthStore } from '@/stores/auth'
+import { queryKeys } from '@/lib/queryKeys'
 import type { ShopifySyncJob, ShopifyJobStatus } from '@/types/shopify'
 import type { JobsFilterState, JobStatusTab, JobStatusCount } from '@/components/shopify/jobs/types'
 
@@ -26,7 +27,7 @@ export function useJobsFiltering(options?: { storeId?: string }) {
 
   // Fetch all jobs
   const { data: allJobs = [], isLoading, refetch } = useQuery({
-    queryKey: ['shopify-jobs-all', filters.storeId],
+    queryKey: queryKeys.shopify.jobs(filters.storeId ?? '', { storeId: filters.storeId }),
     queryFn: async () => {
       const response = await fetch(
         `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/shopify-jobs`,

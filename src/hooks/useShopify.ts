@@ -1,6 +1,7 @@
 import { useQuery, useInfiniteQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { supabase } from '@/lib/supabase'
 import { useAuthStore } from '@/stores/auth'
+import { queryKeys } from '@/lib/queryKeys'
 import type {
   ShopifyStore,
   ShopifyStoreSettings,
@@ -22,7 +23,7 @@ export function useShopifyStores() {
   const { user } = useAuthStore()
 
   return useQuery({
-    queryKey: ['shopify-stores', user?.id],
+    queryKey: queryKeys.shopify.stores(user?.id ?? ''),
     queryFn: async () => {
       if (!user) return []
 
@@ -45,7 +46,7 @@ export function useShopifyStore(storeId: string | null) {
   const { user } = useAuthStore()
 
   return useQuery({
-    queryKey: ['shopify-store', storeId],
+    queryKey: queryKeys.shopify.store(storeId ?? ''),
     queryFn: async () => {
       if (!storeId || !user) return null
 
@@ -134,7 +135,7 @@ export function useCompleteShopifyOAuth() {
       return response.json()
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['shopify-stores'] })
+      queryClient.invalidateQueries({ queryKey: queryKeys.shopify.all })
     }
   })
 }
@@ -158,8 +159,8 @@ export function useUpdateStoreSettings() {
       return data
     },
     onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({ queryKey: ['shopify-store', variables.storeId] })
-      queryClient.invalidateQueries({ queryKey: ['shopify-stores'] })
+      queryClient.invalidateQueries({ queryKey: queryKeys.shopify.store(variables.storeId) })
+      queryClient.invalidateQueries({ queryKey: queryKeys.shopify.all })
     }
   })
 }
@@ -180,7 +181,7 @@ export function useDisconnectStore() {
       if (error) throw error
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['shopify-stores'] })
+      queryClient.invalidateQueries({ queryKey: queryKeys.shopify.all })
     }
   })
 }
@@ -200,7 +201,7 @@ export function useShopifyProducts(storeId: string | null, options?: {
   const { session } = useAuthStore()
 
   return useQuery({
-    queryKey: ['shopify-products', storeId, options],
+    queryKey: queryKeys.shopify.products(storeId ?? '', options),
     queryFn: async (): Promise<ShopifyProductsResponse> => {
       if (!storeId) return { products: [], pagination: { next_page: null, prev_page: null, has_next: false, has_prev: false } }
 
@@ -245,7 +246,7 @@ export function useShopifyProductsInfinite(storeId: string | null, options?: {
   const { session } = useAuthStore()
 
   return useInfiniteQuery({
-    queryKey: ['shopify-products-infinite', storeId, options],
+    queryKey: queryKeys.shopify.productsInfinite(storeId ?? '', options),
     queryFn: async ({ pageParam }): Promise<ShopifyProductsResponse> => {
       if (!storeId) return { products: [], pagination: { next_page: null, prev_page: null, has_next: false, has_prev: false } }
 
@@ -371,7 +372,7 @@ export function useShopifyJobs(options?: {
   const { session } = useAuthStore()
 
   return useQuery({
-    queryKey: ['shopify-jobs', options],
+    queryKey: queryKeys.shopify.jobs(options?.storeId ?? '', options),
     queryFn: async () => {
       const response = await fetch(
         `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/shopify-jobs`,
@@ -408,7 +409,7 @@ export function useShopifyJob(jobId: string | null) {
   const { session } = useAuthStore()
 
   return useQuery({
-    queryKey: ['shopify-job', jobId],
+    queryKey: queryKeys.shopify.job(jobId ?? ''),
     queryFn: async (): Promise<ShopifyJobWithImages | null> => {
       if (!jobId) return null
 
@@ -474,7 +475,7 @@ export function useCreateShopifyJob() {
       return response.json()
     },
     onSuccess: (data) => {
-      queryClient.invalidateQueries({ queryKey: ['shopify-jobs'] })
+      queryClient.invalidateQueries({ queryKey: queryKeys.shopify.all })
       // Auto-trigger processing after job creation
       if (data.job_id && session?.access_token) {
         triggerJobProcessing(data.job_id, session.access_token)
@@ -513,7 +514,7 @@ export function useStartJobProcessing() {
       return response.json()
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['shopify-jobs'] })
+      queryClient.invalidateQueries({ queryKey: queryKeys.shopify.all })
     }
   })
 }
@@ -571,8 +572,8 @@ export function useApproveShopifyJob() {
       return response.json()
     },
     onSuccess: (_, jobId) => {
-      queryClient.invalidateQueries({ queryKey: ['shopify-jobs'] })
-      queryClient.invalidateQueries({ queryKey: ['shopify-job', jobId] })
+      queryClient.invalidateQueries({ queryKey: queryKeys.shopify.all })
+      queryClient.invalidateQueries({ queryKey: queryKeys.shopify.job(jobId) })
     }
   })
 }
@@ -607,8 +608,8 @@ export function useCancelShopifyJob() {
       return response.json()
     },
     onSuccess: (_, jobId) => {
-      queryClient.invalidateQueries({ queryKey: ['shopify-jobs'] })
-      queryClient.invalidateQueries({ queryKey: ['shopify-job', jobId] })
+      queryClient.invalidateQueries({ queryKey: queryKeys.shopify.all })
+      queryClient.invalidateQueries({ queryKey: queryKeys.shopify.job(jobId) })
     }
   })
 }
@@ -643,8 +644,8 @@ export function usePauseShopifyJob() {
       return response.json()
     },
     onSuccess: (_, jobId) => {
-      queryClient.invalidateQueries({ queryKey: ['shopify-jobs'] })
-      queryClient.invalidateQueries({ queryKey: ['shopify-job', jobId] })
+      queryClient.invalidateQueries({ queryKey: queryKeys.shopify.all })
+      queryClient.invalidateQueries({ queryKey: queryKeys.shopify.job(jobId) })
     }
   })
 }
@@ -679,8 +680,8 @@ export function useResumeShopifyJob() {
       return response.json()
     },
     onSuccess: (_, jobId) => {
-      queryClient.invalidateQueries({ queryKey: ['shopify-jobs'] })
-      queryClient.invalidateQueries({ queryKey: ['shopify-job', jobId] })
+      queryClient.invalidateQueries({ queryKey: queryKeys.shopify.all })
+      queryClient.invalidateQueries({ queryKey: queryKeys.shopify.job(jobId) })
     }
   })
 }
@@ -715,7 +716,7 @@ export function useDiscardShopifyJob() {
       return response.json()
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['shopify-jobs'] })
+      queryClient.invalidateQueries({ queryKey: queryKeys.shopify.all })
     }
   })
 }
@@ -750,8 +751,8 @@ export function usePushShopifyJob() {
       return response.json()
     },
     onSuccess: (_, jobId) => {
-      queryClient.invalidateQueries({ queryKey: ['shopify-jobs'] })
-      queryClient.invalidateQueries({ queryKey: ['shopify-job', jobId] })
+      queryClient.invalidateQueries({ queryKey: queryKeys.shopify.all })
+      queryClient.invalidateQueries({ queryKey: queryKeys.shopify.job(jobId) })
     }
   })
 }
@@ -786,8 +787,8 @@ export function useRetryShopifyImage() {
       return response.json()
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['shopify-jobs'] })
-      queryClient.invalidateQueries({ queryKey: ['shopify-job'] })
+      queryClient.invalidateQueries({ queryKey: queryKeys.shopify.all })
+      queryClient.invalidateQueries({ queryKey: queryKeys.shopify.all })
     }
   })
 }
