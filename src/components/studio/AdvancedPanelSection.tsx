@@ -1,91 +1,76 @@
-import { ChevronDown } from 'lucide-react'
+import { ChevronDown, ChevronRight } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 interface AdvancedPanelSectionProps {
   title: string
-  icon: string
+  icon: React.ReactNode
   iconBg?: string
   isExpanded: boolean
   onToggle: () => void
   children: React.ReactNode
   /** Compact mode for tighter spacing */
   compact?: boolean
+  /** Current value preview shown in collapsed state */
+  preview?: string
 }
 
 export function AdvancedPanelSection({
   title,
   icon,
-  iconBg = 'bg-gray-100',
+  iconBg = 'bg-slate-100',
   isExpanded,
   onToggle,
   children,
-  compact = false
+  compact = false,
+  preview
 }: AdvancedPanelSectionProps) {
   return (
-    <div className={cn(
-      "rounded-lg overflow-hidden transition-all duration-200",
-      isExpanded
-        ? "bg-white border border-gray-200 shadow-sm"
-        : "bg-gray-50 border border-gray-200 hover:border-gray-300"
-    )}>
+    <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
       {/* Section Header */}
       <button
         onClick={onToggle}
-        className={cn(
-          "w-full flex items-center justify-between transition-all cursor-pointer group",
-          compact ? "p-2.5" : "p-4",
-          isExpanded
-            ? "bg-gradient-to-r from-purple-50/50 to-blue-50/50"
-            : "hover:bg-gray-50"
-        )}
+        className="w-full flex items-center justify-between px-3 py-2.5 hover:bg-slate-50/50 transition-colors"
         aria-expanded={isExpanded}
       >
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 min-w-0">
           <div className={cn(
-            "rounded-md flex items-center justify-center transition-transform duration-200",
-            compact ? "h-7 w-7" : "h-9 w-9",
-            iconBg,
-            isExpanded && "scale-105"
+            "w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0",
+            iconBg
           )}>
-            <span className={compact ? "text-sm" : "text-lg"}>{icon}</span>
+            {icon}
           </div>
           <span className={cn(
-            "font-medium transition-colors",
-            compact ? "text-xs" : "text-sm",
-            isExpanded ? "text-gray-900" : "text-gray-700 group-hover:text-gray-900"
+            "font-medium text-slate-700 truncate",
+            compact ? "text-xs" : "text-sm"
           )}>
             {title}
           </span>
+          {!isExpanded && preview && (
+            <span className="text-xs text-slate-400 ml-1 truncate">{preview}</span>
+          )}
         </div>
         <div className={cn(
-          "rounded-full flex items-center justify-center transition-all duration-200",
-          compact ? "h-5 w-5" : "h-7 w-7",
-          isExpanded
-            ? "bg-purple-100 rotate-180"
-            : "bg-gray-100 group-hover:bg-gray-200"
+          "w-6 h-6 rounded-full flex items-center justify-center transition-all flex-shrink-0",
+          isExpanded ? "bg-purple-100" : "bg-slate-100"
         )}>
-          <ChevronDown className={cn(
-            "transition-colors",
-            compact ? "h-3 w-3" : "h-4 w-4",
-            isExpanded ? "text-purple-600" : "text-gray-500"
-          )} />
+          {isExpanded ? (
+            <ChevronDown className="w-3.5 h-3.5 text-purple-600" />
+          ) : (
+            <ChevronRight className="w-3.5 h-3.5 text-slate-400" />
+          )}
         </div>
       </button>
 
       {/* Section Content with animated expand */}
-      <div className={cn(
-        "grid transition-all duration-200 ease-out",
-        isExpanded ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"
-      )}>
-        <div className="overflow-hidden">
+      {isExpanded && (
+        <div className="border-t border-slate-100">
           <div className={cn(
-            "border-t border-gray-100",
-            compact ? "px-3 pb-3 pt-2" : "px-4 pb-4 pt-2"
+            compact ? "px-3 pb-3 pt-2" : "px-3 pb-4 pt-3"
           )}>
             {children}
           </div>
         </div>
-      </div>
+      )}
     </div>
   )
 }

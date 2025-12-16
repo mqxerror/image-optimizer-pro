@@ -1,5 +1,5 @@
 import { useState, useCallback, useRef } from 'react'
-import { Upload, X, Image as ImageIcon, RefreshCw, Camera } from 'lucide-react'
+import { Upload, X, Image as ImageIcon, RefreshCw, Camera, ImagePlus } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { MobileImageCapture } from '@/components/shared'
 
@@ -88,7 +88,7 @@ export function ImageUploader({ imageUrl, onImageChange }: ImageUploaderProps) {
       <div className="relative group">
         {fileInput}
         <div
-          className="rounded-2xl overflow-hidden bg-gray-800/50 border border-gray-700 shadow-2xl cursor-pointer md:cursor-default"
+          className="rounded-xl overflow-hidden bg-slate-100 border border-slate-200 cursor-pointer md:cursor-default"
           onClick={() => {
             // On mobile, tapping the image opens capture modal to replace
             if (isMobileDevice()) {
@@ -96,54 +96,57 @@ export function ImageUploader({ imageUrl, onImageChange }: ImageUploaderProps) {
             }
           }}
         >
-          <img
-            src={imageUrl}
-            alt="Uploaded image"
-            className="w-full h-auto max-h-[400px] object-contain"
-          />
+          {/* Checkerboard background for transparency */}
+          <div className="relative bg-[url('/checkerboard.png')] bg-repeat bg-[length:12px_12px]">
+            <img
+              src={imageUrl}
+              alt="Uploaded image"
+              className="w-full h-auto max-h-[400px] object-contain"
+            />
+          </div>
         </div>
         {/* Action buttons - desktop */}
-        <div className="absolute top-3 right-3 hidden md:flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+        <div className="absolute top-2 right-2 hidden md:flex gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity">
           <Button
             variant="secondary"
             size="icon"
-            className="h-8 w-8 bg-gray-900/80 hover:bg-gray-900 border-gray-700"
+            className="h-7 w-7 bg-white/90 hover:bg-white border border-slate-200 shadow-sm"
             onClick={handleClick}
           >
-            <RefreshCw className="h-4 w-4 text-gray-300" />
+            <RefreshCw className="h-3.5 w-3.5 text-slate-600" />
           </Button>
           <Button
             variant="secondary"
             size="icon"
-            className="h-8 w-8 bg-gray-900/80 hover:bg-red-900 border-gray-700"
+            className="h-7 w-7 bg-white/90 hover:bg-red-50 border border-slate-200 shadow-sm"
             onClick={handleClear}
           >
-            <X className="h-4 w-4 text-gray-300" />
+            <X className="h-3.5 w-3.5 text-slate-600" />
           </Button>
         </div>
         {/* Action buttons - mobile (always visible) */}
-        <div className="absolute top-3 right-3 flex md:hidden gap-2">
+        <div className="absolute top-2 right-2 flex md:hidden gap-1.5">
           <Button
             variant="secondary"
             size="icon"
-            className="h-8 w-8 bg-gray-900/80 hover:bg-gray-900 border-gray-700"
+            className="h-8 w-8 bg-white/90 hover:bg-white border border-slate-200 shadow-sm"
             onClick={(e) => {
               e.stopPropagation()
               setShowMobileCapture(true)
             }}
           >
-            <Camera className="h-4 w-4 text-gray-300" />
+            <Camera className="h-4 w-4 text-slate-600" />
           </Button>
           <Button
             variant="secondary"
             size="icon"
-            className="h-8 w-8 bg-gray-900/80 hover:bg-red-900 border-gray-700"
+            className="h-8 w-8 bg-white/90 hover:bg-red-50 border border-slate-200 shadow-sm"
             onClick={(e) => {
               e.stopPropagation()
               handleClear()
             }}
           >
-            <X className="h-4 w-4 text-gray-300" />
+            <X className="h-4 w-4 text-slate-600" />
           </Button>
         </div>
         {/* Mobile capture modal */}
@@ -174,25 +177,25 @@ export function ImageUploader({ imageUrl, onImageChange }: ImageUploaderProps) {
         tabIndex={0}
         role="button"
         aria-label="Upload image. Press Enter to browse files."
-        className={`rounded-2xl border-2 border-dashed cursor-pointer transition-all flex flex-col items-center justify-center gap-3 py-10 px-6 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-500 focus-visible:ring-offset-2 focus-visible:ring-offset-gray-900 ${
+        className={`rounded-xl border-2 border-dashed cursor-pointer transition-all flex flex-col items-center justify-center gap-3 py-10 px-6 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-500 focus-visible:ring-offset-2 ${
           isDragging
-            ? 'border-purple-500 bg-purple-500/10'
-            : 'border-gray-600 bg-gray-800/30 hover:border-purple-400 hover:bg-purple-500/5'
+            ? 'border-purple-400 bg-purple-50'
+            : 'border-slate-300 bg-slate-50/50 hover:border-purple-300 hover:bg-purple-50/30'
         }`}
       >
         {fileInput}
-        <div className={`p-3 rounded-full ${isDragging ? 'bg-purple-500/20' : 'bg-gray-700/50'}`}>
+        <div className={`p-3 rounded-xl ${isDragging ? 'bg-purple-100' : 'bg-white border border-slate-200'}`}>
           {isDragging ? (
-            <Upload className="h-8 w-8 text-purple-400" />
+            <Upload className="h-7 w-7 text-purple-500" />
           ) : (
-            <Camera className="h-8 w-8 text-gray-500 md:hidden" />
-          )}
-          {!isDragging && (
-            <ImageIcon className="h-8 w-8 text-gray-500 hidden md:block" />
+            <>
+              <Camera className="h-7 w-7 text-slate-400 md:hidden" />
+              <ImagePlus className="h-7 w-7 text-slate-400 hidden md:block" />
+            </>
           )}
         </div>
         <div className="text-center">
-          <p className="font-medium text-gray-300 text-base">
+          <p className="font-medium text-slate-700 text-sm">
             {isDragging ? 'Drop your image' : (
               <>
                 <span className="md:hidden">Tap to capture or browse</span>
@@ -200,27 +203,27 @@ export function ImageUploader({ imageUrl, onImageChange }: ImageUploaderProps) {
               </>
             )}
           </p>
-          <p className="text-sm text-gray-500 mt-0.5">
+          <p className="text-xs text-slate-400 mt-0.5">
             <span className="hidden md:inline">or click to browse</span>
           </p>
         </div>
-        <p className="text-xs text-gray-600">PNG, JPG up to 10MB</p>
+        <p className="text-[10px] text-slate-400">PNG, JPG up to 10MB</p>
 
         {/* Step indicators for guidance */}
-        <div className="flex items-center justify-center gap-2 text-xs text-gray-500">
-          <div className="flex items-center gap-1.5">
-            <span className="w-5 h-5 rounded-full bg-purple-500/20 text-purple-400 flex items-center justify-center text-[10px] font-bold">1</span>
-            <span className="text-purple-400 font-medium">Upload</span>
+        <div className="flex items-center justify-center gap-2 text-[10px] text-slate-500 mt-1">
+          <div className="flex items-center gap-1">
+            <span className="w-4 h-4 rounded-full bg-purple-100 text-purple-600 flex items-center justify-center text-[9px] font-bold">1</span>
+            <span className="text-purple-600 font-medium">Upload</span>
           </div>
-          <div className="w-4 h-px bg-gray-700" />
-          <div className="flex items-center gap-1.5">
-            <span className="w-5 h-5 rounded-full bg-gray-700 text-gray-500 flex items-center justify-center text-[10px] font-bold">2</span>
-            <span>Style</span>
+          <div className="w-3 h-px bg-slate-300" />
+          <div className="flex items-center gap-1">
+            <span className="w-4 h-4 rounded-full bg-slate-200 text-slate-400 flex items-center justify-center text-[9px] font-bold">2</span>
+            <span className="text-slate-400">Style</span>
           </div>
-          <div className="w-4 h-px bg-gray-700" />
-          <div className="flex items-center gap-1.5">
-            <span className="w-5 h-5 rounded-full bg-gray-700 text-gray-500 flex items-center justify-center text-[10px] font-bold">3</span>
-            <span>Generate</span>
+          <div className="w-3 h-px bg-slate-300" />
+          <div className="flex items-center gap-1">
+            <span className="w-4 h-4 rounded-full bg-slate-200 text-slate-400 flex items-center justify-center text-[9px] font-bold">3</span>
+            <span className="text-slate-400">Generate</span>
           </div>
         </div>
       </div>

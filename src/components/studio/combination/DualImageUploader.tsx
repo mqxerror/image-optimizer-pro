@@ -26,11 +26,11 @@ function SingleImageUpload({
   const Icon = isModel ? User : Gem
   const title = isModel ? 'Model Photo' : 'Jewelry Image'
   const subtitle = isModel
-    ? 'Upload a photo of a person to wear the jewelry'
-    : 'Upload the jewelry to be placed on the model'
+    ? 'Upload a photo of a person'
+    : 'Upload the jewelry piece'
   const hint = isModel
-    ? 'Best: Clear face, visible neck/ears/hands'
-    : 'Best: Transparent or white background'
+    ? 'Clear face, visible neck/ears'
+    : 'Transparent background best'
 
   const handleFile = useCallback((file: File) => {
     if (!file.type.startsWith('image/')) {
@@ -95,41 +95,44 @@ function SingleImageUpload({
     return (
       <div className={cn("relative group", className)}>
         {fileInput}
-        <div className="rounded-xl overflow-hidden bg-gray-800/50 border border-gray-700 shadow-lg">
+        <div className="rounded-xl overflow-hidden bg-slate-100 border border-slate-200 shadow-sm">
           {/* Label badge */}
           <div className={cn(
-            "absolute top-2 left-2 z-10 flex items-center gap-1.5 px-2 py-1 rounded-md text-xs font-medium",
-            isModel ? "bg-blue-500/90 text-white" : "bg-amber-500/90 text-white"
+            "absolute top-2 left-2 z-10 flex items-center gap-1 px-2 py-1 rounded-lg text-[10px] font-medium",
+            isModel ? "bg-blue-500 text-white" : "bg-amber-500 text-white"
           )}>
-            <Icon className="h-3 w-3" />
+            <Icon className="h-2.5 w-2.5" />
             {title}
-            <Check className="h-3 w-3 ml-1" />
+            <Check className="h-2.5 w-2.5 ml-0.5" />
           </div>
 
-          <img
-            src={imageUrl}
-            alt={title}
-            className="w-full h-auto max-h-[280px] object-contain"
-          />
+          {/* Checkerboard for transparency */}
+          <div className="relative bg-[url('/checkerboard.png')] bg-repeat bg-[length:12px_12px]">
+            <img
+              src={imageUrl}
+              alt={title}
+              className="w-full h-auto max-h-[200px] object-contain"
+            />
+          </div>
         </div>
 
         {/* Action buttons */}
-        <div className="absolute top-2 right-2 flex gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity">
+        <div className="absolute top-2 right-2 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
           <Button
             variant="secondary"
             size="icon"
-            className="h-7 w-7 bg-gray-900/80 hover:bg-gray-900 border-gray-700"
+            className="h-6 w-6 bg-white/90 hover:bg-white border border-slate-200 shadow-sm"
             onClick={handleClick}
           >
-            <RefreshCw className="h-3.5 w-3.5 text-gray-300" />
+            <RefreshCw className="h-3 w-3 text-slate-600" />
           </Button>
           <Button
             variant="secondary"
             size="icon"
-            className="h-7 w-7 bg-gray-900/80 hover:bg-red-900 border-gray-700"
+            className="h-6 w-6 bg-white/90 hover:bg-red-50 border border-slate-200 shadow-sm"
             onClick={handleClear}
           >
-            <X className="h-3.5 w-3.5 text-gray-300" />
+            <X className="h-3 w-3 text-slate-600" />
           </Button>
         </div>
       </div>
@@ -144,14 +147,14 @@ function SingleImageUpload({
       onDragOver={handleDragOver}
       onDragLeave={handleDragLeave}
       className={cn(
-        "rounded-xl border-2 border-dashed cursor-pointer transition-all flex flex-col items-center justify-center gap-2 py-6 px-3",
+        "rounded-xl border-2 border-dashed cursor-pointer transition-all flex flex-col items-center justify-center gap-2 py-5 px-2",
         isDragging
           ? isModel
-            ? 'border-blue-500 bg-blue-500/10'
-            : 'border-amber-500 bg-amber-500/10'
+            ? 'border-blue-400 bg-blue-50'
+            : 'border-amber-400 bg-amber-50'
           : isModel
-            ? 'border-blue-400/40 bg-blue-500/5 hover:border-blue-400 hover:bg-blue-500/10'
-            : 'border-amber-400/40 bg-amber-500/5 hover:border-amber-400 hover:bg-amber-500/10',
+            ? 'border-slate-300 bg-blue-50/30 hover:border-blue-400 hover:bg-blue-50'
+            : 'border-slate-300 bg-amber-50/30 hover:border-amber-400 hover:bg-amber-50',
         className
       )}
     >
@@ -159,29 +162,29 @@ function SingleImageUpload({
 
       {/* Icon */}
       <div className={cn(
-        "p-2.5 rounded-full",
+        "p-2 rounded-lg",
         isDragging
-          ? isModel ? 'bg-blue-500/20' : 'bg-amber-500/20'
-          : isModel ? 'bg-blue-500/10' : 'bg-amber-500/10'
+          ? isModel ? 'bg-blue-100' : 'bg-amber-100'
+          : isModel ? 'bg-blue-50 border border-blue-200' : 'bg-amber-50 border border-amber-200'
       )}>
         {isDragging ? (
-          <Upload className={cn("h-6 w-6", isModel ? "text-blue-400" : "text-amber-400")} />
+          <Upload className={cn("h-5 w-5", isModel ? "text-blue-500" : "text-amber-500")} />
         ) : isUploading ? (
-          <div className="h-6 w-6 border-2 border-t-transparent rounded-full animate-spin border-current" />
+          <div className="h-5 w-5 border-2 border-t-transparent rounded-full animate-spin border-current" />
         ) : (
-          <Icon className={cn("h-6 w-6", isModel ? "text-blue-400" : "text-amber-400")} />
+          <Icon className={cn("h-5 w-5", isModel ? "text-blue-500" : "text-amber-500")} />
         )}
       </div>
 
       {/* Title */}
       <div className="text-center">
         <p className={cn(
-          "font-medium text-sm",
-          isModel ? "text-blue-300" : "text-amber-300"
+          "font-medium text-xs",
+          isModel ? "text-blue-700" : "text-amber-700"
         )}>
           {isDragging ? 'Drop here' : title}
         </p>
-        <p className="text-[10px] text-gray-500 mt-0.5 max-w-[140px]">{subtitle}</p>
+        <p className="text-[9px] text-slate-500 mt-0.5 max-w-[100px]">{subtitle}</p>
       </div>
     </div>
   )
@@ -205,9 +208,9 @@ export function DualImageUploader({
   className
 }: DualImageUploaderProps) {
   return (
-    <div className={cn("space-y-3", className)}>
+    <div className={cn("space-y-2", className)}>
       {/* Side-by-side upload zones */}
-      <div className="grid grid-cols-2 gap-3">
+      <div className="grid grid-cols-2 gap-2">
         <SingleImageUpload
           type="model"
           imageUrl={images.model.url}

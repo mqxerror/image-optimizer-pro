@@ -1,5 +1,5 @@
-import { Lightbulb, Sparkles } from 'lucide-react'
-import { Label } from '@/components/ui/label'
+import { useState } from 'react'
+import { Lightbulb, Sparkles, ChevronDown, ChevronRight, Sliders, Layout } from 'lucide-react'
 import { AIModelSelector } from './AIModelSelector'
 import type { AspectRatio } from '@/types/studio'
 
@@ -29,83 +29,173 @@ export function QuickControls({
   onModelChange,
   onAspectRatioChange
 }: QuickControlsProps) {
+  const [expandedSections, setExpandedSections] = useState({
+    model: true,
+    output: false,
+    lighting: false,
+  })
+
+  const toggleSection = (section: keyof typeof expandedSections) => {
+    setExpandedSections(prev => ({ ...prev, [section]: !prev[section] }))
+  }
+
   return (
-    <div className="bg-white flex flex-col h-full">
+    <div className="flex flex-col h-full bg-slate-50/50">
       {/* Scrollable Content */}
-      <div className="flex-1 overflow-y-auto p-4 space-y-5">
-        {/* AI Model Selection */}
-        <AIModelSelector
-          value={aiModel}
-          onChange={onModelChange}
-          mode="single"
-        />
+      <div className="flex-1 overflow-y-auto p-3 space-y-2">
 
-        {/* Aspect Ratio - 3 per row compact grid */}
-        <div>
-          <Label className="text-xs text-gray-500 font-medium mb-2 block">Output Size</Label>
-          <div className="grid grid-cols-3 gap-2">
-            {aspectOptions.map(option => (
-              <button
-                key={option.value}
-                onClick={() => onAspectRatioChange(option.value)}
-                className={`flex flex-col items-center gap-1 py-3 px-2 rounded-xl transition-all ${
-                  aspectRatio === option.value
-                    ? 'bg-purple-50 ring-2 ring-purple-400 ring-offset-1'
-                    : 'bg-gray-50 hover:bg-gray-100 border border-gray-200'
-                }`}
-              >
-                <div
-                  className={`rounded-sm transition-colors ${
-                    aspectRatio === option.value
-                      ? 'bg-purple-500'
-                      : 'bg-gray-300'
-                  }`}
-                  style={{ width: option.width, height: option.height }}
+        {/* AI Model Section */}
+        <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
+          <button
+            onClick={() => toggleSection('model')}
+            className="w-full flex items-center justify-between px-3 py-2.5 hover:bg-slate-50/50 transition-colors"
+          >
+            <div className="flex items-center gap-2">
+              <div className="w-7 h-7 rounded-lg bg-indigo-50 flex items-center justify-center">
+                <Sparkles className="w-3.5 h-3.5 text-indigo-500" />
+              </div>
+              <span className="text-sm font-medium text-slate-700">AI Model</span>
+            </div>
+            <div className={`w-6 h-6 rounded-full flex items-center justify-center transition-all ${
+              expandedSections.model ? 'bg-indigo-100' : 'bg-slate-100'
+            }`}>
+              {expandedSections.model ? (
+                <ChevronDown className="w-3.5 h-3.5 text-indigo-600" />
+              ) : (
+                <ChevronRight className="w-3.5 h-3.5 text-slate-400" />
+              )}
+            </div>
+          </button>
+
+          {expandedSections.model && (
+            <div className="px-3 pb-3 border-t border-slate-100">
+              <div className="pt-3">
+                <AIModelSelector
+                  value={aiModel}
+                  onChange={onModelChange}
+                  mode="single"
+                  compact
                 />
-                <span className={`text-xs font-semibold ${
-                  aspectRatio === option.value ? 'text-purple-700' : 'text-gray-700'
-                }`}>
-                  {option.label}
-                </span>
-                <span className={`text-[10px] ${
-                  aspectRatio === option.value ? 'text-purple-500' : 'text-gray-400'
-                }`}>
-                  {option.desc}
-                </span>
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {/* Lighting Control */}
-        <div>
-          <Label className="text-xs text-gray-500 font-medium mb-2 block">Lighting</Label>
-          <div className="flex items-center gap-3">
-            <Lightbulb className={`w-4 h-4 flex-shrink-0 ${lighting > 50 ? 'text-yellow-500' : 'text-gray-400'}`} />
-            <div className="flex-1 space-y-1.5">
-              <input
-                type="range"
-                min={0}
-                max={100}
-                value={lighting}
-                onChange={(e) => onChange('lighting', Number(e.target.value))}
-                className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-yellow-500"
-              />
-              <div className="flex justify-between text-[10px] text-gray-500">
-                <span>Dim</span>
-                <span className="font-semibold text-gray-700">{lighting}%</span>
-                <span>Bright</span>
               </div>
             </div>
-          </div>
+          )}
         </div>
 
-        {/* Advanced Mode CTA */}
-        <div className="pt-3 border-t border-gray-100">
-          <div className="flex items-center gap-2 text-xs text-gray-500">
-            <Sparkles className="w-4 h-4 text-purple-400" />
-            <span>Switch to <strong className="text-purple-600">Advanced</strong> for more</span>
-          </div>
+        {/* Output Size Section */}
+        <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
+          <button
+            onClick={() => toggleSection('output')}
+            className="w-full flex items-center justify-between px-3 py-2.5 hover:bg-slate-50/50 transition-colors"
+          >
+            <div className="flex items-center gap-2">
+              <div className="w-7 h-7 rounded-lg bg-purple-50 flex items-center justify-center">
+                <Layout className="w-3.5 h-3.5 text-purple-500" />
+              </div>
+              <span className="text-sm font-medium text-slate-700">Output Size</span>
+              <span className="text-xs text-slate-400 ml-1">{aspectRatio}</span>
+            </div>
+            <div className={`w-6 h-6 rounded-full flex items-center justify-center transition-all ${
+              expandedSections.output ? 'bg-purple-100' : 'bg-slate-100'
+            }`}>
+              {expandedSections.output ? (
+                <ChevronDown className="w-3.5 h-3.5 text-purple-600" />
+              ) : (
+                <ChevronRight className="w-3.5 h-3.5 text-slate-400" />
+              )}
+            </div>
+          </button>
+
+          {expandedSections.output && (
+            <div className="px-3 pb-3 border-t border-slate-100">
+              <div className="pt-3 grid grid-cols-3 gap-1.5">
+                {aspectOptions.map(option => (
+                  <button
+                    key={option.value}
+                    onClick={() => onAspectRatioChange(option.value)}
+                    className={`flex flex-col items-center gap-1 py-2.5 px-2 rounded-lg transition-all ${
+                      aspectRatio === option.value
+                        ? 'bg-purple-50 ring-1 ring-purple-400'
+                        : 'bg-slate-50 hover:bg-slate-100'
+                    }`}
+                  >
+                    <div
+                      className={`rounded-sm transition-colors ${
+                        aspectRatio === option.value
+                          ? 'bg-purple-500'
+                          : 'bg-slate-300'
+                      }`}
+                      style={{ width: option.width * 0.8, height: option.height * 0.8 }}
+                    />
+                    <span className={`text-[11px] font-semibold ${
+                      aspectRatio === option.value ? 'text-purple-700' : 'text-slate-600'
+                    }`}>
+                      {option.label}
+                    </span>
+                    <span className={`text-[9px] ${
+                      aspectRatio === option.value ? 'text-purple-400' : 'text-slate-400'
+                    }`}>
+                      {option.desc}
+                    </span>
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Lighting Section */}
+        <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
+          <button
+            onClick={() => toggleSection('lighting')}
+            className="w-full flex items-center justify-between px-3 py-2.5 hover:bg-slate-50/50 transition-colors"
+          >
+            <div className="flex items-center gap-2">
+              <div className="w-7 h-7 rounded-lg bg-amber-50 flex items-center justify-center">
+                <Lightbulb className="w-3.5 h-3.5 text-amber-500" />
+              </div>
+              <span className="text-sm font-medium text-slate-700">Lighting</span>
+              <span className="text-xs text-slate-400 ml-1">{lighting}%</span>
+            </div>
+            <div className={`w-6 h-6 rounded-full flex items-center justify-center transition-all ${
+              expandedSections.lighting ? 'bg-amber-100' : 'bg-slate-100'
+            }`}>
+              {expandedSections.lighting ? (
+                <ChevronDown className="w-3.5 h-3.5 text-amber-600" />
+              ) : (
+                <ChevronRight className="w-3.5 h-3.5 text-slate-400" />
+              )}
+            </div>
+          </button>
+
+          {expandedSections.lighting && (
+            <div className="px-3 pb-3 border-t border-slate-100">
+              <div className="pt-3">
+                <div className="flex items-center gap-3">
+                  <div className="flex-1 space-y-2">
+                    <input
+                      type="range"
+                      min={0}
+                      max={100}
+                      value={lighting}
+                      onChange={(e) => onChange('lighting', Number(e.target.value))}
+                      className="w-full h-1.5 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-amber-500"
+                    />
+                    <div className="flex justify-between text-[10px] text-slate-500">
+                      <span>Dim</span>
+                      <span className="font-medium text-slate-700">{lighting}%</span>
+                      <span>Bright</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Advanced Mode Hint */}
+        <div className="flex items-center justify-center gap-2 py-3 text-xs text-slate-400">
+          <Sliders className="w-3.5 h-3.5" />
+          <span>Switch to <strong className="text-purple-500">Advanced</strong> for more controls</span>
         </div>
       </div>
     </div>

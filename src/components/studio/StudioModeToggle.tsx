@@ -14,7 +14,7 @@ export function StudioModeToggle({ mode, onChange, darkTheme = false }: StudioMo
     <div
       className={cn(
         "flex w-full rounded-xl p-1 transition-colors border",
-        isDark ? "bg-gray-800 border-gray-700" : "bg-gray-100 border-gray-200"
+        isDark ? "bg-slate-800 border-slate-700" : "bg-slate-100 border-slate-200"
       )}
       role="tablist"
       aria-label="Studio mode selection"
@@ -27,10 +27,10 @@ export function StudioModeToggle({ mode, onChange, darkTheme = false }: StudioMo
         className={cn(
           'flex-1 py-2 text-sm font-medium rounded-lg transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-500 focus-visible:ring-offset-1',
           mode === 'quick'
-            ? 'bg-white text-gray-900 shadow-md ring-2 ring-purple-400/50 shadow-purple-200/50'
+            ? 'bg-white text-slate-900 shadow-sm ring-1 ring-purple-400/40'
             : isDark
-              ? 'text-gray-400 hover:text-white hover:bg-gray-700/50'
-              : 'text-gray-500 hover:text-gray-900 hover:bg-gray-200/50'
+              ? 'text-slate-400 hover:text-white hover:bg-slate-700/50'
+              : 'text-slate-500 hover:text-slate-900 hover:bg-slate-200/50'
         )}
       >
         Quick
@@ -43,10 +43,10 @@ export function StudioModeToggle({ mode, onChange, darkTheme = false }: StudioMo
         className={cn(
           'flex-1 py-2 text-sm font-medium rounded-lg transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-500 focus-visible:ring-offset-1',
           mode === 'advanced'
-            ? 'bg-gradient-to-r from-purple-500 to-blue-500 text-white shadow-md ring-2 ring-purple-400/50 shadow-purple-500/30'
+            ? 'bg-gradient-to-r from-purple-500 to-indigo-500 text-white shadow-sm ring-1 ring-purple-400/40'
             : isDark
-              ? 'text-gray-400 hover:text-white hover:bg-gray-700/50'
-              : 'text-gray-500 hover:text-gray-900 hover:bg-gray-200/50'
+              ? 'text-slate-400 hover:text-white hover:bg-slate-700/50'
+              : 'text-slate-500 hover:text-slate-900 hover:bg-slate-200/50'
         )}
       >
         Advanced
