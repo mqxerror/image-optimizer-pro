@@ -77,7 +77,7 @@ export function JobsToolbar({
       )}
 
       {/* Divider */}
-      <div className="h-8 w-px bg-gray-200" />
+      <div className="h-8 w-px bg-slate-200" />
 
       {/* Selection Mode */}
       <Button

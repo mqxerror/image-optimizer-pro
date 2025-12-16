@@ -92,8 +92,8 @@ const statusConfig: Record<string, {
     label: 'Failed'
   },
   cancelled: {
-    color: 'text-gray-500',
-    bgColor: 'bg-gray-100',
+    color: 'text-slate-500',
+    bgColor: 'bg-slate-100',
     icon: XCircle,
     label: 'Cancelled'
   }

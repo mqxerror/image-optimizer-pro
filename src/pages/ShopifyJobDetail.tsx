@@ -44,8 +44,8 @@ const statusConfig: Record<ShopifyJobStatus, {
   animate?: boolean
 }> = {
   pending: {
-    color: 'text-gray-600',
-    bgColor: 'bg-gray-100',
+    color: 'text-slate-600',
+    bgColor: 'bg-slate-100',
     icon: Clock,
     label: 'Pending'
   },
@@ -94,8 +94,8 @@ const statusConfig: Record<ShopifyJobStatus, {
     label: 'Failed'
   },
   cancelled: {
-    color: 'text-gray-500',
-    bgColor: 'bg-gray-100',
+    color: 'text-slate-500',
+    bgColor: 'bg-slate-100',
     icon: XCircle,
     label: 'Cancelled'
   }
@@ -225,12 +225,12 @@ export default function ShopifyJobDetail() {
         <CardContent className="space-y-6">
           {/* Stats grid */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <div className="text-center p-4 bg-gray-50 rounded-lg">
+            <div className="text-center p-4 bg-slate-50 rounded-lg">
               <Package className="h-5 w-5 mx-auto mb-2 text-muted-foreground" />
               <div className="text-2xl font-bold">{job.product_count}</div>
               <div className="text-sm text-muted-foreground">Products</div>
             </div>
-            <div className="text-center p-4 bg-gray-50 rounded-lg">
+            <div className="text-center p-4 bg-slate-50 rounded-lg">
               <ImageIcon className="h-5 w-5 mx-auto mb-2 text-muted-foreground" />
               <div className="text-2xl font-bold">{job.image_count}</div>
               <div className="text-sm text-muted-foreground">Images</div>
@@ -369,7 +369,7 @@ export default function ShopifyJobDetail() {
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
                 <h4 className="font-medium text-sm">Original</h4>
-                <div className="aspect-square bg-gray-100 rounded-lg overflow-hidden">
+                <div className="aspect-square bg-slate-100 rounded-lg overflow-hidden">
                   <img
                     src={previewImage.original_url}
                     alt="Original"
@@ -382,7 +382,7 @@ export default function ShopifyJobDetail() {
               </div>
               <div className="space-y-2">
                 <h4 className="font-medium text-sm">Optimized</h4>
-                <div className="aspect-square bg-gray-100 rounded-lg overflow-hidden">
+                <div className="aspect-square bg-slate-100 rounded-lg overflow-hidden">
                   {previewImage.optimized_url ? (
                     <img
                       src={previewImage.optimized_url}
@@ -414,19 +414,19 @@ interface ImageCardProps {
 
 function ImageCard({ image, onPreview, onRetry, isRetrying }: ImageCardProps) {
   const statusBadge = {
-    queued: { color: 'bg-gray-100 text-gray-700', label: 'Queued' },
+    queued: { color: 'bg-slate-100 text-slate-700', label: 'Queued' },
     processing: { color: 'bg-blue-100 text-blue-700', label: 'Processing' },
     ready: { color: 'bg-amber-100 text-amber-700', label: 'Ready' },
     approved: { color: 'bg-purple-100 text-purple-700', label: 'Approved' },
     pushing: { color: 'bg-blue-100 text-blue-700', label: 'Pushing' },
     pushed: { color: 'bg-green-100 text-green-700', label: 'Pushed' },
     failed: { color: 'bg-red-100 text-red-700', label: 'Failed' },
-    skipped: { color: 'bg-gray-100 text-gray-500', label: 'Skipped' }
+    skipped: { color: 'bg-slate-100 text-slate-500', label: 'Skipped' }
   }[image.status]
 
   return (
     <Card className="overflow-hidden">
-      <div className="aspect-video bg-gray-100 relative">
+      <div className="aspect-video bg-slate-100 relative">
         {/* Side by side preview */}
         <div className="grid grid-cols-2 h-full">
           <div className="border-r">

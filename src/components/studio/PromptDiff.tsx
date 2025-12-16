@@ -105,7 +105,7 @@ export function PromptDiff({
 
   if (!prompt) {
     return (
-      <span className={cn('text-gray-400 italic', className)}>
+      <span className={cn('text-slate-400 italic', className)}>
         Select a preset or adjust settings to generate a prompt
       </span>
     )

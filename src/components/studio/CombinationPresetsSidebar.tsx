@@ -79,10 +79,10 @@ function getPresetGradient(preset: CombinationPreset): string {
     return 'from-purple-100 via-indigo-50 to-purple-100'
   }
   if (preset.category === 'dramatic') {
-    return 'from-gray-700 via-gray-800 to-gray-900'
+    return 'from-slate-700 via-slate-800 to-slate-900'
   }
   if (preset.category === 'minimal') {
-    return 'from-gray-50 via-white to-gray-100'
+    return 'from-slate-50 via-white to-slate-100'
   }
   if (preset.category === 'lifestyle') {
     return 'from-amber-50 via-yellow-50 to-orange-50'
@@ -106,7 +106,7 @@ function CollapsibleSection({ title, icon, count, defaultOpen = true, accentColo
   const [isOpen, setIsOpen] = useState(defaultOpen)
 
   const colorClasses: Record<string, string> = {
-    gray: 'text-gray-500 hover:text-gray-700',
+    gray: 'text-slate-500 hover:text-slate-700',
     purple: 'text-purple-600 hover:text-purple-700',
     blue: 'text-blue-600 hover:text-blue-700',
     amber: 'text-amber-600 hover:text-amber-700',
@@ -250,19 +250,19 @@ export function CombinationPresetsSidebar({
               <img
                 src={preset.thumbnail_url}
                 alt={preset.name}
-                className="w-11 h-11 rounded-lg object-cover bg-gray-100 flex-shrink-0"
+                className="w-11 h-11 rounded-lg object-cover bg-slate-100 flex-shrink-0"
               />
             ) : (
               <div className={cn(
                 'w-11 h-11 rounded-lg bg-gradient-to-br flex items-center justify-center relative overflow-hidden flex-shrink-0',
                 gradientClass
               )}>
-                <Layers className={cn('h-4 w-4', isDark ? 'text-gray-300' : 'text-gray-500')} />
+                <Layers className={cn('h-4 w-4', isDark ? 'text-slate-300' : 'text-slate-500')} />
               </div>
             )}
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-1.5">
-                <p className="font-medium text-gray-900 text-sm truncate">{preset.name}</p>
+                <p className="font-medium text-slate-900 text-sm truncate">{preset.name}</p>
                 {preset.is_system && (
                   <Sparkles className="h-3 w-3 text-purple-500 flex-shrink-0" />
                 )}
@@ -298,10 +298,10 @@ export function CombinationPresetsSidebar({
                 e.stopPropagation()
                 toggleFavoriteMutation.mutate({ id: preset.id, isFavorite })
               }}
-              className="p-1 rounded hover:bg-gray-100"
+              className="p-1 rounded hover:bg-slate-100"
               title={isFavorite ? 'Remove from favorites' : 'Add to favorites'}
             >
-              <Star className={cn('h-3.5 w-3.5', isFavorite ? 'text-amber-500 fill-amber-500' : 'text-gray-400')} />
+              <Star className={cn('h-3.5 w-3.5', isFavorite ? 'text-amber-500 fill-amber-500' : 'text-slate-400')} />
             </button>
             <button
               onClick={(e) => {
@@ -320,17 +320,17 @@ export function CombinationPresetsSidebar({
   }
 
   return (
-    <div className="h-full flex flex-col bg-gray-50 border-r">
+    <div className="h-full flex flex-col bg-slate-50 border-r">
       {/* Header */}
       <div className="p-4 border-b bg-white">
-        <h2 className="font-semibold text-gray-900 mb-3">Combination Presets</h2>
+        <h2 className="font-semibold text-slate-900 mb-3">Combination Presets</h2>
         <div className="relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
           <Input
             placeholder="Search presets..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-9 bg-gray-50 border-gray-200"
+            className="pl-9 bg-slate-50 border-slate-200"
           />
         </div>
       </div>
@@ -349,8 +349,8 @@ export function CombinationPresetsSidebar({
               <div className="mb-5">
                 <div className="flex items-center justify-between mb-2">
                   <div className="flex items-center gap-2">
-                    <Layers className="h-3.5 w-3.5 text-gray-500" />
-                    <span className="text-xs font-semibold text-gray-500 uppercase tracking-wider">My Presets</span>
+                    <Layers className="h-3.5 w-3.5 text-slate-500" />
+                    <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">My Presets</span>
                   </div>
                   <Button
                     variant="ghost"
@@ -368,8 +368,8 @@ export function CombinationPresetsSidebar({
                     {filteredUserPresets.map(renderPresetCard)}
                   </div>
                 ) : (
-                  <div className="p-4 rounded-xl bg-gray-100/50 text-center">
-                    <p className="text-xs text-gray-500">No saved presets yet</p>
+                  <div className="p-4 rounded-xl bg-slate-100/50 text-center">
+                    <p className="text-xs text-slate-500">No saved presets yet</p>
                     <button
                       onClick={onSaveCurrentSettings}
                       className="text-xs text-purple-600 hover:underline mt-1"
@@ -381,7 +381,7 @@ export function CombinationPresetsSidebar({
               </div>
 
               {/* Divider */}
-              <div className="border-t border-gray-200 my-4" />
+              <div className="border-t border-slate-200 my-4" />
 
               {/* System Presets Section */}
               {totalPresets > 0 && (
@@ -400,7 +400,7 @@ export function CombinationPresetsSidebar({
                       <div key={category} className="mb-3">
                         <div className="flex items-center gap-1.5 mb-1.5 px-1">
                           {categoryIcons[category]}
-                          <span className="text-[10px] font-medium text-gray-400 uppercase">
+                          <span className="text-[10px] font-medium text-slate-400 uppercase">
                             {categoryLabels[category]}
                           </span>
                         </div>
@@ -416,9 +416,9 @@ export function CombinationPresetsSidebar({
               {/* Empty State */}
               {totalPresets === 0 && filteredUserPresets.length === 0 && (
                 <div className="text-center py-8">
-                  <Layers className="h-10 w-10 mx-auto mb-3 text-gray-300" />
-                  <p className="text-sm text-gray-500">No presets found</p>
-                  <p className="text-xs text-gray-400 mt-1">
+                  <Layers className="h-10 w-10 mx-auto mb-3 text-slate-300" />
+                  <p className="text-sm text-slate-500">No presets found</p>
+                  <p className="text-xs text-slate-400 mt-1">
                     Try a different search term
                   </p>
                 </div>

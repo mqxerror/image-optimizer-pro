@@ -189,7 +189,7 @@ export default function ProfileSettings() {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center py-12">
-        <Loader2 className="h-6 w-6 animate-spin text-gray-400" />
+        <Loader2 className="h-6 w-6 animate-spin text-slate-400" />
       </div>
     )
   }
@@ -240,7 +240,7 @@ export default function ProfileSettings() {
                 )}
                 Upload Photo
               </Button>
-              <p className="text-xs text-gray-500 mt-1">Max 2MB, JPG or PNG</p>
+              <p className="text-xs text-slate-500 mt-1">Max 2MB, JPG or PNG</p>
             </div>
           </div>
 
@@ -260,10 +260,10 @@ export default function ProfileSettings() {
           <div className="space-y-2">
             <Label htmlFor="email">Email</Label>
             <div className="flex items-center gap-2 max-w-md">
-              <Mail className="h-4 w-4 text-gray-400" />
-              <span className="text-gray-600">{user?.email}</span>
+              <Mail className="h-4 w-4 text-slate-400" />
+              <span className="text-slate-600">{user?.email}</span>
             </div>
-            <p className="text-xs text-gray-500">Contact support to change your email</p>
+            <p className="text-xs text-slate-500">Contact support to change your email</p>
           </div>
 
           <Button
@@ -289,7 +289,7 @@ export default function ProfileSettings() {
           <div className="flex items-center justify-between">
             <div>
               <p className="font-medium">Processing Complete</p>
-              <p className="text-sm text-gray-500">Get notified when your images are done processing</p>
+              <p className="text-sm text-slate-500">Get notified when your images are done processing</p>
             </div>
             <Switch
               checked={emailPrefs.processing_complete}
@@ -300,7 +300,7 @@ export default function ProfileSettings() {
           <div className="flex items-center justify-between">
             <div>
               <p className="font-medium">Product Updates</p>
-              <p className="text-sm text-gray-500">New features and improvements</p>
+              <p className="text-sm text-slate-500">New features and improvements</p>
             </div>
             <Switch
               checked={emailPrefs.product_updates}
@@ -311,7 +311,7 @@ export default function ProfileSettings() {
           <div className="flex items-center justify-between">
             <div>
               <p className="font-medium">Weekly Digest</p>
-              <p className="text-sm text-gray-500">Summary of your weekly activity</p>
+              <p className="text-sm text-slate-500">Summary of your weekly activity</p>
             </div>
             <Switch
               checked={emailPrefs.weekly_digest}
@@ -354,7 +354,7 @@ export default function ProfileSettings() {
             <Lock className="h-4 w-4 mr-2" />
             Change Password
           </Button>
-          <p className="text-xs text-gray-500 mt-2">
+          <p className="text-xs text-slate-500 mt-2">
             We'll send you an email with a link to reset your password
           </p>
         </CardContent>

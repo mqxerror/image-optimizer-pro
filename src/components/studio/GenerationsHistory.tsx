@@ -373,7 +373,7 @@ export function GenerationsHistory({ onReuse }: GenerationsHistoryProps) {
   }
 
   return (
-    <div className="h-full flex flex-col bg-white text-gray-900">
+    <div className="h-full flex flex-col bg-white text-slate-900">
       {/* Processing Banner - compact on mobile */}
       {processingCount > 0 && (
         <div className={`px-3 md:px-4 py-2 md:py-3 flex items-center gap-2 md:gap-3 ${
@@ -436,7 +436,7 @@ export function GenerationsHistory({ onReuse }: GenerationsHistoryProps) {
           {isLoading ? (
             <>
               {[1, 2, 3, 4].map(i => (
-                <Skeleton key={i} className="aspect-square w-full bg-gray-100 rounded-lg" />
+                <Skeleton key={i} className="aspect-square w-full bg-slate-100 rounded-lg" />
               ))}
             </>
           ) : generations && generations.length > 0 ? (
@@ -455,10 +455,10 @@ export function GenerationsHistory({ onReuse }: GenerationsHistoryProps) {
                       setModalOpen(true)
                     }
                   }}
-                  className={`w-full aspect-square rounded-lg overflow-hidden bg-gray-100 border-2 transition-all ${
+                  className={`w-full aspect-square rounded-lg overflow-hidden bg-slate-100 border-2 transition-all ${
                     generation.status === 'processing' || generation.status === 'pending'
                       ? 'border-purple-400 ring-2 ring-purple-200 ring-offset-2 cursor-wait'
-                      : 'border-gray-200 hover:border-purple-500 cursor-pointer'
+                      : 'border-slate-200 hover:border-purple-500 cursor-pointer'
                   }`}
                 >
                   {(() => {
@@ -482,9 +482,9 @@ export function GenerationsHistory({ onReuse }: GenerationsHistoryProps) {
                       )
                     }
                     return (
-                      <div className="w-full h-full flex flex-col items-center justify-center gap-1 bg-gray-50">
-                        <ImageOff className="h-5 w-5 md:h-6 md:w-6 text-gray-300" />
-                        <span className="text-[9px] text-gray-400">No preview</span>
+                      <div className="w-full h-full flex flex-col items-center justify-center gap-1 bg-slate-50">
+                        <ImageOff className="h-5 w-5 md:h-6 md:w-6 text-slate-300" />
+                        <span className="text-[9px] text-slate-400">No preview</span>
                       </div>
                     )
                   })()}
@@ -591,11 +591,11 @@ export function GenerationsHistory({ onReuse }: GenerationsHistoryProps) {
               <div className="w-12 h-12 md:w-16 md:h-16 mx-auto mb-3 md:mb-4 rounded-full bg-gradient-to-br from-purple-100 to-blue-100 flex items-center justify-center">
                 <Image className="h-6 w-6 md:h-8 md:w-8 text-purple-500" />
               </div>
-              <p className="text-sm md:text-base font-medium text-gray-700 mb-2">No generations yet</p>
-              <p className="text-xs md:text-sm text-gray-500 mb-3 max-w-[200px] md:max-w-xs mx-auto">
+              <p className="text-sm md:text-base font-medium text-slate-700 mb-2">No generations yet</p>
+              <p className="text-xs md:text-sm text-slate-500 mb-3 max-w-[200px] md:max-w-xs mx-auto">
                 Upload an image and click Generate to create your first AI-enhanced product photo.
               </p>
-              <div className="flex flex-col gap-1.5 md:gap-2 text-[10px] md:text-xs text-gray-400">
+              <div className="flex flex-col gap-1.5 md:gap-2 text-[10px] md:text-xs text-slate-400">
                 <div className="flex items-center justify-center gap-1.5 md:gap-2">
                   <div className="w-1 h-1 md:w-1.5 md:h-1.5 bg-purple-400 rounded-full" />
                   <span>Single: Enhance lighting & style</span>

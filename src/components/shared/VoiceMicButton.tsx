@@ -106,7 +106,7 @@ export function VoiceMicButton({ onTranscript, disabled, className }: VoiceMicBu
       size="icon"
       onClick={handleClick}
       disabled={disabled}
-      className={`h-8 w-8 ${isListening ? 'text-red-500 bg-red-500/10 animate-pulse' : 'text-gray-400 hover:text-gray-300'} ${className || ''}`}
+      className={`h-8 w-8 ${isListening ? 'text-red-500 bg-red-500/10 animate-pulse' : 'text-slate-400 hover:text-slate-300'} ${className || ''}`}
       title={isListening ? 'Stop recording' : 'Voice input'}
     >
       {isListening ? (

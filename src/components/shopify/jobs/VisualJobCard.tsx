@@ -109,8 +109,8 @@ const statusConfig: Record<string, {
     label: 'Failed'
   },
   cancelled: {
-    color: 'text-gray-500',
-    bgColor: 'bg-gray-100',
+    color: 'text-slate-500',
+    bgColor: 'bg-slate-100',
     icon: XCircle,
     label: 'Cancelled'
   }
@@ -244,7 +244,7 @@ export function VisualJobCard({
           <div className="flex">
             {/* Selection Checkbox */}
             {selectionMode && (
-              <div className="flex items-center justify-center px-4 border-r bg-gray-50">
+              <div className="flex items-center justify-center px-4 border-r bg-slate-50">
                 <Checkbox
                   checked={isSelected}
                   onCheckedChange={(checked) => onSelect?.(job.id, checked as boolean)}
@@ -254,7 +254,7 @@ export function VisualJobCard({
 
             {/* Preview Images */}
             <div
-              className="w-40 h-28 flex-shrink-0 bg-gray-100 grid grid-cols-2 gap-0.5 overflow-hidden"
+              className="w-40 h-28 flex-shrink-0 bg-slate-100 grid grid-cols-2 gap-0.5 overflow-hidden"
               role="img"
               aria-label={`Preview images for job from ${job.shop_name || job.shop_domain}`}
             >
@@ -271,7 +271,7 @@ export function VisualJobCard({
                 ))
               ) : (
                 <div className="col-span-2 row-span-2 flex items-center justify-center">
-                  <ImageIcon className="h-8 w-8 text-gray-300" aria-hidden="true" />
+                  <ImageIcon className="h-8 w-8 text-slate-300" aria-hidden="true" />
                   <span className="sr-only">No preview images available</span>
                 </div>
               )}
@@ -287,7 +287,7 @@ export function VisualJobCard({
                       <StatusIcon className={`h-3 w-3 mr-1 ${status.animate ? 'animate-spin' : ''}`} />
                       {status.label}
                     </Badge>
-                    <span className="text-sm font-medium text-gray-700">
+                    <span className="text-sm font-medium text-slate-700">
                       {job.shop_name || job.shop_domain}
                     </span>
                   </div>

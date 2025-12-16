@@ -70,17 +70,17 @@ export function TriggersPanel({ form, onChange, webhookSecret }: TriggersPanelPr
       {/* Webhook Trigger */}
       <div className={cn(
         'p-4 rounded-lg border transition-colors',
-        form.webhook_enabled ? 'bg-purple-50/50 border-purple-200' : 'bg-gray-50'
+        form.webhook_enabled ? 'bg-purple-50/50 border-purple-200' : 'bg-slate-50'
       )}>
         <div className="flex items-start justify-between">
           <div className="flex items-center gap-3">
             <div className={cn(
               'p-2 rounded-lg',
-              form.webhook_enabled ? 'bg-purple-100' : 'bg-gray-100'
+              form.webhook_enabled ? 'bg-purple-100' : 'bg-slate-100'
             )}>
               <Webhook className={cn(
                 'h-5 w-5',
-                form.webhook_enabled ? 'text-purple-600' : 'text-gray-500'
+                form.webhook_enabled ? 'text-purple-600' : 'text-slate-500'
               )} />
             </div>
             <div>
@@ -113,7 +113,7 @@ export function TriggersPanel({ form, onChange, webhookSecret }: TriggersPanelPr
 
             {webhookSecret && (
               <div className="flex items-center gap-2">
-                <code className="flex-1 text-xs bg-gray-100 px-2 py-1.5 rounded border truncate">
+                <code className="flex-1 text-xs bg-slate-100 px-2 py-1.5 rounded border truncate">
                   {`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/shopify-webhook...`}
                 </code>
                 <Button
@@ -137,17 +137,17 @@ export function TriggersPanel({ form, onChange, webhookSecret }: TriggersPanelPr
       {/* Schedule Trigger */}
       <div className={cn(
         'p-4 rounded-lg border transition-colors',
-        form.schedule_enabled ? 'bg-blue-50/50 border-blue-200' : 'bg-gray-50'
+        form.schedule_enabled ? 'bg-blue-50/50 border-blue-200' : 'bg-slate-50'
       )}>
         <div className="flex items-start justify-between">
           <div className="flex items-center gap-3">
             <div className={cn(
               'p-2 rounded-lg',
-              form.schedule_enabled ? 'bg-blue-100' : 'bg-gray-100'
+              form.schedule_enabled ? 'bg-blue-100' : 'bg-slate-100'
             )}>
               <Calendar className={cn(
                 'h-5 w-5',
-                form.schedule_enabled ? 'text-blue-600' : 'text-gray-500'
+                form.schedule_enabled ? 'text-blue-600' : 'text-slate-500'
               )} />
             </div>
             <div>
@@ -221,7 +221,7 @@ export function TriggersPanel({ form, onChange, webhookSecret }: TriggersPanelPr
                         'px-2.5 py-1.5 text-xs font-medium rounded-md transition-colors',
                         form.schedule_days?.includes(day.value)
                           ? 'bg-blue-600 text-white'
-                          : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                          : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
                       )}
                     >
                       {day.label}

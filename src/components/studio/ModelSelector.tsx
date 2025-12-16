@@ -37,13 +37,13 @@ export function ModelSelector({ model, onChange }: ModelSelectorProps) {
           className={`w-full text-left p-3 rounded-lg border transition-all ${
             model === option.value
               ? 'border-purple-500 bg-purple-50'
-              : 'border-gray-200 bg-white hover:border-purple-300'
+              : 'border-slate-200 bg-white hover:border-purple-300'
           }`}
         >
           <div className="flex justify-between items-start">
             <div>
-              <p className="font-medium text-gray-900 text-sm">{option.label}</p>
-              <p className="text-xs text-gray-500 mt-0.5">{option.description}</p>
+              <p className="font-medium text-slate-900 text-sm">{option.label}</p>
+              <p className="text-xs text-slate-500 mt-0.5">{option.description}</p>
             </div>
             <div className="flex gap-2 text-[10px]">
               <span className={`px-1.5 py-0.5 rounded ${

@@ -136,7 +136,7 @@ export function ImageComparisonViewer({
             {image.status}
           </Badge>
           {image.ai_model && (
-            <Badge variant="outline" className="text-gray-300 border-gray-600">
+            <Badge variant="outline" className="text-slate-300 border-slate-600">
               {image.ai_model}
             </Badge>
           )}
@@ -144,17 +144,17 @@ export function ImageComparisonViewer({
 
         <div className="flex items-center gap-2">
           {/* View Mode Toggle */}
-          <div className="flex bg-gray-800 rounded-lg p-1">
+          <div className="flex bg-slate-800 rounded-lg p-1">
             <button
               onClick={() => setViewMode('side-by-side')}
-              className={`p-2 rounded ${viewMode === 'side-by-side' ? 'bg-gray-700 text-white' : 'text-gray-400 hover:text-white'}`}
+              className={`p-2 rounded ${viewMode === 'side-by-side' ? 'bg-slate-700 text-white' : 'text-slate-400 hover:text-white'}`}
               title="Side by side"
             >
               <Columns className="h-4 w-4" />
             </button>
             <button
               onClick={() => setViewMode('slider')}
-              className={`p-2 rounded ${viewMode === 'slider' ? 'bg-gray-700 text-white' : 'text-gray-400 hover:text-white'}`}
+              className={`p-2 rounded ${viewMode === 'slider' ? 'bg-slate-700 text-white' : 'text-slate-400 hover:text-white'}`}
               title="Slider comparison"
             >
               <SlidersHorizontal className="h-4 w-4" />
@@ -198,29 +198,29 @@ export function ImageComparisonViewer({
           /* Side by Side View */
           <div className="grid grid-cols-2 gap-4 max-w-6xl w-full h-full max-h-[70vh]">
             <div className="flex flex-col">
-              <Label className="text-gray-400 text-sm mb-2 text-center">Original</Label>
+              <Label className="text-slate-400 text-sm mb-2 text-center">Original</Label>
               {image.original_url ? (
                 <img
                   src={image.original_url}
                   alt="Original"
-                  className="flex-1 object-contain bg-gray-900 rounded-lg"
+                  className="flex-1 object-contain bg-slate-900 rounded-lg"
                 />
               ) : (
-                <div className="flex-1 flex items-center justify-center bg-gray-900 rounded-lg text-gray-500">
+                <div className="flex-1 flex items-center justify-center bg-slate-900 rounded-lg text-slate-500">
                   No original image
                 </div>
               )}
             </div>
             <div className="flex flex-col">
-              <Label className="text-gray-400 text-sm mb-2 text-center">Optimized</Label>
+              <Label className="text-slate-400 text-sm mb-2 text-center">Optimized</Label>
               {image.optimized_url ? (
                 <img
                   src={image.optimized_url}
                   alt="Optimized"
-                  className="flex-1 object-contain bg-gray-900 rounded-lg"
+                  className="flex-1 object-contain bg-slate-900 rounded-lg"
                 />
               ) : (
-                <div className="flex-1 flex items-center justify-center bg-gray-900 rounded-lg text-gray-500">
+                <div className="flex-1 flex items-center justify-center bg-slate-900 rounded-lg text-slate-500">
                   No optimized image
                 </div>
               )}
@@ -230,7 +230,7 @@ export function ImageComparisonViewer({
           /* Slider View */
           <div
             ref={sliderContainerRef}
-            className="relative max-w-4xl w-full aspect-square max-h-[70vh] bg-gray-900 rounded-lg overflow-hidden cursor-ew-resize select-none touch-none"
+            className="relative max-w-4xl w-full aspect-square max-h-[70vh] bg-slate-900 rounded-lg overflow-hidden cursor-ew-resize select-none touch-none"
             onMouseDown={() => setIsDragging(true)}
             onTouchStart={() => setIsDragging(true)}
             role="slider"
@@ -271,7 +271,7 @@ export function ImageComparisonViewer({
               style={{ left: `${sliderPosition}%`, transform: 'translateX(-50%)' }}
             >
               <div className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 w-10 h-10 bg-white rounded-full shadow-xl flex items-center justify-center border-2 border-white/50 pointer-events-auto">
-                <GripVertical className="h-5 w-5 text-gray-500" />
+                <GripVertical className="h-5 w-5 text-slate-500" />
               </div>
             </div>
 
@@ -288,7 +288,7 @@ export function ImageComparisonViewer({
 
       {/* Footer with metadata */}
       {(image.tokens_used || image.processing_time_sec || image.error_message) && (
-        <div className="p-4 bg-black/50 flex items-center justify-center gap-6 text-sm text-gray-400">
+        <div className="p-4 bg-black/50 flex items-center justify-center gap-6 text-sm text-slate-400">
           {image.tokens_used && <span>Tokens: {image.tokens_used}</span>}
           {image.processing_time_sec && <span>Time: {image.processing_time_sec}s</span>}
           {image.error_message && (

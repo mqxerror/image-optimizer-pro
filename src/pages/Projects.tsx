@@ -66,10 +66,10 @@ import { InsufficientTokensPrompt } from '@/components/tokens/InsufficientTokens
 import type { Project } from '@/types/database'
 
 const statusColors: Record<string, string> = {
-  draft: 'bg-gray-100 text-gray-700',
+  draft: 'bg-slate-100 text-slate-700',
   active: 'bg-blue-100 text-blue-700',
   completed: 'bg-green-100 text-green-700',
-  archived: 'bg-gray-100 text-gray-500',
+  archived: 'bg-slate-100 text-slate-500',
 }
 
 export default function Projects() {
@@ -272,8 +272,8 @@ export default function Projects() {
             <FolderKanban className="h-6 w-6 text-purple-600" />
           </div>
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">Projects</h1>
-            <p className="text-gray-500 mt-0.5 text-sm">Manage your image optimization projects</p>
+            <h1 className="text-2xl font-bold text-slate-900">Projects</h1>
+            <p className="text-slate-500 mt-0.5 text-sm">Manage your image optimization projects</p>
           </div>
         </div>
         <Button
@@ -287,47 +287,47 @@ export default function Projects() {
 
       {/* Stats Summary */}
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3">
-        <Card className="p-4 bg-white border-gray-200 hover:shadow-md transition-all hover:border-gray-300">
+        <Card className="p-4 bg-white border-slate-200 hover:shadow-md transition-all hover:border-slate-300">
           <div className="flex items-center gap-3">
-            <div className="p-2 rounded-xl bg-gray-100">
-              <FolderKanban className="h-4 w-4 text-gray-600" />
+            <div className="p-2 rounded-xl bg-slate-100">
+              <FolderKanban className="h-4 w-4 text-slate-600" />
             </div>
             <div>
-              <p className="text-xl font-bold text-gray-900">{projectStats.total}</p>
-              <p className="text-xs font-medium text-gray-500">Total</p>
+              <p className="text-xl font-bold text-slate-900">{projectStats.total}</p>
+              <p className="text-xs font-medium text-slate-500">Total</p>
             </div>
           </div>
         </Card>
-        <Card className={`p-4 hover:shadow-md transition-all ${projectStats.draft > 0 ? 'bg-white border-gray-300' : 'bg-white border-gray-200 hover:border-gray-300'}`}>
+        <Card className={`p-4 hover:shadow-md transition-all ${projectStats.draft > 0 ? 'bg-white border-slate-300' : 'bg-white border-slate-200 hover:border-slate-300'}`}>
           <div className="flex items-center gap-3">
-            <div className="p-2 rounded-xl bg-gray-100">
-              <FileEdit className="h-4 w-4 text-gray-600" />
+            <div className="p-2 rounded-xl bg-slate-100">
+              <FileEdit className="h-4 w-4 text-slate-600" />
             </div>
             <div>
-              <p className="text-xl font-bold text-gray-700">{projectStats.draft}</p>
-              <p className="text-xs font-medium text-gray-500">Draft</p>
+              <p className="text-xl font-bold text-slate-700">{projectStats.draft}</p>
+              <p className="text-xs font-medium text-slate-500">Draft</p>
             </div>
           </div>
         </Card>
-        <Card className={`p-4 hover:shadow-md transition-all ${projectStats.active > 0 ? 'bg-gradient-to-br from-blue-50 to-white border-blue-200 ring-1 ring-blue-100' : 'bg-white border-gray-200 hover:border-gray-300'}`}>
+        <Card className={`p-4 hover:shadow-md transition-all ${projectStats.active > 0 ? 'bg-gradient-to-br from-blue-50 to-white border-blue-200 ring-1 ring-blue-100' : 'bg-white border-slate-200 hover:border-slate-300'}`}>
           <div className="flex items-center gap-3">
-            <div className={`p-2 rounded-xl ${projectStats.active > 0 ? 'bg-blue-100' : 'bg-gray-100'}`}>
-              <Cog className={`h-4 w-4 ${projectStats.active > 0 ? 'text-blue-600 animate-spin' : 'text-gray-600'}`} style={{ animationDuration: '3s' }} />
+            <div className={`p-2 rounded-xl ${projectStats.active > 0 ? 'bg-blue-100' : 'bg-slate-100'}`}>
+              <Cog className={`h-4 w-4 ${projectStats.active > 0 ? 'text-blue-600 animate-spin' : 'text-slate-600'}`} style={{ animationDuration: '3s' }} />
             </div>
             <div>
-              <p className={`text-xl font-bold ${projectStats.active > 0 ? 'text-blue-700' : 'text-gray-700'}`}>{projectStats.active}</p>
-              <p className={`text-xs font-medium ${projectStats.active > 0 ? 'text-blue-600' : 'text-gray-500'}`}>Active</p>
+              <p className={`text-xl font-bold ${projectStats.active > 0 ? 'text-blue-700' : 'text-slate-700'}`}>{projectStats.active}</p>
+              <p className={`text-xs font-medium ${projectStats.active > 0 ? 'text-blue-600' : 'text-slate-500'}`}>Active</p>
             </div>
           </div>
         </Card>
-        <Card className={`p-4 hover:shadow-md transition-all ${projectStats.completed > 0 ? 'bg-gradient-to-br from-green-50 to-white border-green-200 ring-1 ring-green-100' : 'bg-white border-gray-200 hover:border-gray-300'}`}>
+        <Card className={`p-4 hover:shadow-md transition-all ${projectStats.completed > 0 ? 'bg-gradient-to-br from-green-50 to-white border-green-200 ring-1 ring-green-100' : 'bg-white border-slate-200 hover:border-slate-300'}`}>
           <div className="flex items-center gap-3">
-            <div className={`p-2 rounded-xl ${projectStats.completed > 0 ? 'bg-green-100' : 'bg-gray-100'}`}>
-              <CheckCircle2 className={`h-4 w-4 ${projectStats.completed > 0 ? 'text-green-600' : 'text-gray-600'}`} />
+            <div className={`p-2 rounded-xl ${projectStats.completed > 0 ? 'bg-green-100' : 'bg-slate-100'}`}>
+              <CheckCircle2 className={`h-4 w-4 ${projectStats.completed > 0 ? 'text-green-600' : 'text-slate-600'}`} />
             </div>
             <div>
-              <p className={`text-xl font-bold ${projectStats.completed > 0 ? 'text-green-700' : 'text-gray-700'}`}>{projectStats.completed}</p>
-              <p className={`text-xs font-medium ${projectStats.completed > 0 ? 'text-green-600' : 'text-gray-500'}`}>Completed</p>
+              <p className={`text-xl font-bold ${projectStats.completed > 0 ? 'text-green-700' : 'text-slate-700'}`}>{projectStats.completed}</p>
+              <p className={`text-xs font-medium ${projectStats.completed > 0 ? 'text-green-600' : 'text-slate-500'}`}>Completed</p>
             </div>
           </div>
         </Card>
@@ -365,7 +365,7 @@ export default function Projects() {
       {/* Filters */}
       <div className="flex gap-4 flex-wrap items-center">
         <div className="relative flex-1 max-w-sm">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-400" />
           <Input
             placeholder="Search projects..."
             value={searchQuery}
@@ -376,7 +376,7 @@ export default function Projects() {
         {/* Sort Dropdown */}
         <Select value={sortBy} onValueChange={(v) => setSortBy(v as any)}>
           <SelectTrigger className="w-[150px]">
-            <ArrowUpDown className="h-3.5 w-3.5 mr-2 text-gray-400" />
+            <ArrowUpDown className="h-3.5 w-3.5 mr-2 text-slate-400" />
             <SelectValue placeholder="Sort by" />
           </SelectTrigger>
           <SelectContent>
@@ -391,7 +391,7 @@ export default function Projects() {
           <Button
             variant="ghost"
             size="sm"
-            className={`rounded-none px-3 ${viewMode === 'table' ? 'bg-gray-100' : ''}`}
+            className={`rounded-none px-3 ${viewMode === 'table' ? 'bg-slate-100' : ''}`}
             onClick={() => setViewMode('table')}
           >
             <List className="h-4 w-4" />
@@ -399,7 +399,7 @@ export default function Projects() {
           <Button
             variant="ghost"
             size="sm"
-            className={`rounded-none px-3 ${viewMode === 'grid' ? 'bg-gray-100' : ''}`}
+            className={`rounded-none px-3 ${viewMode === 'grid' ? 'bg-slate-100' : ''}`}
             onClick={() => setViewMode('grid')}
           >
             <LayoutGrid className="h-4 w-4" />
@@ -448,10 +448,10 @@ export default function Projects() {
             </TableHeader>
             <TableBody>
               {filteredProjects.map(project => (
-                <TableRow key={project.id} className="cursor-pointer hover:bg-gray-50" onClick={() => handleOpenProject(project)}>
+                <TableRow key={project.id} className="cursor-pointer hover:bg-slate-50" onClick={() => handleOpenProject(project)}>
                   <TableCell>
                     <div className="font-medium">{project.name}</div>
-                    <div className="text-xs text-gray-400">{project.resolution}</div>
+                    <div className="text-xs text-slate-400">{project.resolution}</div>
                   </TableCell>
                   <TableCell>
                     <Badge className={`${statusColors[project.status]} flex items-center gap-1 w-fit`}>
@@ -461,7 +461,7 @@ export default function Projects() {
                   </TableCell>
                   <TableCell>
                     <div className="w-28">
-                      <div className="flex justify-between text-xs text-gray-500 mb-1">
+                      <div className="flex justify-between text-xs text-slate-500 mb-1">
                         <span>{project.processed_images}/{project.total_images}</span>
                         <span>{getProgressPercentage(project)}%</span>
                       </div>
@@ -470,11 +470,11 @@ export default function Projects() {
                   </TableCell>
                   <TableCell>
                     {project.status === 'completed' ? (
-                      <span className="text-xs text-gray-400">—</span>
+                      <span className="text-xs text-slate-400">—</span>
                     ) : getTokenEstimate(project) > 0 ? (
                       <div className="flex items-center gap-1">
                         <Coins className="h-3.5 w-3.5 text-amber-500" />
-                        <span className={`text-sm font-medium ${hasInsufficientTokens(project) ? 'text-red-500' : 'text-gray-700'}`}>
+                        <span className={`text-sm font-medium ${hasInsufficientTokens(project) ? 'text-red-500' : 'text-slate-700'}`}>
                           {getTokenEstimate(project)}
                         </span>
                         {hasInsufficientTokens(project) && (
@@ -482,10 +482,10 @@ export default function Projects() {
                         )}
                       </div>
                     ) : (
-                      <span className="text-xs text-gray-400">0</span>
+                      <span className="text-xs text-slate-400">0</span>
                     )}
                   </TableCell>
-                  <TableCell className="text-gray-500 text-sm">
+                  <TableCell className="text-slate-500 text-sm">
                     {format(new Date(project.updated_at), 'MMM d, yyyy')}
                   </TableCell>
                   <TableCell onClick={(e) => e.stopPropagation()}>
@@ -562,12 +562,12 @@ export default function Projects() {
           </Card>
         </>
       ) : (
-        <div className="bg-white rounded-xl border border-gray-200 p-12 text-center max-w-2xl mx-auto">
+        <div className="bg-white rounded-xl border border-slate-200 p-12 text-center max-w-2xl mx-auto">
           {searchQuery || statusFilter !== 'all' ? (
             <>
-              <FolderKanban className="h-12 w-12 text-gray-400 mx-auto" />
-              <h3 className="text-lg font-medium text-gray-900 mt-4">No projects found</h3>
-              <p className="text-gray-500 mt-2">Try adjusting your search or filters</p>
+              <FolderKanban className="h-12 w-12 text-slate-400 mx-auto" />
+              <h3 className="text-lg font-medium text-slate-900 mt-4">No projects found</h3>
+              <p className="text-slate-500 mt-2">Try adjusting your search or filters</p>
             </>
           ) : (
             <>
@@ -575,33 +575,33 @@ export default function Projects() {
               <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-gradient-to-br from-purple-100 to-blue-100 flex items-center justify-center">
                 <FolderKanban className="h-10 w-10 text-purple-500" />
               </div>
-              <h3 className="text-xl font-semibold text-gray-900">Create your first project</h3>
-              <p className="text-gray-500 mt-2 max-w-md mx-auto">
+              <h3 className="text-xl font-semibold text-slate-900">Create your first project</h3>
+              <p className="text-slate-500 mt-2 max-w-md mx-auto">
                 Projects help you batch process multiple images with consistent settings. Perfect for product catalogs and collections.
               </p>
 
               {/* Feature highlights */}
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-8 text-left">
-                <div className="p-4 bg-gray-50 rounded-lg">
+                <div className="p-4 bg-slate-50 rounded-lg">
                   <div className="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center mb-2">
                     <Play className="h-4 w-4 text-green-600" />
                   </div>
-                  <h4 className="text-sm font-medium text-gray-900">Batch Process</h4>
-                  <p className="text-xs text-gray-500 mt-1">Process hundreds of images with one click</p>
+                  <h4 className="text-sm font-medium text-slate-900">Batch Process</h4>
+                  <p className="text-xs text-slate-500 mt-1">Process hundreds of images with one click</p>
                 </div>
-                <div className="p-4 bg-gray-50 rounded-lg">
+                <div className="p-4 bg-slate-50 rounded-lg">
                   <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center mb-2">
                     <Cog className="h-4 w-4 text-blue-600" />
                   </div>
-                  <h4 className="text-sm font-medium text-gray-900">Consistent Settings</h4>
-                  <p className="text-xs text-gray-500 mt-1">Same AI model and prompts across all images</p>
+                  <h4 className="text-sm font-medium text-slate-900">Consistent Settings</h4>
+                  <p className="text-xs text-slate-500 mt-1">Same AI model and prompts across all images</p>
                 </div>
-                <div className="p-4 bg-gray-50 rounded-lg">
+                <div className="p-4 bg-slate-50 rounded-lg">
                   <div className="w-8 h-8 rounded-full bg-purple-100 flex items-center justify-center mb-2">
                     <Coins className="h-4 w-4 text-purple-600" />
                   </div>
-                  <h4 className="text-sm font-medium text-gray-900">Token Tracking</h4>
-                  <p className="text-xs text-gray-500 mt-1">See exactly how many tokens you'll use</p>
+                  <h4 className="text-sm font-medium text-slate-900">Token Tracking</h4>
+                  <p className="text-xs text-slate-500 mt-1">See exactly how many tokens you'll use</p>
                 </div>
               </div>
 

@@ -44,8 +44,8 @@ export default function Shopify() {
             <Store className="h-6 w-6 text-green-600" />
           </div>
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">Shopify Integration</h1>
-            <p className="text-sm text-gray-500 mt-0.5">
+            <h1 className="text-2xl font-bold text-slate-900">Shopify Integration</h1>
+            <p className="text-sm text-slate-500 mt-0.5">
               Connect your stores and optimize product images
             </p>
           </div>
@@ -61,7 +61,7 @@ export default function Shopify() {
 
       {/* Stats Overview */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-        <Card className="p-4 bg-white border-gray-200 hover:shadow-md transition-all hover:border-gray-300">
+        <Card className="p-4 bg-white border-slate-200 hover:shadow-md transition-all hover:border-slate-300">
           <div className="flex items-center gap-3">
             <div className="p-2 rounded-xl bg-blue-100">
               <Store className="h-4 w-4 text-blue-600" />
@@ -70,39 +70,39 @@ export default function Shopify() {
               {loadingStores ? (
                 <Skeleton className="h-7 w-8" />
               ) : (
-                <p className="text-xl font-bold text-gray-900">{stores?.length || 0}</p>
+                <p className="text-xl font-bold text-slate-900">{stores?.length || 0}</p>
               )}
-              <p className="text-xs font-medium text-gray-500">Connected</p>
+              <p className="text-xs font-medium text-slate-500">Connected</p>
             </div>
           </div>
         </Card>
-        <Card className={`p-4 hover:shadow-md transition-all ${activeJobs.length > 0 ? 'bg-gradient-to-br from-amber-50 to-white border-amber-200 ring-1 ring-amber-100' : 'bg-white border-gray-200 hover:border-gray-300'}`}>
+        <Card className={`p-4 hover:shadow-md transition-all ${activeJobs.length > 0 ? 'bg-gradient-to-br from-amber-50 to-white border-amber-200 ring-1 ring-amber-100' : 'bg-white border-slate-200 hover:border-slate-300'}`}>
           <div className="flex items-center gap-3">
-            <div className={`p-2 rounded-xl ${activeJobs.length > 0 ? 'bg-amber-100' : 'bg-gray-100'}`}>
-              <Clock className={`h-4 w-4 ${activeJobs.length > 0 ? 'text-amber-600' : 'text-gray-600'}`} />
+            <div className={`p-2 rounded-xl ${activeJobs.length > 0 ? 'bg-amber-100' : 'bg-slate-100'}`}>
+              <Clock className={`h-4 w-4 ${activeJobs.length > 0 ? 'text-amber-600' : 'text-slate-600'}`} />
             </div>
             <div>
               {loadingJobs ? (
                 <Skeleton className="h-7 w-8" />
               ) : (
-                <p className={`text-xl font-bold ${activeJobs.length > 0 ? 'text-amber-700' : 'text-gray-700'}`}>{activeJobs.length}</p>
+                <p className={`text-xl font-bold ${activeJobs.length > 0 ? 'text-amber-700' : 'text-slate-700'}`}>{activeJobs.length}</p>
               )}
-              <p className={`text-xs font-medium ${activeJobs.length > 0 ? 'text-amber-600' : 'text-gray-500'}`}>Active Jobs</p>
+              <p className={`text-xs font-medium ${activeJobs.length > 0 ? 'text-amber-600' : 'text-slate-500'}`}>Active Jobs</p>
             </div>
           </div>
         </Card>
-        <Card className={`p-4 hover:shadow-md transition-all ${awaitingApproval.length > 0 ? 'bg-gradient-to-br from-purple-50 to-white border-purple-200 ring-1 ring-purple-100' : 'bg-white border-gray-200 hover:border-gray-300'}`}>
+        <Card className={`p-4 hover:shadow-md transition-all ${awaitingApproval.length > 0 ? 'bg-gradient-to-br from-purple-50 to-white border-purple-200 ring-1 ring-purple-100' : 'bg-white border-slate-200 hover:border-slate-300'}`}>
           <div className="flex items-center gap-3">
-            <div className={`p-2 rounded-xl ${awaitingApproval.length > 0 ? 'bg-purple-100' : 'bg-gray-100'}`}>
-              <AlertCircle className={`h-4 w-4 ${awaitingApproval.length > 0 ? 'text-purple-600' : 'text-gray-600'}`} />
+            <div className={`p-2 rounded-xl ${awaitingApproval.length > 0 ? 'bg-purple-100' : 'bg-slate-100'}`}>
+              <AlertCircle className={`h-4 w-4 ${awaitingApproval.length > 0 ? 'text-purple-600' : 'text-slate-600'}`} />
             </div>
             <div>
               {loadingJobs ? (
                 <Skeleton className="h-7 w-8" />
               ) : (
-                <p className={`text-xl font-bold ${awaitingApproval.length > 0 ? 'text-purple-700' : 'text-gray-700'}`}>{awaitingApproval.length}</p>
+                <p className={`text-xl font-bold ${awaitingApproval.length > 0 ? 'text-purple-700' : 'text-slate-700'}`}>{awaitingApproval.length}</p>
               )}
-              <p className={`text-xs font-medium ${awaitingApproval.length > 0 ? 'text-purple-600' : 'text-gray-500'}`}>Awaiting</p>
+              <p className={`text-xs font-medium ${awaitingApproval.length > 0 ? 'text-purple-600' : 'text-slate-500'}`}>Awaiting</p>
             </div>
           </div>
         </Card>
@@ -131,7 +131,7 @@ export default function Shopify() {
           <div className="p-2 rounded-xl bg-blue-100">
             <Store className="h-4 w-4 text-blue-600" />
           </div>
-          <h2 className="text-lg font-semibold text-gray-900">Connected Stores</h2>
+          <h2 className="text-lg font-semibold text-slate-900">Connected Stores</h2>
         </div>
         {loadingStores ? (
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
@@ -151,8 +151,8 @@ export default function Shopify() {
               <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-green-100 to-emerald-50 flex items-center justify-center mb-4 shadow-sm">
                 <Store className="h-8 w-8 text-green-600" />
               </div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-1">No stores connected</h3>
-              <p className="text-sm text-gray-500 mb-6 text-center max-w-sm">
+              <h3 className="text-lg font-semibold text-slate-900 mb-1">No stores connected</h3>
+              <p className="text-sm text-slate-500 mb-6 text-center max-w-sm">
                 Connect your Shopify store to start optimizing product images automatically.
               </p>
               <Button

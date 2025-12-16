@@ -111,7 +111,7 @@ export function PreviewPanel({
       </div>
 
       {/* Settings Panel - scrollable with max height on mobile */}
-      <div className="border-t bg-gray-50 p-2 sm:p-2.5 md:p-4 space-y-2 sm:space-y-3 max-h-[35vh] md:max-h-[40vh] overflow-y-auto flex-shrink-0">
+      <div className="border-t bg-slate-50 p-2 sm:p-2.5 md:p-4 space-y-2 sm:space-y-3 max-h-[35vh] md:max-h-[40vh] overflow-y-auto flex-shrink-0">
         {/* AI Model Selector */}
         <div className="space-y-2">
           <div className="flex items-center justify-between">
@@ -135,7 +135,7 @@ export function PreviewPanel({
                     'p-1.5 sm:p-2 rounded-lg border-2 cursor-pointer transition-all',
                     selectedModel === model.id
                       ? 'border-primary bg-primary/5'
-                      : 'border-gray-200 hover:border-gray-300'
+                      : 'border-slate-200 hover:border-slate-300'
                   )}
                   onClick={() => {
                     onModelChange(model.id)

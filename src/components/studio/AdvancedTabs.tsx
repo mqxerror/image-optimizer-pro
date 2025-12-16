@@ -198,16 +198,16 @@ export function AdvancedTabs({
   return (
     <div className={cn(
       "flex flex-col h-full",
-      darkTheme ? "bg-gray-900" : "bg-white"
+      darkTheme ? "bg-slate-900" : "bg-white"
     )}>
       {/* Tab Bar with Labels */}
       <div className={cn(
         "flex-shrink-0 px-2 py-1.5 border-b",
-        darkTheme ? "border-gray-700 bg-gray-800/50" : "border-slate-100 bg-slate-50/50"
+        darkTheme ? "border-slate-700 bg-slate-800/50" : "border-slate-100 bg-slate-50/50"
       )}>
         <div className={cn(
           "flex rounded-lg p-0.5 gap-0.5",
-          darkTheme ? "bg-gray-800" : "bg-slate-100"
+          darkTheme ? "bg-slate-800" : "bg-slate-100"
         )}>
           {tabs.map((tab) => (
             <button
@@ -220,7 +220,7 @@ export function AdvancedTabs({
                     ? "bg-purple-600 text-white"
                     : "bg-white text-purple-700 shadow-sm"
                   : darkTheme
-                    ? "text-gray-400 hover:text-white hover:bg-gray-700"
+                    ? "text-slate-400 hover:text-white hover:bg-slate-700"
                     : "text-slate-500 hover:text-slate-700 hover:bg-white/50"
               )}
             >
@@ -235,7 +235,7 @@ export function AdvancedTabs({
       {(hasModifications || true) && (
         <div className={cn(
           "flex-shrink-0 px-2 py-1.5 border-b",
-          darkTheme ? "border-gray-700" : "border-slate-100"
+          darkTheme ? "border-slate-700" : "border-slate-100"
         )}>
           {/* Action buttons */}
           <div className="flex items-center justify-between mb-1.5">
@@ -245,7 +245,7 @@ export function AdvancedTabs({
                 className={cn(
                   "p-1.5 rounded-md transition-colors",
                   darkTheme
-                    ? "text-gray-400 hover:text-white hover:bg-gray-700"
+                    ? "text-slate-400 hover:text-white hover:bg-slate-700"
                     : "text-slate-400 hover:text-purple-600 hover:bg-purple-50"
                 )}
                 title="Copy settings"
@@ -257,7 +257,7 @@ export function AdvancedTabs({
                 className={cn(
                   "p-1.5 rounded-md transition-colors",
                   darkTheme
-                    ? "text-gray-400 hover:text-white hover:bg-gray-700"
+                    ? "text-slate-400 hover:text-white hover:bg-slate-700"
                     : "text-slate-400 hover:text-purple-600 hover:bg-purple-50"
                 )}
                 title="Paste settings"
@@ -271,7 +271,7 @@ export function AdvancedTabs({
                 className={cn(
                   "flex items-center gap-1 px-2 py-1 rounded-md text-[10px] font-medium transition-colors",
                   darkTheme
-                    ? "text-gray-400 hover:text-white hover:bg-gray-700"
+                    ? "text-slate-400 hover:text-white hover:bg-slate-700"
                     : "text-slate-400 hover:text-purple-600 hover:bg-purple-50"
                 )}
               >
@@ -308,7 +308,7 @@ export function AdvancedTabs({
               {chips.length > 6 && (
                 <span className={cn(
                   "text-[9px] px-1.5 py-0.5",
-                  darkTheme ? "text-gray-500" : "text-slate-400"
+                  darkTheme ? "text-slate-500" : "text-slate-400"
                 )}>
                   +{chips.length - 6} more
                 </span>
@@ -318,7 +318,7 @@ export function AdvancedTabs({
           {chips.length === 0 && (
             <p className={cn(
               "text-[10px]",
-              darkTheme ? "text-gray-500" : "text-slate-400"
+              darkTheme ? "text-slate-500" : "text-slate-400"
             )}>
               Using default settings
             </p>

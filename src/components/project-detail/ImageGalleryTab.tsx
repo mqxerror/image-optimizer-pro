@@ -143,7 +143,7 @@ export function ImageGalleryTab({ projectId }: ImageGalleryTabProps) {
     <div className="space-y-4 h-full flex flex-col">
       {/* Filter */}
       <div className="flex justify-between items-center">
-        <p className="text-sm text-gray-500">
+        <p className="text-sm text-slate-500">
           {images.length} {images.length === 1 ? 'image' : 'images'}
         </p>
         <Select value={statusFilter} onValueChange={(v) => setStatusFilter(v as StatusFilter)}>
@@ -161,22 +161,22 @@ export function ImageGalleryTab({ projectId }: ImageGalleryTabProps) {
       {/* Image Grid */}
       {images.length === 0 ? (
         <div className="flex-1 flex flex-col items-center justify-center">
-          <div className="text-center p-8 rounded-xl bg-gradient-to-b from-gray-50 to-gray-100/50 border border-dashed border-gray-200 max-w-sm">
+          <div className="text-center p-8 rounded-xl bg-gradient-to-b from-slate-50 to-slate-100/50 border border-dashed border-slate-200 max-w-sm">
             <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-purple-50 flex items-center justify-center">
               <ImageIcon className="h-8 w-8 text-purple-400" />
             </div>
-            <h3 className="font-medium text-gray-700 mb-1">No processed images yet</h3>
-            <p className="text-sm text-gray-500 mb-4">
+            <h3 className="font-medium text-slate-700 mb-1">No processed images yet</h3>
+            <p className="text-sm text-slate-500 mb-4">
               {statusFilter !== 'all'
                 ? `No ${statusFilter === 'success' ? 'successful' : 'failed'} images to display. Try changing the filter.`
                 : 'Your processed images will appear here. Head to the Overview tab to start processing.'}
             </p>
-            <div className="flex items-center justify-center gap-2 text-xs text-gray-400">
+            <div className="flex items-center justify-center gap-2 text-xs text-slate-400">
               <div className="flex items-center gap-1">
                 <CheckCircle className="h-3.5 w-3.5 text-green-400" />
                 <span>Success</span>
               </div>
-              <span className="text-gray-300">•</span>
+              <span className="text-slate-300">•</span>
               <div className="flex items-center gap-1">
                 <XCircle className="h-3.5 w-3.5 text-red-400" />
                 <span>Failed</span>
@@ -202,7 +202,7 @@ export function ImageGalleryTab({ projectId }: ImageGalleryTabProps) {
                 tabIndex={focusedIndex === index || (focusedIndex === -1 && index === 0) ? 0 : -1}
                 role="gridcell"
                 aria-label={`${image.file_name || 'Image'}, ${image.status === 'success' || image.status === 'completed' ? 'successful' : 'failed'}. Press Enter to view.`}
-                className="group relative aspect-square bg-gray-100 rounded-lg overflow-hidden border hover:border-purple-400 transition-colors focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2"
+                className="group relative aspect-square bg-slate-100 rounded-lg overflow-hidden border hover:border-purple-400 transition-colors focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2"
               >
                 {image.optimized_url ? (
                   <img
@@ -220,7 +220,7 @@ export function ImageGalleryTab({ projectId }: ImageGalleryTabProps) {
                   />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center">
-                    <ImageIcon className="h-8 w-8 text-gray-300" />
+                    <ImageIcon className="h-8 w-8 text-slate-300" />
                   </div>
                 )}
 
@@ -254,7 +254,7 @@ export function ImageGalleryTab({ projectId }: ImageGalleryTabProps) {
           {hasNextPage && (
             <div ref={loadMoreRef} className="flex justify-center py-4">
               {isFetchingNextPage && (
-                <Loader2 className="h-6 w-6 animate-spin text-gray-400" />
+                <Loader2 className="h-6 w-6 animate-spin text-slate-400" />
               )}
             </div>
           )}

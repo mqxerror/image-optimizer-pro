@@ -52,7 +52,7 @@ export function ExcludedProductsPanel({
           className="w-full justify-between px-4 py-2 h-auto"
         >
           <div className="flex items-center gap-2">
-            <Ban className="h-4 w-4 text-gray-500" />
+            <Ban className="h-4 w-4 text-slate-500" />
             <span className="text-sm font-medium">Excluded Products</span>
             <Badge variant="secondary" className="text-xs">
               {products.length}
@@ -140,8 +140,8 @@ function ExcludedRow({ product, isSelected, onSelect, onRestore }: ExcludedRowPr
             className="w-8 h-8 object-cover rounded border"
           />
         ) : (
-          <div className="w-8 h-8 bg-gray-100 rounded border flex items-center justify-center">
-            <ImageIcon className="h-3.5 w-3.5 text-gray-400" />
+          <div className="w-8 h-8 bg-slate-100 rounded border flex items-center justify-center">
+            <ImageIcon className="h-3.5 w-3.5 text-slate-400" />
           </div>
         )}
         <div className="min-w-0">

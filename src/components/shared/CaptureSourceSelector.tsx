@@ -8,15 +8,15 @@ interface CaptureSourceSelectorProps {
 
 export function CaptureSourceSelector({ mode, onChange }: CaptureSourceSelectorProps) {
   return (
-    <div className="flex rounded-lg border border-gray-200 p-1 bg-gray-50">
+    <div className="flex rounded-lg border border-slate-200 p-1 bg-slate-50">
       <button
         type="button"
         onClick={() => onChange('camera')}
         className={cn(
           'flex-1 flex items-center justify-center gap-2 py-2.5 px-4 rounded-md text-sm font-medium transition-all',
           mode === 'camera'
-            ? 'bg-white text-gray-900 shadow-sm'
-            : 'text-gray-500 hover:text-gray-700'
+            ? 'bg-white text-slate-900 shadow-sm'
+            : 'text-slate-500 hover:text-slate-700'
         )}
       >
         <Camera className="h-4 w-4" />
@@ -28,8 +28,8 @@ export function CaptureSourceSelector({ mode, onChange }: CaptureSourceSelectorP
         className={cn(
           'flex-1 flex items-center justify-center gap-2 py-2.5 px-4 rounded-md text-sm font-medium transition-all',
           mode === 'gallery'
-            ? 'bg-white text-gray-900 shadow-sm'
-            : 'text-gray-500 hover:text-gray-700'
+            ? 'bg-white text-slate-900 shadow-sm'
+            : 'text-slate-500 hover:text-slate-700'
         )}
       >
         <ImageIcon className="h-4 w-4" />

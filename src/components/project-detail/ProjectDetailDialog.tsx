@@ -21,7 +21,7 @@ import { ExportOptionsTab } from './ExportOptionsTab'
 import type { Project } from '@/types/database'
 
 const statusConfig: Record<string, { color: string; label: string; icon?: boolean }> = {
-  draft: { color: 'bg-gray-100 text-gray-700', label: 'Draft' },
+  draft: { color: 'bg-slate-100 text-slate-700', label: 'Draft' },
   active: { color: 'bg-blue-100 text-blue-700', label: 'Processing', icon: true },
   completed: { color: 'bg-green-100 text-green-700', label: 'Completed' },
   archived: { color: 'bg-yellow-100 text-yellow-700', label: 'Archived' },
@@ -199,7 +199,7 @@ export function ProjectDetailDialog({
         </Tabs>
 
         <DialogFooter className="gap-2 mt-4 border-t pt-4">
-          <div className="flex-1 text-xs text-gray-500">
+          <div className="flex-1 text-xs text-slate-500">
             {isRefetching && (
               <span className="flex items-center gap-1">
                 <Loader2 className="h-3 w-3 animate-spin" />

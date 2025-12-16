@@ -37,7 +37,7 @@ const statusConfig: Record<string, {
   pushing: { color: 'text-blue-600', bgColor: 'bg-blue-100', icon: Upload, animate: true },
   completed: { color: 'text-green-600', bgColor: 'bg-green-100', icon: CheckCircle },
   failed: { color: 'text-red-600', bgColor: 'bg-red-100', icon: XCircle },
-  cancelled: { color: 'text-gray-500', bgColor: 'bg-gray-100', icon: XCircle }
+  cancelled: { color: 'text-slate-500', bgColor: 'bg-slate-100', icon: XCircle }
 }
 
 const statusLabels: Record<string, string> = {
@@ -80,7 +80,7 @@ export function RecentActivityFeed({ jobs, isLoading, maxItems = 5 }: RecentActi
           </div>
         ) : (
           <div className="flex flex-col items-center justify-center py-8 text-center">
-            <Briefcase className="h-8 w-8 text-gray-300 mb-3" />
+            <Briefcase className="h-8 w-8 text-slate-300 mb-3" />
             <p className="text-sm text-muted-foreground">No recent activity</p>
             <p className="text-xs text-muted-foreground mt-1">
               Jobs will appear here when you start optimizing
@@ -126,7 +126,7 @@ function ActivityRow({ job }: { job: ShopifySyncJob }) {
       className={cn(
         'flex items-center gap-3 sm:gap-4 p-2.5 sm:p-3 rounded-lg border transition-colors block',
         isActive && 'bg-blue-50/50 border-blue-200',
-        !isActive && 'hover:bg-gray-50'
+        !isActive && 'hover:bg-slate-50'
       )}
     >
       {/* Status Icon */}
@@ -196,7 +196,7 @@ function ActivityRow({ job }: { job: ShopifySyncJob }) {
         {getAction()}
       </div>
       {/* Mobile tap indicator */}
-      <ArrowRight className="h-4 w-4 text-gray-400 sm:hidden flex-shrink-0" />
+      <ArrowRight className="h-4 w-4 text-slate-400 sm:hidden flex-shrink-0" />
     </Link>
   )
 }

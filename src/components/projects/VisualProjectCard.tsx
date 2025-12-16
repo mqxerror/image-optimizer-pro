@@ -62,8 +62,8 @@ const statusConfig: Record<string, {
   animate?: boolean
 }> = {
   draft: {
-    color: 'text-gray-600',
-    bgColor: 'bg-gray-100',
+    color: 'text-slate-600',
+    bgColor: 'bg-slate-100',
     icon: FileEdit,
     label: 'Draft'
   },
@@ -81,8 +81,8 @@ const statusConfig: Record<string, {
     label: 'Completed'
   },
   archived: {
-    color: 'text-gray-500',
-    bgColor: 'bg-gray-100',
+    color: 'text-slate-500',
+    bgColor: 'bg-slate-100',
     icon: Archive,
     label: 'Archived'
   }
@@ -139,7 +139,7 @@ export function VisualProjectCard({
           <div className="flex">
             {/* Selection Checkbox */}
             {selectionMode && (
-              <div className="flex items-center justify-center px-4 border-r bg-gray-50">
+              <div className="flex items-center justify-center px-4 border-r bg-slate-50">
                 <Checkbox
                   checked={isSelected}
                   onCheckedChange={(checked) => onSelect?.(project.id, checked as boolean)}
@@ -149,7 +149,7 @@ export function VisualProjectCard({
 
             {/* Preview Images */}
             <div
-              className="w-40 h-28 flex-shrink-0 bg-gray-100 grid grid-cols-2 gap-0.5 overflow-hidden"
+              className="w-40 h-28 flex-shrink-0 bg-slate-100 grid grid-cols-2 gap-0.5 overflow-hidden"
               role="img"
               aria-label={`Preview images for ${project.name}`}
             >
@@ -166,7 +166,7 @@ export function VisualProjectCard({
                 ))
               ) : (
                 <div className="col-span-2 row-span-2 flex items-center justify-center">
-                  <ImageIcon className="h-8 w-8 text-gray-300" aria-hidden="true" />
+                  <ImageIcon className="h-8 w-8 text-slate-300" aria-hidden="true" />
                   <span className="sr-only">No preview images available</span>
                 </div>
               )}
@@ -178,7 +178,7 @@ export function VisualProjectCard({
               <div className="flex items-start justify-between gap-4 mb-2">
                 <div className="min-w-0">
                   <div className="flex items-center gap-2 mb-1">
-                    <h3 className="font-medium text-gray-900 truncate">
+                    <h3 className="font-medium text-slate-900 truncate">
                       {project.name}
                     </h3>
                     <Badge className={`${status.bgColor} ${status.color} border-0 flex-shrink-0`}>

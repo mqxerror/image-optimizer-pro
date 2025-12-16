@@ -145,8 +145,8 @@ export default function Dashboard() {
     <div className="space-y-8">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Dashboard</h1>
-          <p className="text-gray-500 mt-1 text-sm sm:text-base">Overview of your image optimization activity</p>
+          <h1 className="text-2xl font-bold text-slate-900">Dashboard</h1>
+          <p className="text-slate-500 mt-1 text-sm sm:text-base">Overview of your image optimization activity</p>
         </div>
         <Button
           onClick={() => navigate('/projects')}
@@ -264,11 +264,11 @@ export default function Dashboard() {
           <CardContent className="pt-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-500">Token Balance</p>
+                <p className="text-sm font-medium text-slate-500">Token Balance</p>
                 {loadingTokens ? (
                   <Skeleton className="h-9 w-20 mt-2" />
                 ) : (
-                  <p className="text-3xl font-bold text-gray-900 mt-2">
+                  <p className="text-3xl font-bold text-slate-900 mt-2">
                     {tokenAccount?.balance || 0}
                   </p>
                 )}
@@ -284,11 +284,11 @@ export default function Dashboard() {
           <CardContent className="pt-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-500">In Queue</p>
+                <p className="text-sm font-medium text-slate-500">In Queue</p>
                 {loadingQueue ? (
                   <Skeleton className="h-9 w-16 mt-2" />
                 ) : (
-                  <p className="text-3xl font-bold text-gray-900 mt-2">
+                  <p className="text-3xl font-bold text-slate-900 mt-2">
                     {queueStats?.queued || 0}
                   </p>
                 )}
@@ -313,11 +313,11 @@ export default function Dashboard() {
           <CardContent className="pt-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-500">Processing</p>
+                <p className="text-sm font-medium text-slate-500">Processing</p>
                 {loadingQueue ? (
                   <Skeleton className="h-9 w-16 mt-2" />
                 ) : (
-                  <p className="text-3xl font-bold text-gray-900 mt-2">
+                  <p className="text-3xl font-bold text-slate-900 mt-2">
                     {queueStats?.processing || 0}
                   </p>
                 )}
@@ -333,11 +333,11 @@ export default function Dashboard() {
           <CardContent className="pt-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-500">Processed Today</p>
+                <p className="text-sm font-medium text-slate-500">Processed Today</p>
                 {loadingToday ? (
                   <Skeleton className="h-9 w-16 mt-2" />
                 ) : (
-                  <p className="text-3xl font-bold text-gray-900 mt-2">
+                  <p className="text-3xl font-bold text-slate-900 mt-2">
                     {todayStats?.processed || 0}
                   </p>
                 )}
@@ -412,12 +412,12 @@ export default function Dashboard() {
                 {recentProjects.map(project => (
                   <div
                     key={project.id}
-                    className="flex items-center justify-between p-3 rounded-lg border hover:bg-gray-50 cursor-pointer transition-colors"
+                    className="flex items-center justify-between p-3 rounded-lg border hover:bg-slate-50 cursor-pointer transition-colors"
                     onClick={() => navigate(`/projects?id=${project.id}`)}
                   >
                     <div>
-                      <p className="font-medium text-gray-900">{project.name}</p>
-                      <p className="text-sm text-gray-500">
+                      <p className="font-medium text-slate-900">{project.name}</p>
+                      <p className="text-sm text-slate-500">
                         {project.processed_images}/{project.total_images} images
                       </p>
                     </div>
@@ -432,8 +432,8 @@ export default function Dashboard() {
                 ))}
               </div>
             ) : (
-              <div className="text-center py-8 text-gray-500">
-                <FolderKanban className="h-12 w-12 mx-auto mb-3 text-gray-300" />
+              <div className="text-center py-8 text-slate-500">
+                <FolderKanban className="h-12 w-12 mx-auto mb-3 text-slate-300" />
                 <p>No projects yet</p>
                 <Button
                   variant="link"

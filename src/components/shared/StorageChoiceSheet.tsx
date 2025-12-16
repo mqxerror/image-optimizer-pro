@@ -40,20 +40,20 @@ export function StorageChoiceSheet({
               'flex items-center gap-4 p-4 rounded-xl border-2 transition-all text-left',
               currentSelection === 'supabase'
                 ? 'border-primary bg-primary/5'
-                : 'border-gray-200 hover:border-gray-300'
+                : 'border-slate-200 hover:border-slate-300'
             )}
           >
             <div className={cn(
               'flex items-center justify-center h-12 w-12 rounded-full',
               currentSelection === 'supabase'
                 ? 'bg-primary text-primary-foreground'
-                : 'bg-gray-100 text-gray-600'
+                : 'bg-slate-100 text-slate-600'
             )}>
               <Cloud className="h-6 w-6" />
             </div>
             <div className="flex-1">
-              <h4 className="font-medium text-gray-900">App Storage</h4>
-              <p className="text-sm text-gray-500">
+              <h4 className="font-medium text-slate-900">App Storage</h4>
+              <p className="text-sm text-slate-500">
                 Keep images in your Image Optimizer account
               </p>
             </div>
@@ -70,20 +70,20 @@ export function StorageChoiceSheet({
               'flex items-center gap-4 p-4 rounded-xl border-2 transition-all text-left',
               currentSelection === 'google_drive'
                 ? 'border-primary bg-primary/5'
-                : 'border-gray-200 hover:border-gray-300'
+                : 'border-slate-200 hover:border-slate-300'
             )}
           >
             <div className={cn(
               'flex items-center justify-center h-12 w-12 rounded-full',
               currentSelection === 'google_drive'
                 ? 'bg-primary text-primary-foreground'
-                : 'bg-gray-100 text-gray-600'
+                : 'bg-slate-100 text-slate-600'
             )}>
               <HardDrive className="h-6 w-6" />
             </div>
             <div className="flex-1">
-              <h4 className="font-medium text-gray-900">Google Drive</h4>
-              <p className="text-sm text-gray-500">
+              <h4 className="font-medium text-slate-900">Google Drive</h4>
+              <p className="text-sm text-slate-500">
                 Save directly to your connected Google Drive
               </p>
             </div>

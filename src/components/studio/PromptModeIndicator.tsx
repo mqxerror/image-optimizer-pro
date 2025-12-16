@@ -20,7 +20,7 @@ export function PromptModeIndicator({
         'flex items-center justify-between p-2 rounded-lg transition-all duration-200',
         mode === 'template' && 'bg-blue-500/10 border border-blue-500/30',
         mode === 'preset' && selectedName && 'bg-purple-500/10 border border-purple-500/30',
-        mode === 'custom' && 'bg-gray-500/10 border border-gray-500/30',
+        mode === 'custom' && 'bg-slate-500/10 border border-slate-500/30',
         className
       )}
     >
@@ -51,10 +51,10 @@ export function PromptModeIndicator({
         )}
         {mode === 'custom' && (
           <>
-            <span className="w-2 h-2 rounded-full bg-gray-400" />
-            <span className="text-sm text-gray-400">Custom Settings</span>
+            <span className="w-2 h-2 rounded-full bg-slate-400" />
+            <span className="text-sm text-slate-400">Custom Settings</span>
             {selectedName && (
-              <span className="text-xs text-gray-500">(modified from {selectedName})</span>
+              <span className="text-xs text-slate-500">(modified from {selectedName})</span>
             )}
           </>
         )}

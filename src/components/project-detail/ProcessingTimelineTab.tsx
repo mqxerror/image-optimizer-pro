@@ -57,32 +57,32 @@ export function ProcessingTimelineTab({ projectId }: ProcessingTimelineTabProps)
   if (items.length === 0) {
     return (
       <div className="h-full flex flex-col items-center justify-center">
-        <div className="text-center p-8 rounded-xl bg-gradient-to-b from-gray-50 to-gray-100/50 border border-dashed border-gray-200 max-w-sm">
+        <div className="text-center p-8 rounded-xl bg-gradient-to-b from-slate-50 to-slate-100/50 border border-dashed border-slate-200 max-w-sm">
           <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-blue-50 flex items-center justify-center">
             <Activity className="h-8 w-8 text-blue-400" />
           </div>
-          <h3 className="font-medium text-gray-700 mb-1">No processing history yet</h3>
-          <p className="text-sm text-gray-500 mb-4">
+          <h3 className="font-medium text-slate-700 mb-1">No processing history yet</h3>
+          <p className="text-sm text-slate-500 mb-4">
             As images are processed, a detailed timeline will appear here showing each step, processing time, and token usage.
           </p>
           {/* Visual preview of what timeline items look like */}
-          <div className="bg-white/80 rounded-lg p-3 border border-gray-100 text-left">
-            <div className="flex items-center gap-2 text-xs text-gray-400 mb-2">
+          <div className="bg-white/80 rounded-lg p-3 border border-slate-100 text-left">
+            <div className="flex items-center gap-2 text-xs text-slate-400 mb-2">
               <Clock className="h-3 w-3" />
               Timeline Preview
             </div>
             <div className="space-y-2">
               <div className="flex items-center gap-2">
                 <div className="w-2 h-2 rounded-full bg-green-400"></div>
-                <span className="text-xs text-gray-500">image_001.jpg - 2.3s</span>
+                <span className="text-xs text-slate-500">image_001.jpg - 2.3s</span>
               </div>
               <div className="flex items-center gap-2">
                 <div className="w-2 h-2 rounded-full bg-green-400"></div>
-                <span className="text-xs text-gray-500">image_002.jpg - 1.8s</span>
+                <span className="text-xs text-slate-500">image_002.jpg - 1.8s</span>
               </div>
               <div className="flex items-center gap-2">
-                <div className="w-2 h-2 rounded-full bg-gray-300"></div>
-                <span className="text-xs text-gray-400">Waiting...</span>
+                <div className="w-2 h-2 rounded-full bg-slate-300"></div>
+                <span className="text-xs text-slate-400">Waiting...</span>
               </div>
             </div>
           </div>
@@ -102,18 +102,18 @@ export function ProcessingTimelineTab({ projectId }: ProcessingTimelineTabProps)
             <div
               key={item.id}
               className={`relative pl-6 pb-3 border-l-2 ${
-                isSuccess ? 'border-green-200' : hasFailed ? 'border-red-200' : 'border-gray-200'
+                isSuccess ? 'border-green-200' : hasFailed ? 'border-red-200' : 'border-slate-200'
               }`}
             >
               {/* Status Dot */}
               <div
                 className={`absolute -left-[9px] top-0 w-4 h-4 rounded-full border-2 border-white ${
-                  isSuccess ? 'bg-green-500' : hasFailed ? 'bg-red-500' : 'bg-gray-400'
+                  isSuccess ? 'bg-green-500' : hasFailed ? 'bg-red-500' : 'bg-slate-400'
                 }`}
               />
 
               {/* Content */}
-              <div className="bg-gray-50 rounded-lg p-3">
+              <div className="bg-slate-50 rounded-lg p-3">
                 {/* Header */}
                 <div className="flex items-start justify-between gap-2">
                   <div className="flex items-center gap-2 min-w-0">
@@ -126,7 +126,7 @@ export function ProcessingTimelineTab({ projectId }: ProcessingTimelineTabProps)
                       {item.file_name || 'Untitled'}
                     </span>
                   </div>
-                  <span className="text-xs text-gray-500 flex-shrink-0">
+                  <span className="text-xs text-slate-500 flex-shrink-0">
                     {item.completed_at
                       ? format(new Date(item.completed_at), 'MMM d, HH:mm')
                       : 'Processing...'}
@@ -178,7 +178,7 @@ export function ProcessingTimelineTab({ projectId }: ProcessingTimelineTabProps)
         {hasNextPage && (
           <div ref={loadMoreRef} className="flex justify-center py-4">
             {isFetchingNextPage && (
-              <Loader2 className="h-5 w-5 animate-spin text-gray-400" />
+              <Loader2 className="h-5 w-5 animate-spin text-slate-400" />
             )}
           </div>
         )}

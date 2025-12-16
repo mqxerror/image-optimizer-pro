@@ -53,7 +53,7 @@ function CollapsibleSection({
 
   return (
     <Collapsible open={open} onOpenChange={setOpen} className="border-b last:border-b-0">
-      <CollapsibleTrigger className="flex items-center justify-between w-full p-3 hover:bg-gray-50 transition-colors">
+      <CollapsibleTrigger className="flex items-center justify-between w-full p-3 hover:bg-slate-50 transition-colors">
         <div className="flex items-center gap-2">
           {icon}
           <span className="font-medium text-sm">{title}</span>
@@ -86,7 +86,7 @@ export function FilterSidebar({
   }
 
   return (
-    <div className="h-full flex flex-col bg-gray-50">
+    <div className="h-full flex flex-col bg-slate-50">
       {/* Header */}
       <div className="p-3 border-b bg-white flex items-center justify-between">
         <div className="flex items-center gap-2">
@@ -140,7 +140,7 @@ export function FilterSidebar({
                   'text-xs rounded p-2',
                   filters.excludeModelImages
                     ? 'bg-amber-50 text-amber-700'
-                    : 'bg-gray-100 text-muted-foreground'
+                    : 'bg-slate-100 text-muted-foreground'
                 )}>
                   {filters.excludeModelImages
                     ? `${stats.modelImagesExcluded} model images will be excluded`

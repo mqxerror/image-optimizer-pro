@@ -55,7 +55,7 @@ interface OverviewTabProps {
 }
 
 const statusConfig: Record<string, { color: string; label: string }> = {
-  draft: { color: 'bg-gray-100 text-gray-700', label: 'Draft' },
+  draft: { color: 'bg-slate-100 text-slate-700', label: 'Draft' },
   active: { color: 'bg-blue-100 text-blue-700', label: 'Active' },
   completed: { color: 'bg-green-100 text-green-700', label: 'Completed' },
   archived: { color: 'bg-yellow-100 text-yellow-700', label: 'Archived' },
@@ -179,7 +179,7 @@ export function OverviewTab({ project: initialProject }: OverviewTabProps) {
               <Zap className="h-3.5 w-3.5" />
               STATUS
             </div>
-            <Badge className={statusConfig[project.status]?.color || 'bg-gray-100'}>
+            <Badge className={statusConfig[project.status]?.color || 'bg-slate-100'}>
               {statusConfig[project.status]?.label || project.status}
             </Badge>
           </CardContent>

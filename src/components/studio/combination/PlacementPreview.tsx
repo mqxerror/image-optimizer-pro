@@ -35,10 +35,10 @@ export function PlacementPreview({
   if (!modelImageUrl) {
     return (
       <div className={cn(
-        "aspect-[3/4] bg-gray-800/50 rounded-xl border border-gray-700 flex items-center justify-center",
+        "aspect-[3/4] bg-slate-800/50 rounded-xl border border-slate-700 flex items-center justify-center",
         className
       )}>
-        <p className="text-xs text-gray-500 text-center px-4">
+        <p className="text-xs text-slate-500 text-center px-4">
           Upload model photo to see placement preview
         </p>
       </div>
@@ -46,7 +46,7 @@ export function PlacementPreview({
   }
 
   return (
-    <div className={cn("relative rounded-xl overflow-hidden bg-gray-900", className)}>
+    <div className={cn("relative rounded-xl overflow-hidden bg-slate-900", className)}>
       {/* Model Image */}
       <img
         src={modelImageUrl}
@@ -82,7 +82,7 @@ export function PlacementPreview({
       </div>
 
       {/* Preview badge */}
-      <div className="absolute bottom-2 left-2 bg-black/60 backdrop-blur-sm px-2 py-1 rounded text-[10px] text-gray-300">
+      <div className="absolute bottom-2 left-2 bg-black/60 backdrop-blur-sm px-2 py-1 rounded text-[10px] text-slate-300">
         Preview • Adjust sliders to reposition
       </div>
     </div>

@@ -387,8 +387,8 @@ export default function Queue() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Processing Queue</h1>
-          <p className="text-gray-500 mt-1">Monitor and manage images being optimized</p>
+          <h1 className="text-2xl font-bold text-slate-900">Processing Queue</h1>
+          <p className="text-slate-500 mt-1">Monitor and manage images being optimized</p>
         </div>
         <div className="flex gap-2">
           <Button variant="outline" size="sm" onClick={() => refetch()}>
@@ -480,7 +480,7 @@ export default function Queue() {
         <Card className={`overflow-hidden relative ${
           (stats?.failed_count || 0) > 0
             ? 'bg-gradient-to-br from-red-50 to-rose-50 border-red-200'
-            : 'bg-gradient-to-br from-slate-50 to-gray-50 border-slate-200'
+            : 'bg-gradient-to-br from-slate-50 to-slate-50 border-slate-200'
         }`}>
           <div className={`absolute top-0 right-0 w-20 h-20 rounded-full -mr-6 -mt-6 ${
             (stats?.failed_count || 0) > 0 ? 'bg-red-200/30' : 'bg-slate-200/30'
@@ -540,7 +540,7 @@ export default function Queue() {
                   <div key={item.id} className="bg-white rounded-lg p-3 border border-green-100 shadow-sm">
                     <div className="flex items-center gap-3">
                       {/* Thumbnail */}
-                      <div className="w-10 h-10 rounded-lg bg-gray-100 overflow-hidden shrink-0">
+                      <div className="w-10 h-10 rounded-lg bg-slate-100 overflow-hidden shrink-0">
                         {item.file_id ? (
                           <ProxiedThumbnail
                             fileId={item.file_id}
@@ -549,7 +549,7 @@ export default function Queue() {
                           />
                         ) : (
                           <div className="w-full h-full flex items-center justify-center">
-                            <ImageIcon className="h-5 w-5 text-gray-400" />
+                            <ImageIcon className="h-5 w-5 text-slate-400" />
                           </div>
                         )}
                       </div>
@@ -1126,7 +1126,7 @@ export default function Queue() {
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4">
-            <div className="aspect-video bg-gray-100 rounded-lg flex items-center justify-center overflow-hidden">
+            <div className="aspect-video bg-slate-100 rounded-lg flex items-center justify-center overflow-hidden">
               {previewImage?.file_id ? (
                 <ProxiedThumbnail
                   fileId={previewImage.file_id}
@@ -1134,31 +1134,31 @@ export default function Queue() {
                   className="max-w-full max-h-full object-contain"
                 />
               ) : (
-                <ImageIcon className="h-16 w-16 text-gray-300" />
+                <ImageIcon className="h-16 w-16 text-slate-300" />
               )}
             </div>
             <div className="grid grid-cols-2 gap-4 text-sm">
               <div>
-                <p className="text-gray-500">Project</p>
+                <p className="text-slate-500">Project</p>
                 <p className="font-medium">{previewImage?.project_name || '-'}</p>
               </div>
               <div>
-                <p className="text-gray-500">Progress</p>
+                <p className="text-slate-500">Progress</p>
                 <p className="font-medium">{previewImage?.progress}%</p>
               </div>
               <div>
-                <p className="text-gray-500">Added</p>
+                <p className="text-slate-500">Added</p>
                 <p className="font-medium">
                   {previewImage?.started_at && format(new Date(previewImage.started_at), 'MMM d, yyyy HH:mm')}
                 </p>
               </div>
               <div>
-                <p className="text-gray-500">Retry Count</p>
+                <p className="text-slate-500">Retry Count</p>
                 <p className="font-medium">{previewImage?.retry_count || 0}</p>
               </div>
               {previewImage?.folder_path && (
                 <div className="col-span-2">
-                  <p className="text-gray-500">Folder</p>
+                  <p className="text-slate-500">Folder</p>
                   <p className="font-medium">{previewImage.folder_path}</p>
                 </div>
               )}
@@ -1170,8 +1170,8 @@ export default function Queue() {
             )}
             {previewImage?.generated_prompt && (
               <div>
-                <p className="text-sm text-gray-500 mb-1">Generated Prompt</p>
-                <p className="text-sm p-3 bg-gray-50 rounded-lg">{previewImage.generated_prompt}</p>
+                <p className="text-sm text-slate-500 mb-1">Generated Prompt</p>
+                <p className="text-sm p-3 bg-slate-50 rounded-lg">{previewImage.generated_prompt}</p>
               </div>
             )}
           </div>

@@ -179,7 +179,7 @@ function BeforeAfterSlider({
       >
         {/* Slider Handle */}
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-10 h-10 bg-white rounded-full shadow-lg flex items-center justify-center">
-          <ArrowLeftRight className="h-5 w-5 text-gray-700" />
+          <ArrowLeftRight className="h-5 w-5 text-slate-700" />
         </div>
       </div>
 
@@ -313,7 +313,7 @@ export function GenerationDetailModal({
       case 'history':
         return <FolderKanban className="h-5 w-5 text-green-500" />
       default:
-        return <Image className="h-5 w-5 text-gray-500" />
+        return <Image className="h-5 w-5 text-slate-500" />
     }
   }
 
@@ -355,7 +355,7 @@ export function GenerationDetailModal({
               {getSourceLabel()}
             </DialogTitle>
             {generation?.fileName && (
-              <p className="text-sm text-gray-500">{generation.fileName}</p>
+              <p className="text-sm text-slate-500">{generation.fileName}</p>
             )}
           </DialogHeader>
 
@@ -364,7 +364,7 @@ export function GenerationDetailModal({
               {/* Before/After Slider or Image Display */}
               {generation.resultUrl && originalUrl ? (
                 <div className="space-y-2">
-                  <div className="flex items-center gap-2 text-sm text-gray-600">
+                  <div className="flex items-center gap-2 text-sm text-slate-600">
                     <ArrowLeftRight className="h-4 w-4" />
                     <span>Drag to compare before & after</span>
                   </div>
@@ -408,7 +408,7 @@ export function GenerationDetailModal({
                       </div>
                     )}
                   </div>
-                  <p className="text-xs text-gray-500 text-center">
+                  <p className="text-xs text-slate-500 text-center">
                     {isCombination ? 'Model image' : 'Original image'} — no result available
                   </p>
                 </div>
@@ -430,7 +430,7 @@ export function GenerationDetailModal({
               {generation.prompt && (
                 <div className="space-y-2">
                   <div className="flex items-center justify-between">
-                    <h4 className="font-medium text-sm text-gray-700">Prompt Used</h4>
+                    <h4 className="font-medium text-sm text-slate-700">Prompt Used</h4>
                     <Button
                       variant="ghost"
                       size="sm"
@@ -444,7 +444,7 @@ export function GenerationDetailModal({
                       )}
                     </Button>
                   </div>
-                  <div className="bg-gray-50 rounded-lg p-3 text-sm text-gray-600 leading-relaxed max-h-32 overflow-y-auto">
+                  <div className="bg-slate-50 rounded-lg p-3 text-sm text-slate-600 leading-relaxed max-h-32 overflow-y-auto">
                     {generation.prompt}
                   </div>
                 </div>
@@ -453,8 +453,8 @@ export function GenerationDetailModal({
               {/* Settings Grid */}
               <div className="grid grid-cols-2 gap-3">
                 {/* AI Model */}
-                <div className="bg-gray-50 rounded-lg p-3">
-                  <p className="text-xs text-gray-500 mb-1">AI Model</p>
+                <div className="bg-slate-50 rounded-lg p-3">
+                  <p className="text-xs text-slate-500 mb-1">AI Model</p>
                   <p className="font-medium text-sm">
                     {generation.aiModel
                       ? getModelById(generation.aiModel)?.friendlyName || generation.aiModel
@@ -463,8 +463,8 @@ export function GenerationDetailModal({
                 </div>
 
                 {/* Processing Time */}
-                <div className="bg-gray-50 rounded-lg p-3">
-                  <p className="text-xs text-gray-500 mb-1">Processing Time</p>
+                <div className="bg-slate-50 rounded-lg p-3">
+                  <p className="text-xs text-slate-500 mb-1">Processing Time</p>
                   <p className="font-medium text-sm">
                     {generation.processingTimeSec
                       ? `${generation.processingTimeSec}s`
@@ -473,16 +473,16 @@ export function GenerationDetailModal({
                 </div>
 
                 {/* Tokens Used */}
-                <div className="bg-gray-50 rounded-lg p-3">
-                  <p className="text-xs text-gray-500 mb-1">Tokens Used</p>
+                <div className="bg-slate-50 rounded-lg p-3">
+                  <p className="text-xs text-slate-500 mb-1">Tokens Used</p>
                   <p className="font-medium text-sm">
                     {generation.tokensUsed || 'Not recorded'}
                   </p>
                 </div>
 
                 {/* Created */}
-                <div className="bg-gray-50 rounded-lg p-3">
-                  <p className="text-xs text-gray-500 mb-1">Created</p>
+                <div className="bg-slate-50 rounded-lg p-3">
+                  <p className="text-xs text-slate-500 mb-1">Created</p>
                   <p className="font-medium text-sm">
                     {formatDistanceToNow(new Date(generation.createdAt), { addSuffix: true })}
                   </p>
@@ -492,7 +492,7 @@ export function GenerationDetailModal({
               {/* Combination-specific settings */}
               {isCombination && (
                 <div className="space-y-2">
-                  <h4 className="font-medium text-sm text-gray-700">Combination Settings</h4>
+                  <h4 className="font-medium text-sm text-slate-700">Combination Settings</h4>
                   <div className="grid grid-cols-3 gap-2">
                     <div className="bg-blue-50 rounded-lg p-2 text-center">
                       <p className="text-xs text-blue-600 mb-0.5">Position</p>
@@ -521,7 +521,7 @@ export function GenerationDetailModal({
               {/* Source Jewelry Image for Combination */}
               {isCombination && generation.jewelryImageUrl && originalUrl && (
                 <div className="space-y-2">
-                  <h4 className="font-medium text-sm text-gray-700">Jewelry Source</h4>
+                  <h4 className="font-medium text-sm text-slate-700">Jewelry Source</h4>
                   <img
                     src={generation.jewelryImageUrl}
                     alt="Jewelry"

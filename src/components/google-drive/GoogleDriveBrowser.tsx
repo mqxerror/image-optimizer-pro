@@ -292,7 +292,7 @@ export default function GoogleDriveBrowser({
   if (loadingConnections) {
     return (
       <div className="flex items-center justify-center py-12">
-        <Loader2 className="h-6 w-6 animate-spin text-gray-400" />
+        <Loader2 className="h-6 w-6 animate-spin text-slate-400" />
       </div>
     )
   }
@@ -300,9 +300,9 @@ export default function GoogleDriveBrowser({
   if (!connections || connections.length === 0) {
     return (
       <div className="text-center py-12">
-        <AlertCircle className="h-12 w-12 mx-auto mb-3 text-gray-300" />
-        <p className="text-gray-500">No Google Drive accounts connected</p>
-        <p className="text-sm text-gray-400 mt-1">
+        <AlertCircle className="h-12 w-12 mx-auto mb-3 text-slate-300" />
+        <p className="text-slate-500">No Google Drive accounts connected</p>
+        <p className="text-sm text-slate-400 mt-1">
           Connect a Google Drive account in Settings first
         </p>
       </div>
@@ -331,11 +331,11 @@ export default function GoogleDriveBrowser({
       <div className="flex items-center gap-1 text-sm overflow-x-auto pb-2">
         {breadcrumbs.map((crumb, index) => (
           <div key={crumb.id} className="flex items-center">
-            {index > 0 && <ChevronRight className="h-4 w-4 text-gray-400 mx-1" />}
+            {index > 0 && <ChevronRight className="h-4 w-4 text-slate-400 mx-1" />}
             <button
               onClick={() => navigateToBreadcrumb(index)}
-              className={`px-2 py-1 rounded hover:bg-gray-100 whitespace-nowrap ${
-                index === breadcrumbs.length - 1 ? 'font-medium text-primary' : 'text-gray-600'
+              className={`px-2 py-1 rounded hover:bg-slate-100 whitespace-nowrap ${
+                index === breadcrumbs.length - 1 ? 'font-medium text-primary' : 'text-slate-600'
               }`}
             >
               {index === 0 ? <Home className="h-4 w-4" /> : crumb.name}
@@ -355,7 +355,7 @@ export default function GoogleDriveBrowser({
       {/* Search & Selection Toolbar */}
       <div className="flex items-center gap-2">
         <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
           <Input
             placeholder="Search files..."
             value={searchQuery}
@@ -365,7 +365,7 @@ export default function GoogleDriveBrowser({
           {searchQuery && (
             <button
               onClick={() => setSearchQuery('')}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
             >
               <X className="h-4 w-4" />
             </button>
@@ -409,7 +409,7 @@ export default function GoogleDriveBrowser({
             {filteredFiles.map((file) => (
               <div
                 key={file.id}
-                className={`flex items-center gap-3 p-3 hover:bg-gray-50 cursor-pointer ${
+                className={`flex items-center gap-3 p-3 hover:bg-slate-50 cursor-pointer ${
                   selectedFiles.some(f => f.id === file.id) ? 'bg-primary/5' : ''
                 }`}
                 onClick={() => {
@@ -439,13 +439,13 @@ export default function GoogleDriveBrowser({
                     className="h-10 w-10"
                   />
                 ) : (
-                  <Image className="h-10 w-10 text-gray-400" />
+                  <Image className="h-10 w-10 text-slate-400" />
                 )}
 
                 {/* File info */}
                 <div className="flex-1 min-w-0">
                   <p className="font-medium truncate">{file.name}</p>
-                  <p className="text-xs text-gray-500">
+                  <p className="text-xs text-slate-500">
                     {isFolder(file.mimeType)
                       ? 'Folder'
                       : file.size
@@ -461,7 +461,7 @@ export default function GoogleDriveBrowser({
                       <Button
                         variant="ghost"
                         size="icon"
-                        className="h-8 w-8 text-gray-400 hover:text-primary"
+                        className="h-8 w-8 text-slate-400 hover:text-primary"
                         onClick={(e) => {
                           e.stopPropagation()
                           setPreviewFolder(
@@ -474,17 +474,17 @@ export default function GoogleDriveBrowser({
                         <Eye className="h-4 w-4" />
                       </Button>
                     )}
-                    <ChevronRight className="h-5 w-5 text-gray-400" />
+                    <ChevronRight className="h-5 w-5 text-slate-400" />
                   </div>
                 )}
               </div>
             ))}
           </div>
         ) : (
-          <div className="flex flex-col items-center justify-center h-full text-gray-500">
+          <div className="flex flex-col items-center justify-center h-full text-slate-500">
             {searchQuery ? (
               <>
-                <Search className="h-12 w-12 text-gray-300 mb-2" />
+                <Search className="h-12 w-12 text-slate-300 mb-2" />
                 <p>No files match "{searchQuery}"</p>
                 <Button
                   variant="ghost"
@@ -497,7 +497,7 @@ export default function GoogleDriveBrowser({
               </>
             ) : (
               <>
-                <Folder className="h-12 w-12 text-gray-300 mb-2" />
+                <Folder className="h-12 w-12 text-slate-300 mb-2" />
                 <p>This folder is empty</p>
               </>
             )}
@@ -515,7 +515,7 @@ export default function GoogleDriveBrowser({
             </div>
             <div className="flex items-center gap-2">
               {loadingPreview ? (
-                <Loader2 className="h-4 w-4 animate-spin text-gray-400" />
+                <Loader2 className="h-4 w-4 animate-spin text-slate-400" />
               ) : previewData ? (
                 <Badge variant="secondary" className="bg-blue-100 text-blue-700">
                   <ImageIcon className="h-3 w-3 mr-1" />
@@ -604,7 +604,7 @@ export default function GoogleDriveBrowser({
 
       {/* Actions */}
       <div className="flex items-center justify-between pt-2 border-t">
-        <div className="text-sm text-gray-500">
+        <div className="text-sm text-slate-500">
           {selectionMode === 'folder' ? (
             <span>Current folder: {breadcrumbs[breadcrumbs.length - 1].name}</span>
           ) : (

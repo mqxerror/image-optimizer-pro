@@ -23,7 +23,7 @@ interface StatCardProps {
 
 function StatCard({ label, value, icon, variant = 'default', pulse }: StatCardProps) {
   const variantStyles = {
-    default: 'bg-gray-50 border-gray-200 text-gray-700',
+    default: 'bg-slate-50 border-slate-200 text-slate-700',
     success: 'bg-green-50 border-green-200 text-green-700',
     error: 'bg-red-50 border-red-200 text-red-700',
     warning: 'bg-amber-50 border-amber-200 text-amber-700',
@@ -178,8 +178,8 @@ export default function Activity() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Activity</h1>
-          <p className="text-sm text-gray-500 mt-1">
+          <h1 className="text-2xl font-bold text-slate-900">Activity</h1>
+          <p className="text-sm text-slate-500 mt-1">
             Track all your image processing across Studio, Projects, and Combinations
           </p>
         </div>
@@ -258,7 +258,7 @@ export default function Activity() {
         <TabsList>
           <TabsTrigger value="all" className="gap-2">
             All
-            <span className="text-xs bg-gray-100 px-1.5 py-0.5 rounded">
+            <span className="text-xs bg-slate-100 px-1.5 py-0.5 rounded">
               {stats.total}
             </span>
           </TabsTrigger>
@@ -298,11 +298,11 @@ export default function Activity() {
         <TabsContent value={filter} className="mt-4">
           {isLoading ? (
             <div className="flex items-center justify-center py-12">
-              <Loader2 className="h-8 w-8 animate-spin text-gray-400" />
+              <Loader2 className="h-8 w-8 animate-spin text-slate-400" />
             </div>
           ) : items.length === 0 ? (
-            <div className="text-center py-12 text-gray-500">
-              <ActivityIcon className="h-12 w-12 mx-auto mb-4 text-gray-300" />
+            <div className="text-center py-12 text-slate-500">
+              <ActivityIcon className="h-12 w-12 mx-auto mb-4 text-slate-300" />
               <p className="text-lg font-medium">No activity yet</p>
               <p className="text-sm mt-1">
                 {filter === 'all'

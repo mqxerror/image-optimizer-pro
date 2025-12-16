@@ -106,7 +106,7 @@ export function OptimizationModal({
           {/* Left Sidebar - Filters (collapsible on mobile) */}
           <div
             className={cn(
-              'border-b md:border-b-0 md:border-r bg-gray-50 flex flex-col transition-all duration-200 overflow-hidden',
+              'border-b md:border-b-0 md:border-r bg-slate-50 flex flex-col transition-all duration-200 overflow-hidden',
               // Mobile: collapsed by default, full width when open
               // Desktop: fixed width sidebar
               sidebarOpen

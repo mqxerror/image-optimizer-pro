@@ -185,7 +185,7 @@ export default function Onboarding() {
                 {errors.organizationName && (
                   <p className="text-sm text-red-600">{errors.organizationName.message}</p>
                 )}
-                <p className="text-xs text-gray-500">
+                <p className="text-xs text-slate-500">
                   This is the name of your business or project
                 </p>
               </div>
@@ -221,21 +221,21 @@ export default function Onboarding() {
               </div>
 
               <div className="space-y-3">
-                <div className="flex items-start gap-3 p-3 rounded-lg bg-gray-50">
+                <div className="flex items-start gap-3 p-3 rounded-lg bg-slate-50">
                   <Check className="h-5 w-5 text-green-600 mt-0.5" />
                   <div>
                     <p className="font-medium text-sm">Bulk Image Optimization</p>
                     <p className="text-xs text-muted-foreground">Process all your product images at once</p>
                   </div>
                 </div>
-                <div className="flex items-start gap-3 p-3 rounded-lg bg-gray-50">
+                <div className="flex items-start gap-3 p-3 rounded-lg bg-slate-50">
                   <Check className="h-5 w-5 text-green-600 mt-0.5" />
                   <div>
                     <p className="font-medium text-sm">Auto-Sync</p>
                     <p className="text-xs text-muted-foreground">Optimized images are uploaded back to Shopify</p>
                   </div>
                 </div>
-                <div className="flex items-start gap-3 p-3 rounded-lg bg-gray-50">
+                <div className="flex items-start gap-3 p-3 rounded-lg bg-slate-50">
                   <Check className="h-5 w-5 text-green-600 mt-0.5" />
                   <div>
                     <p className="font-medium text-sm">Background Removal</p>
@@ -286,15 +286,15 @@ export default function Onboarding() {
               <div className="space-y-2">
                 <p className="text-sm font-medium">Token Costs:</p>
                 <div className="grid grid-cols-1 gap-2 text-sm">
-                  <div className="flex justify-between p-2 rounded bg-gray-50">
+                  <div className="flex justify-between p-2 rounded bg-slate-50">
                     <span>Standard Optimization</span>
                     <span className="font-medium">1 token</span>
                   </div>
-                  <div className="flex justify-between p-2 rounded bg-gray-50">
+                  <div className="flex justify-between p-2 rounded bg-slate-50">
                     <span>Background Removal</span>
                     <span className="font-medium">2 tokens</span>
                   </div>
-                  <div className="flex justify-between p-2 rounded bg-gray-50">
+                  <div className="flex justify-between p-2 rounded bg-slate-50">
                     <span>AI Enhancement</span>
                     <span className="font-medium">3 tokens</span>
                   </div>
@@ -373,7 +373,7 @@ export default function Onboarding() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4 py-8">
+    <div className="min-h-screen flex items-center justify-center bg-slate-50 px-4 py-8">
       <div className="w-full max-w-md">
         {/* Progress indicator */}
         <div className="mb-6">
@@ -390,7 +390,7 @@ export default function Onboarding() {
                     "flex items-center justify-center h-10 w-10 rounded-full transition-colors",
                     isCompleted && "bg-primary text-primary-foreground",
                     isCurrent && "bg-primary/20 text-primary border-2 border-primary",
-                    !isCompleted && !isCurrent && "bg-gray-200 text-gray-500"
+                    !isCompleted && !isCurrent && "bg-slate-200 text-slate-500"
                   )}
                 >
                   {isCompleted ? (

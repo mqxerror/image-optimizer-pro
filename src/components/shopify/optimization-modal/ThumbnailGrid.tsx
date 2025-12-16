@@ -67,7 +67,7 @@ export function ThumbnailGrid({
       </ScrollArea>
 
       {/* Summary bar */}
-      <div className="flex items-center justify-between px-3 py-2 border-t bg-gray-50 text-xs text-muted-foreground">
+      <div className="flex items-center justify-between px-3 py-2 border-t bg-slate-50 text-xs text-muted-foreground">
         <span>
           Showing {displayedImages.length.toLocaleString()} of {images.length.toLocaleString()} images
         </span>
@@ -98,7 +98,7 @@ function ThumbnailItem({ item }: ThumbnailItemProps) {
       className={cn(
         'aspect-square rounded border overflow-hidden relative group',
         item.isExcluded ? 'opacity-40' : 'hover:ring-2 hover:ring-primary/50',
-        item.isSvg && 'bg-gray-200'
+        item.isSvg && 'bg-slate-200'
       )}
       title={`${item.productTitle} - ${isMain ? 'Main' : `Variant ${item.image.position}`}${item.isModel ? ' (Model)' : ''}${item.isSvg ? ' (SVG - skipped)' : ''}`}
     >
@@ -118,7 +118,7 @@ function ThumbnailItem({ item }: ThumbnailItemProps) {
 
       {/* SVG overlay */}
       {item.isSvg && (
-        <div className="absolute inset-0 bg-gray-600/70 flex items-center justify-center">
+        <div className="absolute inset-0 bg-slate-600/70 flex items-center justify-center">
           <span className="text-white text-[10px] font-medium">SVG</span>
         </div>
       )}

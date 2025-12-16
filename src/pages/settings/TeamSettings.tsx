@@ -256,7 +256,7 @@ export default function TeamSettings() {
       case 'admin':
         return <ShieldCheck className="h-4 w-4 text-blue-500" />
       default:
-        return <Shield className="h-4 w-4 text-gray-400" />
+        return <Shield className="h-4 w-4 text-slate-400" />
     }
   }
 
@@ -308,14 +308,14 @@ export default function TeamSettings() {
         <CardContent>
           {loadingMembers ? (
             <div className="flex items-center justify-center py-8">
-              <Loader2 className="h-6 w-6 animate-spin text-gray-400" />
+              <Loader2 className="h-6 w-6 animate-spin text-slate-400" />
             </div>
           ) : (
             <div className="space-y-3">
               {members.map((member) => (
                 <div
                   key={member.id}
-                  className="flex items-center justify-between p-3 bg-gray-50 rounded-lg"
+                  className="flex items-center justify-between p-3 bg-slate-50 rounded-lg"
                 >
                   <div className="flex items-center gap-3">
                     <Avatar>
@@ -333,7 +333,7 @@ export default function TeamSettings() {
                           <Badge variant="outline" className="text-xs">You</Badge>
                         )}
                       </div>
-                      <p className="text-sm text-gray-500">{member.user?.email}</p>
+                      <p className="text-sm text-slate-500">{member.user?.email}</p>
                     </div>
                   </div>
                   <div className="flex items-center gap-2">
@@ -386,10 +386,10 @@ export default function TeamSettings() {
           <CardContent>
             {loadingInvitations ? (
               <div className="flex items-center justify-center py-8">
-                <Loader2 className="h-6 w-6 animate-spin text-gray-400" />
+                <Loader2 className="h-6 w-6 animate-spin text-slate-400" />
               </div>
             ) : invitations.length === 0 ? (
-              <p className="text-center text-gray-500 py-8">No pending invitations</p>
+              <p className="text-center text-slate-500 py-8">No pending invitations</p>
             ) : (
               <div className="space-y-3">
                 {invitations.map((invitation) => {
@@ -413,7 +413,7 @@ export default function TeamSettings() {
                         </div>
                         <div>
                           <p className="font-medium">{invitation.email}</p>
-                          <p className="text-sm text-gray-500">
+                          <p className="text-sm text-slate-500">
                             {isExpired ? 'Expired' : `Expires ${new Date(invitation.expires_at).toLocaleDateString()}`}
                           </p>
                         </div>
@@ -477,7 +477,7 @@ export default function TeamSettings() {
                 <SelectContent>
                   <SelectItem value="member">
                     <div className="flex items-center gap-2">
-                      <Shield className="h-4 w-4 text-gray-400" />
+                      <Shield className="h-4 w-4 text-slate-400" />
                       Member
                     </div>
                   </SelectItem>
@@ -489,7 +489,7 @@ export default function TeamSettings() {
                   </SelectItem>
                 </SelectContent>
               </Select>
-              <p className="text-xs text-gray-500 mt-1">
+              <p className="text-xs text-slate-500 mt-1">
                 {inviteRole === 'admin'
                   ? 'Can manage team members and settings'
                   : 'Can view and process images'}

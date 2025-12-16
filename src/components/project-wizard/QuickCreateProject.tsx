@@ -248,7 +248,7 @@ export function QuickCreateProject({ open, onOpenChange, onUseWizard }: QuickCre
           </Collapsible>
 
           {/* Token Info */}
-          <div className="bg-gray-50 rounded-lg p-3 flex items-center justify-between">
+          <div className="bg-slate-50 rounded-lg p-3 flex items-center justify-between">
             <div className="flex items-center gap-2 text-sm">
               <Coins className="h-4 w-4 text-purple-600" />
               <span className="text-muted-foreground">Your balance:</span>

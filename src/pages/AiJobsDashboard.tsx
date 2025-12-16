@@ -83,7 +83,7 @@ const STATUS_COLORS: Record<string, string> = {
   success: 'bg-green-500/20 text-green-600',
   failed: 'bg-red-500/20 text-red-600',
   timeout: 'bg-orange-500/20 text-orange-600',
-  cancelled: 'bg-gray-500/20 text-gray-600',
+  cancelled: 'bg-slate-500/20 text-slate-600',
 }
 
 const SOURCE_ICONS: Record<string, any> = {

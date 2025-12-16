@@ -311,7 +311,7 @@ export default function Templates() {
     const isFavorite = template.is_favorite || false
 
     return (
-      <Card className="hover:shadow-lg transition-all hover:border-gray-300 group">
+      <Card className="hover:shadow-lg transition-all hover:border-slate-300 group">
         <CardHeader className="pb-3">
           <div className="flex items-start justify-between">
             <div className="flex-1">
@@ -339,7 +339,7 @@ export default function Templates() {
                 onClick={() => toggleFavoriteMutation.mutate({ id: template.id, isFavorite })}
                 title={isFavorite ? 'Remove from favorites' : 'Add to favorites'}
               >
-                <Star className={isFavorite ? 'h-4 w-4 text-amber-500 fill-amber-500' : 'h-4 w-4 text-gray-400'} />
+                <Star className={isFavorite ? 'h-4 w-4 text-amber-500 fill-amber-500' : 'h-4 w-4 text-slate-400'} />
               </Button>
               <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => handleView(template)}>
                 <Eye className="h-4 w-4" />
@@ -358,7 +358,7 @@ export default function Templates() {
           </div>
         </CardHeader>
         <CardContent>
-          <p className="text-sm text-gray-600 line-clamp-2 leading-relaxed">
+          <p className="text-sm text-slate-600 line-clamp-2 leading-relaxed">
             {template.base_prompt}
           </p>
           <div className="flex gap-1.5 mt-3 flex-wrap">
@@ -378,8 +378,8 @@ export default function Templates() {
             <FileText className="h-6 w-6 text-amber-600" />
           </div>
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">Prompt Templates</h1>
-            <p className="text-gray-500 mt-0.5 text-sm">Manage AI prompt templates for image optimization</p>
+            <h1 className="text-2xl font-bold text-slate-900">Prompt Templates</h1>
+            <p className="text-slate-500 mt-0.5 text-sm">Manage AI prompt templates for image optimization</p>
           </div>
         </div>
         <Button
@@ -394,7 +394,7 @@ export default function Templates() {
       {/* Filters */}
       <div className="flex gap-4 flex-wrap">
         <div className="relative flex-1 max-w-sm">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-400" />
           <Input
             placeholder="Search templates..."
             value={searchQuery}
@@ -453,8 +453,8 @@ export default function Templates() {
               </div>
             ) : (
               <div className="text-center py-12">
-                <FileText className="h-12 w-12 text-gray-300 mx-auto mb-3" />
-                <p className="text-gray-500">No custom templates yet</p>
+                <FileText className="h-12 w-12 text-slate-300 mx-auto mb-3" />
+                <p className="text-slate-500">No custom templates yet</p>
                 <Button variant="link" onClick={() => setIsCreateOpen(true)}>
                   Create your first template
                 </Button>
@@ -463,10 +463,10 @@ export default function Templates() {
           </TabsContent>
         </Tabs>
       ) : (
-        <div className="bg-white rounded-xl border border-gray-200 p-12 text-center">
-          <FileText className="h-12 w-12 text-gray-400 mx-auto" />
-          <h3 className="text-lg font-medium text-gray-900 mt-4">No templates found</h3>
-          <p className="text-gray-500 mt-2">
+        <div className="bg-white rounded-xl border border-slate-200 p-12 text-center">
+          <FileText className="h-12 w-12 text-slate-400 mx-auto" />
+          <h3 className="text-lg font-medium text-slate-900 mt-4">No templates found</h3>
+          <p className="text-slate-500 mt-2">
             {searchQuery || categoryFilter !== 'all'
               ? 'Try adjusting your search or filters'
               : 'Create prompt templates to customize how AI enhances your images'}
@@ -608,7 +608,7 @@ export default function Templates() {
                   rows={6}
                 />
                 {errors.base_prompt && <p className="text-sm text-red-600">{errors.base_prompt.message}</p>}
-                <p className="text-xs text-gray-500">
+                <p className="text-xs text-slate-500">
                   Tip: Fill in category, style, and background first, then click "AI Optimize" to generate a professional prompt
                 </p>
               </div>
@@ -656,8 +656,8 @@ export default function Templates() {
               {selectedTemplate?.lighting && <Badge variant="outline">{selectedTemplate.lighting}</Badge>}
             </div>
             <div>
-              <Label className="text-sm text-gray-500">Prompt</Label>
-              <div className="mt-2 p-4 bg-gray-50 rounded-lg text-sm whitespace-pre-wrap">
+              <Label className="text-sm text-slate-500">Prompt</Label>
+              <div className="mt-2 p-4 bg-slate-50 rounded-lg text-sm whitespace-pre-wrap">
                 {selectedTemplate?.base_prompt}
               </div>
             </div>

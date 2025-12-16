@@ -164,7 +164,7 @@ export default function Layout() {
       {/* Mobile Navigation Sheet */}
       <Sheet open={mobileNavOpen} onOpenChange={setMobileNavOpen}>
         <SheetContent side="left" className="w-72 p-0">
-          <SheetHeader className="border-b border-gray-200 px-6 py-4">
+          <SheetHeader className="border-b border-slate-200 px-6 py-4">
             <SheetTitle className="flex items-center gap-2">
               <ImageIcon className="h-6 w-6 text-primary" />
               <span>Image Optimizer</span>
@@ -185,11 +185,11 @@ export default function Layout() {
                 return (
                   <div
                     key={item.name}
-                    className="flex items-center gap-3 px-3 py-3 rounded-lg text-sm font-medium min-h-[44px] text-gray-400 cursor-not-allowed"
+                    className="flex items-center gap-3 px-3 py-3 rounded-lg text-sm font-medium min-h-[44px] text-slate-400 cursor-not-allowed"
                   >
                     <item.icon className="h-5 w-5 flex-shrink-0" />
                     {item.name}
-                    <span className="ml-auto text-[10px] bg-gray-200 text-gray-500 px-1.5 py-0.5 rounded-full">
+                    <span className="ml-auto text-[10px] bg-slate-200 text-slate-500 px-1.5 py-0.5 rounded-full">
                       Restricted
                     </span>
                   </div>
@@ -207,7 +207,7 @@ export default function Layout() {
                       ? 'bg-primary text-primary-foreground'
                       : isHighlight
                       ? 'text-purple-700 bg-purple-50 hover:bg-purple-100 border border-purple-200'
-                      : 'text-gray-700 hover:bg-gray-100'
+                      : 'text-slate-700 hover:bg-slate-100'
                   )}
                 >
                   <item.icon className="h-5 w-5 flex-shrink-0" />
@@ -223,7 +223,7 @@ export default function Layout() {
           </nav>
 
           {/* User section at bottom */}
-          <div className="absolute bottom-0 left-0 right-0 border-t border-gray-200 p-4">
+          <div className="absolute bottom-0 left-0 right-0 border-t border-slate-200 p-4">
             <div className="flex items-center gap-3 mb-4">
               <Avatar className="h-10 w-10">
                 <AvatarFallback className="bg-primary text-primary-foreground text-sm">
@@ -273,7 +273,7 @@ export default function Layout() {
         </SheetContent>
       </Sheet>
 
-      <div className="min-h-screen bg-gray-50" data-tour="welcome">
+      <div className="min-h-screen bg-slate-50" data-tour="welcome">
         {/* Skip to main content link for accessibility */}
         <a
           href="#main-content"
@@ -284,12 +284,12 @@ export default function Layout() {
 
         {/* Sidebar - hidden on mobile, visible on desktop */}
         <div className={cn(
-          "hidden md:block md:fixed inset-y-0 left-0 z-50 bg-white border-r border-gray-200 transition-all duration-300",
+          "hidden md:block md:fixed inset-y-0 left-0 z-50 bg-white border-r border-slate-200 transition-all duration-300",
           sidebarCollapsed ? "md:w-16" : "md:w-64"
         )}>
           {/* Header */}
           <div className={cn(
-            "flex h-16 items-center border-b border-gray-200",
+            "flex h-16 items-center border-b border-slate-200",
             sidebarCollapsed ? "justify-center px-2" : "gap-2 px-6"
           )}>
             <ImageIcon className="h-8 w-8 text-primary flex-shrink-0" />
@@ -305,15 +305,15 @@ export default function Layout() {
           <button
             onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
             className={cn(
-              "absolute top-4 -right-4 z-10 flex h-8 w-8 items-center justify-center rounded-full border bg-white shadow-sm hover:bg-gray-50 transition-colors",
-              "border-gray-200"
+              "absolute top-4 -right-4 z-10 flex h-8 w-8 items-center justify-center rounded-full border bg-white shadow-sm hover:bg-slate-50 transition-colors",
+              "border-slate-200"
             )}
             title={sidebarCollapsed ? "Expand sidebar" : "Collapse sidebar"}
           >
             {sidebarCollapsed ? (
-              <PanelLeft className="h-4 w-4 text-gray-600" />
+              <PanelLeft className="h-4 w-4 text-slate-600" />
             ) : (
-              <PanelLeftClose className="h-4 w-4 text-gray-600" />
+              <PanelLeftClose className="h-4 w-4 text-slate-600" />
             )}
           </button>
 
@@ -331,7 +331,7 @@ export default function Layout() {
                 const disabledContent = (
                   <div
                     className={cn(
-                      'flex items-center rounded-lg text-sm font-medium min-h-[44px] text-gray-400 cursor-not-allowed',
+                      'flex items-center rounded-lg text-sm font-medium min-h-[44px] text-slate-400 cursor-not-allowed',
                       sidebarCollapsed ? 'justify-center p-2' : 'gap-3 px-3 py-2'
                     )}
                   >
@@ -365,7 +365,7 @@ export default function Layout() {
                       ? 'bg-primary text-primary-foreground'
                       : isHighlight
                       ? 'text-purple-700 bg-purple-50 hover:bg-purple-100 border border-purple-200'
-                      : 'text-gray-700 hover:bg-gray-100'
+                      : 'text-slate-700 hover:bg-slate-100'
                   )}
                 >
                   <item.icon className="h-5 w-5 flex-shrink-0" />
@@ -402,7 +402,7 @@ export default function Layout() {
 
           {/* User section at bottom */}
           <div className={cn(
-            "absolute bottom-0 left-0 right-0 border-t border-gray-200",
+            "absolute bottom-0 left-0 right-0 border-t border-slate-200",
             sidebarCollapsed ? "p-2" : "p-4"
           )}>
             <DropdownMenu>
@@ -462,7 +462,7 @@ export default function Layout() {
           sidebarCollapsed ? "md:pl-16" : "md:pl-64"
         )}>
           {/* Top header bar with token balance */}
-          <header className="sticky top-0 z-40 bg-white/80 backdrop-blur-sm border-b border-gray-200">
+          <header className="sticky top-0 z-40 bg-white/80 backdrop-blur-sm border-b border-slate-200">
             <div className="flex items-center h-14 px-4 md:px-6 gap-2 md:gap-4">
               {/* Hamburger menu - mobile only */}
               <Button

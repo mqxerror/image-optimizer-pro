@@ -178,20 +178,20 @@ export default function ProcessQueueButton({
                   <p className="text-2xl font-bold text-red-700">{results.failed}</p>
                   <p className="text-sm text-red-600">Failed</p>
                 </div>
-                <div className="p-4 rounded-lg bg-gray-50">
-                  <p className="text-2xl font-bold text-gray-700 mt-6">{results.skipped}</p>
-                  <p className="text-sm text-gray-600">Skipped</p>
+                <div className="p-4 rounded-lg bg-slate-50">
+                  <p className="text-2xl font-bold text-slate-700 mt-6">{results.skipped}</p>
+                  <p className="text-sm text-slate-600">Skipped</p>
                 </div>
               </div>
 
               {results.total > 0 && (
                 <div>
-                  <p className="text-sm text-gray-500 mb-2">Success Rate</p>
+                  <p className="text-sm text-slate-500 mb-2">Success Rate</p>
                   <Progress
                     value={(results.successCount / results.total) * 100}
                     className="h-2"
                   />
-                  <p className="text-xs text-gray-400 mt-1">
+                  <p className="text-xs text-slate-400 mt-1">
                     {Math.round((results.successCount / results.total) * 100)}%
                   </p>
                 </div>

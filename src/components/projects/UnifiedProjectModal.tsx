@@ -51,7 +51,7 @@ import AddToQueue from '@/components/processing/AddToQueue'
 import type { Project } from '@/types/database'
 
 const statusConfig: Record<string, { color: string; label: string; animate?: boolean }> = {
-  draft: { color: 'bg-gray-100 text-gray-700', label: 'Draft' },
+  draft: { color: 'bg-slate-100 text-slate-700', label: 'Draft' },
   active: { color: 'bg-blue-100 text-blue-700', label: 'Processing', animate: true },
   completed: { color: 'bg-green-100 text-green-700', label: 'Completed' },
   archived: { color: 'bg-yellow-100 text-yellow-700', label: 'Archived' },
@@ -557,7 +557,7 @@ export function UnifiedProjectModal({
           <div className="flex-1 flex overflow-hidden">
             {/* Left Panel - Settings */}
             <div className={cn(
-              'border-r bg-gray-50 transition-all duration-200 flex flex-col shrink-0',
+              'border-r bg-slate-50 transition-all duration-200 flex flex-col shrink-0',
               sidebarCollapsed ? 'w-12' : 'w-80'
             )}>
               {/* Collapse Toggle */}

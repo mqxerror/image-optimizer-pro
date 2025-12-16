@@ -19,12 +19,25 @@ const buttonVariants = cva(
           "bg-secondary text-secondary-foreground shadow-sm hover:bg-secondary/80",
         ghost: "hover:bg-accent hover:text-accent-foreground",
         link: "text-primary underline-offset-4 hover:underline",
+        // Brand variants
+        brand:
+          "bg-purple-600 text-white shadow hover:bg-purple-700 focus-visible:ring-purple-500",
+        "brand-outline":
+          "border border-purple-200 bg-purple-50 text-purple-700 shadow-sm hover:bg-purple-100 hover:border-purple-300",
+        "brand-ghost":
+          "text-purple-600 hover:bg-purple-50 hover:text-purple-700",
+        // Info variant (blue)
+        info:
+          "bg-blue-600 text-white shadow hover:bg-blue-700 focus-visible:ring-blue-500",
+        "info-outline":
+          "border border-blue-200 bg-blue-50 text-blue-700 shadow-sm hover:bg-blue-100",
       },
       size: {
         default: "h-9 px-4 py-2",
         sm: "h-8 rounded-md px-3 text-xs",
         lg: "h-10 rounded-md px-8",
         icon: "h-9 w-9",
+        xs: "h-7 rounded-md px-2 text-xs",
       },
     },
     defaultVariants: {

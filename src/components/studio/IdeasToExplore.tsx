@@ -33,7 +33,7 @@ export function IdeasToExplore({ onSelectIdea }: IdeasToExploreProps) {
       {/* Collapsible header */}
       <button
         onClick={() => setIsExpanded(!isExpanded)}
-        className="w-full flex items-center justify-center gap-2 py-1.5 text-xs font-medium text-gray-500 hover:text-gray-400 transition-colors"
+        className="w-full flex items-center justify-center gap-2 py-1.5 text-xs font-medium text-slate-500 hover:text-slate-400 transition-colors"
       >
         <Sparkles className="h-3 w-3 text-purple-400" />
         <span>Ideas to explore</span>
@@ -51,7 +51,7 @@ export function IdeasToExplore({ onSelectIdea }: IdeasToExploreProps) {
             <button
               key={idea.id}
               onClick={() => onSelectIdea(idea.text)}
-              className="w-full text-left px-3 py-1.5 rounded-lg text-xs text-gray-400 hover:text-gray-200 hover:bg-gray-800/50 transition-colors flex items-center gap-2"
+              className="w-full text-left px-3 py-1.5 rounded-lg text-xs text-slate-400 hover:text-slate-200 hover:bg-slate-800/50 transition-colors flex items-center gap-2"
             >
               <Sparkles className="h-2.5 w-2.5 text-purple-400 flex-shrink-0" />
               <span className="line-clamp-1">{idea.text}</span>

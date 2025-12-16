@@ -62,7 +62,7 @@ function getSourceLabel(source: ActivitySource): string {
 function getStatusColor(step: PipelineStep): string {
   switch (step) {
     case 'queued':
-      return 'text-gray-400'
+      return 'text-slate-400'
     case 'processing':
       return 'text-blue-400'
     case 'complete':
@@ -77,7 +77,7 @@ function StepDot({ active, current, failed }: { active: boolean; current: boolea
     <div
       className={cn(
         'w-2.5 h-2.5 rounded-full transition-all',
-        failed ? 'bg-red-500' : active ? 'bg-green-500' : 'bg-gray-300',
+        failed ? 'bg-red-500' : active ? 'bg-green-500' : 'bg-slate-300',
         current && !failed && 'ring-2 ring-blue-400 ring-offset-1 ring-offset-white bg-blue-500 animate-pulse'
       )}
     />
@@ -89,7 +89,7 @@ function StepConnector({ completed }: { completed: boolean }) {
     <div
       className={cn(
         'h-0.5 w-4 transition-colors',
-        completed ? 'bg-green-500' : 'bg-gray-200'
+        completed ? 'bg-green-500' : 'bg-slate-200'
       )}
     />
   )
@@ -100,9 +100,9 @@ export function ActivityItem({ item, onViewResult }: ActivityItemProps) {
   const isFailed = item.pipelineStep === 'failed'
 
   return (
-    <div className="flex items-center gap-4 p-4 bg-white border border-gray-200 rounded-lg hover:border-gray-300 transition-colors">
+    <div className="flex items-center gap-4 p-4 bg-white border border-slate-200 rounded-lg hover:border-slate-300 transition-colors">
       {/* Thumbnail */}
-      <div className="w-14 h-14 rounded-lg bg-gray-100 overflow-hidden flex-shrink-0">
+      <div className="w-14 h-14 rounded-lg bg-slate-100 overflow-hidden flex-shrink-0">
         {item.thumbnailUrl && !imageError ? (
           <img
             src={item.thumbnailUrl}
@@ -112,7 +112,7 @@ export function ActivityItem({ item, onViewResult }: ActivityItemProps) {
           />
         ) : (
           <div className="w-full h-full flex items-center justify-center">
-            <ImageIcon className="h-6 w-6 text-gray-300" />
+            <ImageIcon className="h-6 w-6 text-slate-300" />
           </div>
         )}
       </div>
@@ -120,7 +120,7 @@ export function ActivityItem({ item, onViewResult }: ActivityItemProps) {
       {/* Main Content */}
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2 mb-1">
-          <span className="font-medium text-gray-900 truncate max-w-[200px]">
+          <span className="font-medium text-slate-900 truncate max-w-[200px]">
             {item.fileName || 'Untitled'}
           </span>
           <Badge variant="secondary" className="text-[10px] px-1.5 py-0 h-4 flex items-center gap-1">
@@ -128,7 +128,7 @@ export function ActivityItem({ item, onViewResult }: ActivityItemProps) {
             {getSourceLabel(item.source)}
           </Badge>
           {item.projectName && (
-            <span className="text-xs text-gray-400 truncate max-w-[100px]">
+            <span className="text-xs text-slate-400 truncate max-w-[100px]">
               {item.projectName}
             </span>
           )}
@@ -141,7 +141,7 @@ export function ActivityItem({ item, onViewResult }: ActivityItemProps) {
             current={item.stepNumber === 1 && item.pipelineStep !== 'failed'}
             failed={isFailed && item.stepNumber === 1}
           />
-          <span className="text-[10px] text-gray-500">Queued</span>
+          <span className="text-[10px] text-slate-500">Queued</span>
           <StepConnector completed={item.stepNumber > 1} />
 
           <StepDot
@@ -149,7 +149,7 @@ export function ActivityItem({ item, onViewResult }: ActivityItemProps) {
             current={item.stepNumber === 2 && item.pipelineStep !== 'failed'}
             failed={isFailed && item.stepNumber === 2}
           />
-          <span className="text-[10px] text-gray-500">Processing</span>
+          <span className="text-[10px] text-slate-500">Processing</span>
           <StepConnector completed={item.stepNumber > 2} />
 
           <StepDot
@@ -157,13 +157,13 @@ export function ActivityItem({ item, onViewResult }: ActivityItemProps) {
             current={item.stepNumber === 3 && item.pipelineStep !== 'failed'}
             failed={isFailed}
           />
-          <span className="text-[10px] text-gray-500">
+          <span className="text-[10px] text-slate-500">
             {isFailed ? 'Failed' : 'Done'}
           </span>
         </div>
 
         {/* Status & Meta */}
-        <div className="flex items-center gap-3 text-xs text-gray-500">
+        <div className="flex items-center gap-3 text-xs text-slate-500">
           {item.pipelineStep === 'processing' && (
             <span className="flex items-center gap-1 text-blue-500">
               <Loader2 className="h-3 w-3 animate-spin" />
@@ -187,12 +187,12 @@ export function ActivityItem({ item, onViewResult }: ActivityItemProps) {
             {formatTimeAgo(item.createdAt)}
           </span>
           {item.processingTimeMs && (
-            <span className="text-gray-400">
+            <span className="text-slate-400">
               {formatDuration(item.processingTimeMs)}
             </span>
           )}
           {item.aiModel && (
-            <span className="text-gray-400 truncate max-w-[100px]">
+            <span className="text-slate-400 truncate max-w-[100px]">
               {item.aiModel}
             </span>
           )}

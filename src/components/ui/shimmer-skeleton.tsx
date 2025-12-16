@@ -9,7 +9,7 @@ export function ShimmerSkeleton({ className }: ShimmerSkeletonProps) {
   return (
     <div
       className={cn(
-        "animate-pulse rounded-md bg-gradient-to-r from-gray-200 via-gray-100 to-gray-200 bg-[length:200%_100%]",
+        "animate-pulse rounded-md bg-gradient-to-r from-slate-200 via-slate-100 to-slate-200 bg-[length:200%_100%]",
         "relative overflow-hidden",
         className
       )}

@@ -161,7 +161,7 @@ export default function GoogleDriveConnect() {
 
         {isLoading ? (
           <div className="flex items-center justify-center py-8">
-            <Loader2 className="h-6 w-6 animate-spin text-gray-400" />
+            <Loader2 className="h-6 w-6 animate-spin text-slate-400" />
           </div>
         ) : connections && connections.length > 0 ? (
           <div className="space-y-3">
@@ -176,13 +176,13 @@ export default function GoogleDriveConnect() {
                   </div>
                   <div>
                     <p className="font-medium">{connection.google_email}</p>
-                    <p className="text-sm text-gray-500">
+                    <p className="text-sm text-slate-500">
                       Connected {new Date(connection.created_at).toLocaleDateString()}
                     </p>
                   </div>
                 </div>
                 <div className="flex items-center gap-2">
-                  <Badge className={connection.is_active ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-700'}>
+                  <Badge className={connection.is_active ? 'bg-green-100 text-green-700' : 'bg-slate-100 text-slate-700'}>
                     {connection.is_active ? (
                       <>
                         <Check className="h-3 w-3 mr-1" />
@@ -195,15 +195,15 @@ export default function GoogleDriveConnect() {
                     size="icon"
                     onClick={() => setDeleteConnection(connection)}
                   >
-                    <Trash2 className="h-4 w-4 text-gray-500" />
+                    <Trash2 className="h-4 w-4 text-slate-500" />
                   </Button>
                 </div>
               </div>
             ))}
           </div>
         ) : (
-          <div className="text-center py-8 text-gray-500">
-            <HardDrive className="h-12 w-12 mx-auto mb-3 text-gray-300" />
+          <div className="text-center py-8 text-slate-500">
+            <HardDrive className="h-12 w-12 mx-auto mb-3 text-slate-300" />
             <p>No Google Drive accounts connected</p>
             <p className="text-sm mt-1">Connect your Drive to start importing images</p>
           </div>
@@ -227,7 +227,7 @@ export default function GoogleDriveConnect() {
           )}
         </Button>
 
-        <p className="text-xs text-gray-500 text-center">
+        <p className="text-xs text-slate-500 text-center">
           We request access to read your files and save optimized images.
           <a href="https://support.google.com/drive" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline ml-1">
             Learn more <ExternalLink className="inline h-3 w-3" />

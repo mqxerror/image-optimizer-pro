@@ -61,7 +61,7 @@ export function ContextualHint({
         <TooltipContent
           side={position}
           className={cn(
-            'max-w-xs p-3 bg-gray-900 text-white border-0',
+            'max-w-xs p-3 bg-slate-900 text-white border-0',
             'animate-in fade-in-0 zoom-in-95'
           )}
           sideOffset={8}
@@ -73,16 +73,16 @@ export function ContextualHint({
             </div>
             <button
               onClick={handleDismiss}
-              className="flex-shrink-0 p-0.5 hover:bg-gray-700 rounded transition-colors"
+              className="flex-shrink-0 p-0.5 hover:bg-slate-700 rounded transition-colors"
               aria-label="Dismiss hint"
             >
-              <X className="w-3.5 h-3.5 text-gray-400 hover:text-white" />
+              <X className="w-3.5 h-3.5 text-slate-400 hover:text-white" />
             </button>
           </div>
-          <div className="mt-2 pt-2 border-t border-gray-700">
+          <div className="mt-2 pt-2 border-t border-slate-700">
             <button
               onClick={handleDismiss}
-              className="text-xs text-gray-400 hover:text-white transition-colors"
+              className="text-xs text-slate-400 hover:text-white transition-colors"
             >
               Got it, don't show again
             </button>

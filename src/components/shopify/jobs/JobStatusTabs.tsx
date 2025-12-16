@@ -34,15 +34,15 @@ export function JobStatusTabs({ activeTab, onTabChange, counts }: JobStatusTabsP
             onClick={() => onTabChange(tab.id)}
             className={cn(
               'flex items-center gap-2 px-4 py-2 rounded-lg border-2 transition-all',
-              'hover:border-gray-300',
+              'hover:border-slate-300',
               isActive
                 ? 'border-primary bg-primary/5 shadow-sm'
-                : 'border-gray-200 bg-white'
+                : 'border-slate-200 bg-white'
             )}
           >
             <span className={cn(
               'font-medium',
-              isActive ? 'text-primary' : 'text-gray-700'
+              isActive ? 'text-primary' : 'text-slate-700'
             )}>
               {tab.label}
             </span>
@@ -50,7 +50,7 @@ export function JobStatusTabs({ activeTab, onTabChange, counts }: JobStatusTabsP
               variant="secondary"
               className={cn(
                 'px-2 py-0.5 text-xs font-semibold',
-                tab.color && count > 0 ? tab.color : 'bg-gray-100 text-gray-600'
+                tab.color && count > 0 ? tab.color : 'bg-slate-100 text-slate-600'
               )}
             >
               {count}

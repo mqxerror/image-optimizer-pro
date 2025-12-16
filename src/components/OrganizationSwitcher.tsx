@@ -55,17 +55,17 @@ export function OrganizationSwitcher({ collapsed = false }: OrganizationSwitcher
   if (!hasMultipleOrgs) {
     if (collapsed) {
       return (
-        <div className="px-2 py-3 border-b border-gray-100">
-          <div className="h-10 w-10 mx-auto rounded-lg bg-gray-100 flex items-center justify-center">
-            <Building2 className="h-5 w-5 text-gray-600" />
+        <div className="px-2 py-3 border-b border-slate-100">
+          <div className="h-10 w-10 mx-auto rounded-lg bg-slate-100 flex items-center justify-center">
+            <Building2 className="h-5 w-5 text-slate-600" />
           </div>
         </div>
       )
     }
 
     return (
-      <div className="px-6 py-3 border-b border-gray-100">
-        <p className="text-xs text-gray-500">Organization</p>
+      <div className="px-6 py-3 border-b border-slate-100">
+        <p className="text-xs text-slate-500">Organization</p>
         <div className="flex items-center gap-2 mt-0.5">
           <span className="text-sm font-medium truncate">{organization.name}</span>
           <Badge variant="outline" className="text-xs flex-shrink-0">
@@ -80,7 +80,7 @@ export function OrganizationSwitcher({ collapsed = false }: OrganizationSwitcher
   // Collapsed state - just show icon with tooltip
   if (collapsed) {
     return (
-      <div className="px-2 py-3 border-b border-gray-100">
+      <div className="px-2 py-3 border-b border-slate-100">
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button
@@ -110,7 +110,7 @@ export function OrganizationSwitcher({ collapsed = false }: OrganizationSwitcher
                   onClick={() => handleSwitchOrg(membership)}
                   className={cn(
                     "flex items-center justify-between cursor-pointer",
-                    isActive && "bg-gray-50"
+                    isActive && "bg-slate-50"
                   )}
                   disabled={isSwitching}
                 >
@@ -135,17 +135,17 @@ export function OrganizationSwitcher({ collapsed = false }: OrganizationSwitcher
 
   // Expanded state - full display
   return (
-    <div className="px-6 py-3 border-b border-gray-100">
+    <div className="px-6 py-3 border-b border-slate-100">
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <button
             className={cn(
-              "w-full text-left hover:bg-gray-50 rounded-lg p-2 -mx-2 transition-colors focus:outline-none focus:ring-2 focus:ring-primary/20",
+              "w-full text-left hover:bg-slate-50 rounded-lg p-2 -mx-2 transition-colors focus:outline-none focus:ring-2 focus:ring-primary/20",
               isSwitching && "opacity-70 pointer-events-none"
             )}
             disabled={isSwitching}
           >
-            <p className="text-xs text-gray-500">Organization</p>
+            <p className="text-xs text-slate-500">Organization</p>
             <div className="flex items-center justify-between mt-0.5">
               <div className="flex items-center gap-2 min-w-0 flex-1">
                 {isSwitching ? (
@@ -156,7 +156,7 @@ export function OrganizationSwitcher({ collapsed = false }: OrganizationSwitcher
                   {ROLE_LABELS[currentRole] || currentRole}
                 </Badge>
               </div>
-              <ChevronsUpDown className="h-4 w-4 text-gray-400 flex-shrink-0 ml-2" />
+              <ChevronsUpDown className="h-4 w-4 text-slate-400 flex-shrink-0 ml-2" />
             </div>
           </button>
         </DropdownMenuTrigger>
@@ -174,7 +174,7 @@ export function OrganizationSwitcher({ collapsed = false }: OrganizationSwitcher
                 onClick={() => handleSwitchOrg(membership)}
                 className={cn(
                   'flex items-center justify-between cursor-pointer',
-                  isActive && 'bg-gray-50'
+                  isActive && 'bg-slate-50'
                 )}
                 disabled={isSwitching}
               >

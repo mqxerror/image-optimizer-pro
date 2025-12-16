@@ -50,8 +50,8 @@ interface StatusTab {
 }
 
 const statusTabs: StatusTab[] = [
-  { id: 'all', label: 'All', color: 'bg-gray-100 text-gray-700' },
-  { id: 'queued', label: 'Queue', color: 'bg-gray-100 text-gray-700', icon: Clock },
+  { id: 'all', label: 'All', color: 'bg-slate-100 text-slate-700' },
+  { id: 'queued', label: 'Queue', color: 'bg-slate-100 text-slate-700', icon: Clock },
   { id: 'processing', label: 'Processing', color: 'bg-blue-100 text-blue-700', icon: Loader2, animate: true },
   { id: 'success', label: 'Done', color: 'bg-green-100 text-green-700', icon: CheckCircle },
   { id: 'failed', label: 'Failed', color: 'bg-red-100 text-red-700', icon: XCircle },
@@ -335,8 +335,8 @@ function ImageCard({ image, isSelected, onSelect }: ImageCardProps) {
       label: 'Failed'
     }
     return {
-      border: 'border-gray-200',
-      bg: 'bg-gray-400',
+      border: 'border-slate-200',
+      bg: 'bg-slate-400',
       icon: <Clock className="h-3 w-3 text-white" />,
       label: 'Queued'
     }
@@ -376,16 +376,16 @@ function ImageCard({ image, isSelected, onSelect }: ImageCardProps) {
         isProcessed ? 'bg-gradient-to-br from-green-50 to-green-100' :
         isProcessing ? 'bg-gradient-to-br from-blue-50 to-blue-100' :
         isFailed ? 'bg-gradient-to-br from-red-50 to-red-100' :
-        'bg-gradient-to-br from-gray-50 to-gray-100'
+        'bg-gradient-to-br from-slate-50 to-slate-100'
       )}>
         <ImageIcon className={cn(
           'h-6 w-6 mb-1',
           isProcessed ? 'text-green-400' :
           isProcessing ? 'text-blue-400' :
           isFailed ? 'text-red-400' :
-          'text-gray-400'
+          'text-slate-400'
         )} />
-        <span className="text-[9px] font-medium text-gray-600 uppercase px-1">
+        <span className="text-[9px] font-medium text-slate-600 uppercase px-1">
           {fileExt || 'img'}
         </span>
       </div>

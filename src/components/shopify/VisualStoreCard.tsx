@@ -78,10 +78,10 @@ export function VisualStoreCard({ store }: VisualStoreCardProps) {
     <>
       <Card className="overflow-hidden hover:shadow-lg transition-shadow duration-200">
         {/* Image Preview Strip */}
-        <div className="h-32 bg-gradient-to-br from-gray-100 to-gray-50 relative overflow-hidden">
+        <div className="h-32 bg-gradient-to-br from-slate-100 to-slate-50 relative overflow-hidden">
           {statsLoading ? (
             <div className="absolute inset-0 flex items-center justify-center">
-              <Loader2 className="h-6 w-6 animate-spin text-gray-400" />
+              <Loader2 className="h-6 w-6 animate-spin text-slate-400" />
             </div>
           ) : stats?.recentImages && stats.recentImages.length > 0 ? (
             <div className="grid grid-cols-4 h-full">
@@ -101,15 +101,15 @@ export function VisualStoreCard({ store }: VisualStoreCardProps) {
               ))}
               {/* Fill empty slots */}
               {Array.from({ length: 4 - stats.recentImages.length }).map((_, idx) => (
-                <div key={`empty-${idx}`} className="bg-gray-100 flex items-center justify-center">
-                  <ImageIcon className="h-6 w-6 text-gray-300" />
+                <div key={`empty-${idx}`} className="bg-slate-100 flex items-center justify-center">
+                  <ImageIcon className="h-6 w-6 text-slate-300" />
                 </div>
               ))}
             </div>
           ) : (
             <div className="absolute inset-0 flex flex-col items-center justify-center">
-              <Store className="h-10 w-10 text-gray-300 mb-2" />
-              <span className="text-xs text-gray-400">No products yet</span>
+              <Store className="h-10 w-10 text-slate-300 mb-2" />
+              <span className="text-xs text-slate-400">No products yet</span>
             </div>
           )}
 
@@ -275,14 +275,14 @@ function StatsBox({ label, value, icon, highlight, formatValue }: StatsBoxProps)
   return (
     <div className={cn(
       'p-3 rounded-lg text-center',
-      highlight ? 'bg-blue-50 border border-blue-200' : 'bg-gray-50'
+      highlight ? 'bg-blue-50 border border-blue-200' : 'bg-slate-50'
     )}>
       {value === null ? (
         <Skeleton className="h-6 w-12 mx-auto mb-1" />
       ) : (
         <p className={cn(
           'text-xl font-bold',
-          highlight ? 'text-blue-600' : 'text-gray-900'
+          highlight ? 'text-blue-600' : 'text-slate-900'
         )}>
           {formatValue ? formatValue(value) : value}
         </p>

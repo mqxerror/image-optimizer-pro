@@ -53,7 +53,7 @@ export function ProgressFooter({
   const estimatedTokens = (project.total_images - project.processed_images) * tokenMultiplier
 
   return (
-    <div className="px-4 py-3 border-t bg-gray-50 shrink-0 space-y-2">
+    <div className="px-4 py-3 border-t bg-slate-50 shrink-0 space-y-2">
       {/* Stats Row */}
       <div className="flex items-center justify-between text-sm">
         <div className="flex items-center gap-4 text-muted-foreground">

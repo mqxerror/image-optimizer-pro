@@ -115,12 +115,12 @@ export function AdvancedControls({
   }
 
   return (
-    <div className={darkTheme ? 'bg-gray-900' : 'bg-white'}>
+    <div className={darkTheme ? 'bg-slate-900' : 'bg-white'}>
       {/* Compact Header with expand/collapse all */}
       <div className={`flex items-center justify-between px-3 py-2 border-b ${
-        darkTheme ? 'border-gray-700/50' : 'border-gray-100'
+        darkTheme ? 'border-slate-700/50' : 'border-slate-100'
       }`}>
-        <p className={`text-[10px] ${darkTheme ? 'text-gray-400' : 'text-gray-500'}`}>
+        <p className={`text-[10px] ${darkTheme ? 'text-slate-400' : 'text-slate-500'}`}>
           Full control over all parameters
         </p>
         <Button
@@ -129,8 +129,8 @@ export function AdvancedControls({
           onClick={toggleAllSections}
           className={`h-6 px-2 text-[10px] ${
             darkTheme
-              ? 'text-gray-400 hover:text-white hover:bg-gray-800'
-              : 'text-gray-500 hover:text-gray-900'
+              ? 'text-slate-400 hover:text-white hover:bg-slate-800'
+              : 'text-slate-500 hover:text-slate-900'
           }`}
         >
           {allExpanded ? (

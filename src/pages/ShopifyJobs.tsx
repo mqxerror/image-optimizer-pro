@@ -52,10 +52,10 @@ export default function ShopifyJobs() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
-          <Briefcase className="h-6 w-6 text-gray-400" />
+          <Briefcase className="h-6 w-6 text-slate-400" />
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">Optimization Jobs</h1>
-            <p className="text-gray-500 text-sm">Manage your Shopify image optimization jobs</p>
+            <h1 className="text-2xl font-bold text-slate-900">Optimization Jobs</h1>
+            <p className="text-slate-500 text-sm">Manage your Shopify image optimization jobs</p>
           </div>
         </div>
         <Button variant="outline" onClick={() => refetch()}>
@@ -114,8 +114,8 @@ export default function ShopifyJobs() {
       ) : (
         <Card className="border-dashed">
           <CardContent className="flex flex-col items-center justify-center py-16">
-            <div className="p-4 bg-gray-100 rounded-full mb-4">
-              <Briefcase className="h-8 w-8 text-gray-400" />
+            <div className="p-4 bg-slate-100 rounded-full mb-4">
+              <Briefcase className="h-8 w-8 text-slate-400" />
             </div>
             <h3 className="text-lg font-medium mb-1">No jobs found</h3>
             <p className="text-sm text-muted-foreground mb-4 text-center max-w-sm">

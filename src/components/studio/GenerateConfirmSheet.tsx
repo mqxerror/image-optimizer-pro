@@ -56,13 +56,13 @@ export function GenerateConfirmSheet({
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent side="bottom" className="rounded-t-2xl px-4 pb-8 pt-4">
         <SheetHeader className="pb-4">
-          <div className="w-12 h-1 bg-gray-300 rounded-full mx-auto mb-3" />
+          <div className="w-12 h-1 bg-slate-300 rounded-full mx-auto mb-3" />
           <SheetTitle className="text-center text-lg">Ready to Generate?</SheetTitle>
         </SheetHeader>
 
         <div className="space-y-3">
           {/* Image Preview */}
-          <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-xl">
+          <div className="flex items-center gap-3 p-3 bg-slate-50 rounded-xl">
             {imageUrl ? (
               <img
                 src={imageUrl}
@@ -70,52 +70,52 @@ export function GenerateConfirmSheet({
                 className="w-12 h-12 rounded-lg object-cover"
               />
             ) : (
-              <div className="w-12 h-12 rounded-lg bg-gray-200 flex items-center justify-center">
-                <Image className="h-6 w-6 text-gray-400" />
+              <div className="w-12 h-12 rounded-lg bg-slate-200 flex items-center justify-center">
+                <Image className="h-6 w-6 text-slate-400" />
               </div>
             )}
             <div className="flex-1 min-w-0">
-              <p className="font-medium text-gray-900 truncate text-sm">{imageName}</p>
+              <p className="font-medium text-slate-900 truncate text-sm">{imageName}</p>
               {imageSize && (
-                <p className="text-xs text-gray-500">{imageSize}</p>
+                <p className="text-xs text-slate-500">{imageSize}</p>
               )}
             </div>
           </div>
 
           {/* AI Model */}
-          <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-xl">
+          <div className="flex items-center gap-3 p-3 bg-slate-50 rounded-xl">
             <div className="w-10 h-10 rounded-lg bg-purple-100 flex items-center justify-center">
               <Sparkles className="h-5 w-5 text-purple-600" />
             </div>
             <div className="flex-1 min-w-0">
-              <p className="font-medium text-gray-900 text-sm">{model?.friendlyName || aiModel}</p>
-              <p className="text-xs text-gray-500">
+              <p className="font-medium text-slate-900 text-sm">{model?.friendlyName || aiModel}</p>
+              <p className="text-xs text-slate-500">
                 {model?.description || 'AI Model'} • {model?.tokenCost || 1} token
               </p>
             </div>
           </div>
 
           {/* Aspect Ratio */}
-          <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-xl">
+          <div className="flex items-center gap-3 p-3 bg-slate-50 rounded-xl">
             <div className="w-10 h-10 rounded-lg bg-blue-100 flex items-center justify-center">
               <RatioIcon className="h-5 w-5 text-blue-600" />
             </div>
             <div className="flex-1 min-w-0">
-              <p className="font-medium text-gray-900 text-sm">{aspectInfo.label}</p>
-              <p className="text-xs text-gray-500">{aspectInfo.desc}</p>
+              <p className="font-medium text-slate-900 text-sm">{aspectInfo.label}</p>
+              <p className="text-xs text-slate-500">{aspectInfo.desc}</p>
             </div>
           </div>
 
           {/* Preset/Lighting Info */}
-          <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-xl">
+          <div className="flex items-center gap-3 p-3 bg-slate-50 rounded-xl">
             <div className="w-10 h-10 rounded-lg bg-yellow-100 flex items-center justify-center">
               <span className="text-lg">💡</span>
             </div>
             <div className="flex-1 min-w-0">
-              <p className="font-medium text-gray-900 text-sm">
+              <p className="font-medium text-slate-900 text-sm">
                 Lighting {lightingIntensity}%
               </p>
-              <p className="text-xs text-gray-500">
+              <p className="text-xs text-slate-500">
                 {presetName ? `${presetName} preset` : 'Custom settings'}
               </p>
             </div>
@@ -149,7 +149,7 @@ export function GenerateConfirmSheet({
               onOpenChange(false)
               onEditSettings()
             }}
-            className="w-full h-12 rounded-xl text-gray-600"
+            className="w-full h-12 rounded-xl text-slate-600"
           >
             <Settings2 className="h-4 w-4 mr-2" />
             Edit Settings

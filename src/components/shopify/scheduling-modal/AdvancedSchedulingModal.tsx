@@ -196,7 +196,7 @@ export function AdvancedSchedulingModal({
             {config && (
               <div className="flex items-center gap-3">
                 {/* Master toggle */}
-                <div className="flex items-center gap-2 px-3 py-1.5 bg-gray-100 rounded-lg">
+                <div className="flex items-center gap-2 px-3 py-1.5 bg-slate-100 rounded-lg">
                   <span className="text-sm font-medium">
                     Automation:
                   </span>
@@ -205,7 +205,7 @@ export function AdvancedSchedulingModal({
                     className={cn(
                       form.is_enabled && !config.is_paused
                         ? 'bg-green-100 text-green-700 border-green-200'
-                        : 'bg-gray-100 text-gray-600 border-gray-200'
+                        : 'bg-slate-100 text-slate-600 border-slate-200'
                     )}
                   >
                     {config.is_paused ? 'PAUSED' : form.is_enabled ? 'ACTIVE' : 'OFF'}

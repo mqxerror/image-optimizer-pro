@@ -44,10 +44,10 @@ export default function AuthCallback() {
   }, [navigate, fetchUserOrganizations])
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50">
+    <div className="min-h-screen flex items-center justify-center bg-slate-50">
       <div className="text-center">
         <Loader2 className="h-12 w-12 animate-spin text-primary mx-auto mb-4" />
-        <p className="text-gray-600">Verifying your account...</p>
+        <p className="text-slate-600">Verifying your account...</p>
       </div>
     </div>
   )

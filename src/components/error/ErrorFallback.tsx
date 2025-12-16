@@ -31,7 +31,7 @@ export function ErrorFallback({ error, onReset }: ErrorFallbackProps) {
         <CardContent className="space-y-4">
           {/* Error details (dev only) */}
           {import.meta.env.DEV && error && (
-            <div className="p-3 bg-gray-100 rounded-lg text-xs font-mono text-gray-600 overflow-auto max-h-32">
+            <div className="p-3 bg-slate-100 rounded-lg text-xs font-mono text-slate-600 overflow-auto max-h-32">
               {error.message}
             </div>
           )}

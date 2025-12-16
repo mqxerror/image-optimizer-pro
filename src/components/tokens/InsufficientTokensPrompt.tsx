@@ -77,7 +77,7 @@ export function InsufficientTokensPrompt({
 
         <div className="space-y-4 py-4">
           {/* Token status */}
-          <div className="bg-gray-50 rounded-lg p-4 space-y-3">
+          <div className="bg-slate-50 rounded-lg p-4 space-y-3">
             <div className="flex justify-between text-sm">
               <span className="text-muted-foreground">Tokens needed:</span>
               <span className="font-semibold">{tokensNeeded}</span>

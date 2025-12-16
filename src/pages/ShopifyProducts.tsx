@@ -559,7 +559,7 @@ export default function ShopifyProducts() {
             <Button
               variant="ghost"
               size="sm"
-              className={`rounded-none px-3 ${gridSize === 'compact' ? 'bg-gray-100' : ''}`}
+              className={`rounded-none px-3 ${gridSize === 'compact' ? 'bg-slate-100' : ''}`}
               onClick={() => setGridSize('compact')}
               title="Compact grid - Show more products per row"
             >
@@ -568,7 +568,7 @@ export default function ShopifyProducts() {
             <Button
               variant="ghost"
               size="sm"
-              className={`rounded-none px-3 ${gridSize === 'comfortable' ? 'bg-gray-100' : ''}`}
+              className={`rounded-none px-3 ${gridSize === 'comfortable' ? 'bg-slate-100' : ''}`}
               onClick={() => setGridSize('comfortable')}
               title="Comfortable grid - Larger product cards"
             >
@@ -608,7 +608,7 @@ export default function ShopifyProducts() {
                   <Button
                     size="sm"
                     onClick={() => setOptimizationModalOpen(true)}
-                    className="bg-white text-blue-600 hover:bg-gray-100 h-8 px-2.5 sm:px-3 text-xs sm:text-sm"
+                    className="bg-white text-blue-600 hover:bg-slate-100 h-8 px-2.5 sm:px-3 text-xs sm:text-sm"
                   >
                     <Play className="h-3.5 w-3.5 sm:h-4 sm:w-4 sm:mr-2" />
                     <span className="hidden sm:inline">Start Optimization</span>
@@ -821,7 +821,7 @@ function ImageSelectionModal({
                         ? 'border-primary ring-2 ring-primary/30'
                         : isProcessed
                           ? 'border-green-400 ring-2 ring-green-200'
-                          : 'border-gray-200 hover:border-gray-400'
+                          : 'border-slate-200 hover:border-slate-400'
                     } ${isSvg || isProcessed ? 'opacity-60' : ''}`}
                   >
                     <img
@@ -867,7 +867,7 @@ function ImageSelectionModal({
 
                     {/* SVG overlay */}
                     {isSvg && (
-                      <div className="absolute inset-0 bg-gray-600/60 flex items-center justify-center">
+                      <div className="absolute inset-0 bg-slate-600/60 flex items-center justify-center">
                         <span className="text-white text-sm font-medium">SVG</span>
                       </div>
                     )}
@@ -909,7 +909,7 @@ function ImageSelectionModal({
                 </span>
               )}
               {svgCount > 0 && (
-                <span className="flex items-center gap-1 text-gray-500">
+                <span className="flex items-center gap-1 text-slate-500">
                   {svgCount} SVG (skipped)
                 </span>
               )}
@@ -1022,7 +1022,7 @@ function ProductCard({ product, selected, onToggle, onEditImages, selectedImageC
           )}
 
           {/* Image */}
-          <div className="aspect-square bg-gray-100 rounded-lg overflow-hidden mb-3 relative">
+          <div className="aspect-square bg-slate-100 rounded-lg overflow-hidden mb-3 relative">
             {mainImage ? (
               <>
                 <img
@@ -1032,9 +1032,9 @@ function ProductCard({ product, selected, onToggle, onEditImages, selectedImageC
                 />
                 {/* SVG overlay - not supported */}
                 {mainImageSvg && (
-                  <div className="absolute inset-0 bg-gray-500/30 flex items-center justify-center" title="SVG images are not supported for AI optimization">
+                  <div className="absolute inset-0 bg-slate-500/30 flex items-center justify-center" title="SVG images are not supported for AI optimization">
                     <div className="absolute bottom-2 left-2">
-                      <Badge className="bg-gray-600 text-white text-[10px] px-1.5 py-0.5">
+                      <Badge className="bg-slate-600 text-white text-[10px] px-1.5 py-0.5">
                         <AlertTriangle className="h-3 w-3 mr-1" />
                         SVG - Not Supported
                       </Badge>
@@ -1066,7 +1066,7 @@ function ProductCard({ product, selected, onToggle, onEditImages, selectedImageC
               </>
             ) : (
               <div className="w-full h-full flex items-center justify-center">
-                <ImageIcon className="h-12 w-12 text-gray-300" />
+                <ImageIcon className="h-12 w-12 text-slate-300" />
               </div>
             )}
           </div>
@@ -1104,13 +1104,13 @@ function ProductCard({ product, selected, onToggle, onEditImages, selectedImageC
             </Badge>
           )}
           {allSvg && (
-            <Badge className="bg-gray-100 text-gray-600 border-gray-300 text-xs" title="All images are SVG format which is not supported for AI optimization">
+            <Badge className="bg-slate-100 text-slate-600 border-slate-300 text-xs" title="All images are SVG format which is not supported for AI optimization">
               <AlertTriangle className="h-3 w-3 mr-1" />
               All SVG
             </Badge>
           )}
           {svgCount > 0 && !allSvg && (
-            <Badge className="bg-gray-100 text-gray-500 border-gray-200 text-xs" title={`${svgCount} SVG image${svgCount > 1 ? 's' : ''} will be skipped`}>
+            <Badge className="bg-slate-100 text-slate-500 border-slate-200 text-xs" title={`${svgCount} SVG image${svgCount > 1 ? 's' : ''} will be skipped`}>
               {svgCount} SVG
             </Badge>
           )}

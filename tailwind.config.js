@@ -47,12 +47,46 @@ export default {
   				'3': 'hsl(var(--chart-3))',
   				'4': 'hsl(var(--chart-4))',
   				'5': 'hsl(var(--chart-5))'
+  			},
+  			// Semantic colors
+  			brand: {
+  				DEFAULT: 'hsl(var(--brand))',
+  				light: 'hsl(var(--brand-light))',
+  				dark: 'hsl(var(--brand-dark))'
+  			},
+  			info: {
+  				DEFAULT: 'hsl(var(--info))',
+  				light: 'hsl(var(--info-light))'
+  			},
+  			success: {
+  				DEFAULT: 'hsl(var(--success))',
+  				light: 'hsl(var(--success-light))'
+  			},
+  			warning: {
+  				DEFAULT: 'hsl(var(--warning))',
+  				light: 'hsl(var(--warning-light))'
   			}
   		},
   		borderRadius: {
   			lg: 'var(--radius)',
   			md: 'calc(var(--radius) - 2px)',
   			sm: 'calc(var(--radius) - 4px)'
+  		},
+  		// Typography scale
+  		fontSize: {
+  			'micro': ['var(--text-micro)', { lineHeight: '1.2' }],
+  			'tiny': ['var(--text-tiny)', { lineHeight: '1.3' }],
+  			'small': ['var(--text-small)', { lineHeight: '1.4' }],
+  			'caption': ['var(--text-caption)', { lineHeight: '1.4' }],
+  		},
+  		// Spacing scale
+  		spacing: {
+  			'space-1': 'var(--space-1)',
+  			'space-2': 'var(--space-2)',
+  			'space-3': 'var(--space-3)',
+  			'space-4': 'var(--space-4)',
+  			'space-6': 'var(--space-6)',
+  			'space-8': 'var(--space-8)',
   		},
   		// UX-018: Shimmer animation for loading skeletons
   		keyframes: {

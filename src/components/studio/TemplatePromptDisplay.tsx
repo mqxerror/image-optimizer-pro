@@ -37,18 +37,18 @@ export function TemplatePromptDisplay({
       </div>
 
       {/* Collapsible prompt preview */}
-      <div className="bg-gray-800/50 border border-gray-700 rounded-xl overflow-hidden">
+      <div className="bg-slate-800/50 border border-slate-700 rounded-xl overflow-hidden">
         <button
           onClick={() => setIsExpanded(!isExpanded)}
-          className="w-full flex items-center justify-between p-3 text-left hover:bg-gray-800/30 transition-colors"
+          className="w-full flex items-center justify-between p-3 text-left hover:bg-slate-800/30 transition-colors"
         >
-          <span className="text-xs text-gray-500">
+          <span className="text-xs text-slate-500">
             Prompt will be sent to AI exactly as written
           </span>
           {isExpanded ? (
-            <ChevronUp className="h-4 w-4 text-gray-500" />
+            <ChevronUp className="h-4 w-4 text-slate-500" />
           ) : (
-            <ChevronDown className="h-4 w-4 text-gray-500" />
+            <ChevronDown className="h-4 w-4 text-slate-500" />
           )}
         </button>
 
@@ -58,7 +58,7 @@ export function TemplatePromptDisplay({
           }`}
         >
           <div className="px-3 pb-3">
-            <p className="text-sm text-gray-300 leading-relaxed whitespace-pre-wrap">
+            <p className="text-sm text-slate-300 leading-relaxed whitespace-pre-wrap">
               {prompt}
             </p>
           </div>
@@ -67,7 +67,7 @@ export function TemplatePromptDisplay({
         {/* Preview snippet when collapsed */}
         {!isExpanded && (
           <div className="px-3 pb-3 -mt-1">
-            <p className="text-sm text-gray-400 line-clamp-2">{prompt}</p>
+            <p className="text-sm text-slate-400 line-clamp-2">{prompt}</p>
           </div>
         )}
       </div>

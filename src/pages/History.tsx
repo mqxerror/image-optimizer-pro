@@ -611,8 +611,8 @@ export default function History() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Processing History</h1>
-          <p className="text-gray-500 mt-1">View all completed image optimizations</p>
+          <h1 className="text-2xl font-bold text-slate-900">Processing History</h1>
+          <p className="text-slate-500 mt-1">View all completed image optimizations</p>
         </div>
         <div className="flex items-center gap-2">
           {/* View Mode Toggle */}
@@ -680,12 +680,12 @@ export default function History() {
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <Card className="p-4">
           <div className="flex items-center gap-3">
-            <div className="p-2 rounded-lg bg-gray-100">
-              <HistoryIcon className="h-5 w-5 text-gray-600" />
+            <div className="p-2 rounded-lg bg-slate-100">
+              <HistoryIcon className="h-5 w-5 text-slate-600" />
             </div>
             <div>
               <p className="text-2xl font-bold">{historyItems?.length || 0}</p>
-              <p className="text-sm text-gray-500">Total</p>
+              <p className="text-sm text-slate-500">Total</p>
             </div>
           </div>
         </Card>
@@ -696,7 +696,7 @@ export default function History() {
             </div>
             <div>
               <p className="text-2xl font-bold">{successCount}</p>
-              <p className="text-sm text-gray-500">Successful</p>
+              <p className="text-sm text-slate-500">Successful</p>
             </div>
           </div>
         </Card>
@@ -707,7 +707,7 @@ export default function History() {
             </div>
             <div>
               <p className="text-2xl font-bold">{failedCount}</p>
-              <p className="text-sm text-gray-500">Failed</p>
+              <p className="text-sm text-slate-500">Failed</p>
             </div>
           </div>
         </Card>
@@ -795,7 +795,7 @@ export default function History() {
       {/* Filters */}
       <div className="flex gap-3 flex-wrap">
         <div className="relative flex-1 max-w-sm">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-400" />
           <Input
             placeholder="Search by filename..."
             value={searchQuery}
@@ -884,15 +884,15 @@ export default function History() {
                         <img
                           src={item.optimized_url}
                           alt={item.file_name}
-                          className="w-10 h-10 object-cover rounded border bg-gray-100"
+                          className="w-10 h-10 object-cover rounded border bg-slate-100"
                           onError={(e) => {
                             (e.target as HTMLImageElement).src = ''
                             ;(e.target as HTMLImageElement).className = 'hidden'
                           }}
                         />
                       ) : (
-                        <div className="w-10 h-10 rounded border bg-gray-100 flex items-center justify-center">
-                          <ImageIcon className="h-4 w-4 text-gray-400" />
+                        <div className="w-10 h-10 rounded border bg-slate-100 flex items-center justify-center">
+                          <ImageIcon className="h-4 w-4 text-slate-400" />
                         </div>
                       )}
                     </TableCell>
@@ -901,7 +901,7 @@ export default function History() {
                         {item.file_name || item.file_id}
                       </div>
                     </TableCell>
-                    <TableCell className="text-gray-500">
+                    <TableCell className="text-slate-500">
                       {item.projects?.name || '-'}
                     </TableCell>
                     <TableCell>
@@ -930,10 +930,10 @@ export default function History() {
                           v{item.version || 1}
                         </Button>
                       ) : (
-                        <span className="text-gray-400 text-sm">v1</span>
+                        <span className="text-slate-400 text-sm">v1</span>
                       )}
                     </TableCell>
-                    <TableCell className="text-gray-500 text-sm">
+                    <TableCell className="text-slate-500 text-sm">
                       {format(new Date(item.completed_at), 'MMM d, HH:mm')}
                     </TableCell>
                     <TableCell>
@@ -963,7 +963,7 @@ export default function History() {
                 onClick={() => handleView(item)}
               >
                 {/* UX-020: Image zoom on hover */}
-                <div className="relative aspect-square bg-gray-100 overflow-hidden">
+                <div className="relative aspect-square bg-slate-100 overflow-hidden">
                   {item.optimized_url ? (
                     <img
                       src={item.optimized_url}
@@ -972,7 +972,7 @@ export default function History() {
                     />
                   ) : (
                     <div className="w-full h-full flex items-center justify-center">
-                      <ImageIcon className="h-8 w-8 text-gray-400" />
+                      <ImageIcon className="h-8 w-8 text-slate-400" />
                     </div>
                   )}
                   {/* Selection Checkbox */}
@@ -1033,7 +1033,7 @@ export default function History() {
                     <Badge variant="outline" className="text-[10px]">
                       {item.ai_model || 'flux-pro'}
                     </Badge>
-                    <span className="text-xs text-gray-500">
+                    <span className="text-xs text-slate-500">
                       {format(new Date(item.completed_at), 'MMM d')}
                     </span>
                   </div>
@@ -1049,7 +1049,7 @@ export default function History() {
                         className={`flex-1 p-1.5 rounded transition-colors ${
                           (item as any).quality_rating === 'thumbs_up'
                             ? 'bg-green-100 text-green-600'
-                            : 'hover:bg-green-50 text-gray-400 hover:text-green-600'
+                            : 'hover:bg-green-50 text-slate-400 hover:text-green-600'
                         }`}
                         title="Good result"
                       >
@@ -1063,7 +1063,7 @@ export default function History() {
                         className={`flex-1 p-1.5 rounded transition-colors ${
                           (item as any).quality_rating === 'thumbs_down'
                             ? 'bg-red-100 text-red-600'
-                            : 'hover:bg-red-50 text-gray-400 hover:text-red-600'
+                            : 'hover:bg-red-50 text-slate-400 hover:text-red-600'
                         }`}
                         title="Needs improvement"
                       >
@@ -1077,10 +1077,10 @@ export default function History() {
           </div>
         )
       ) : (
-        <div className="bg-white rounded-xl border border-gray-200 p-12 text-center">
-          <HistoryIcon className="h-12 w-12 text-gray-400 mx-auto" />
-          <h3 className="text-lg font-medium text-gray-900 mt-4">No history yet</h3>
-          <p className="text-gray-500 mt-2">
+        <div className="bg-white rounded-xl border border-slate-200 p-12 text-center">
+          <HistoryIcon className="h-12 w-12 text-slate-400 mx-auto" />
+          <h3 className="text-lg font-medium text-slate-900 mt-4">No history yet</h3>
+          <p className="text-slate-500 mt-2">
             {searchQuery || statusFilter !== 'all'
               ? 'No items match your search'
               : 'Completed optimizations will appear here'}
@@ -1117,7 +1117,7 @@ export default function History() {
                     </Badge>
                   )}
                 </div>
-                <span className="text-sm text-gray-500">
+                <span className="text-sm text-slate-500">
                   {selectedItem.tokens_used || 0} tokens
                 </span>
               </div>
@@ -1131,8 +1131,8 @@ export default function History() {
 
               {selectedItem.generated_prompt && (
                 <div>
-                  <Label className="text-sm text-gray-500">Prompt Used</Label>
-                  <div className="mt-1 p-3 bg-gray-50 rounded-lg text-sm max-h-32 overflow-y-auto">
+                  <Label className="text-sm text-slate-500">Prompt Used</Label>
+                  <div className="mt-1 p-3 bg-slate-50 rounded-lg text-sm max-h-32 overflow-y-auto">
                     {selectedItem.generated_prompt}
                   </div>
                 </div>
@@ -1142,24 +1142,24 @@ export default function History() {
               <div className="grid grid-cols-2 gap-4">
                 {selectedItem.original_url && (
                   <div>
-                    <Label className="text-gray-500 text-sm mb-2 block">Original</Label>
+                    <Label className="text-slate-500 text-sm mb-2 block">Original</Label>
                     <a href={selectedItem.original_url} target="_blank" rel="noopener noreferrer">
                       <img
                         src={selectedItem.original_url}
                         alt="Original"
-                        className="w-full h-40 object-contain bg-gray-100 rounded-lg border hover:opacity-90 transition-opacity"
+                        className="w-full h-40 object-contain bg-slate-100 rounded-lg border hover:opacity-90 transition-opacity"
                       />
                     </a>
                   </div>
                 )}
                 {selectedItem.optimized_url && (
                   <div>
-                    <Label className="text-gray-500 text-sm mb-2 block">Optimized</Label>
+                    <Label className="text-slate-500 text-sm mb-2 block">Optimized</Label>
                     <a href={selectedItem.optimized_url} target="_blank" rel="noopener noreferrer">
                       <img
                         src={selectedItem.optimized_url}
                         alt="Optimized"
-                        className="w-full h-40 object-contain bg-gray-100 rounded-lg border hover:opacity-90 transition-opacity"
+                        className="w-full h-40 object-contain bg-slate-100 rounded-lg border hover:opacity-90 transition-opacity"
                       />
                     </a>
                   </div>
@@ -1167,12 +1167,12 @@ export default function History() {
               </div>
 
               {selectedItem.processing_time_sec && (
-                <div className="text-sm text-gray-500">
+                <div className="text-sm text-slate-500">
                   Processing time: {selectedItem.processing_time_sec}s
                 </div>
               )}
 
-              <div className="text-xs text-gray-500">
+              <div className="text-xs text-slate-500">
                 Completed: {format(new Date(selectedItem.completed_at), 'MMM d, yyyy HH:mm:ss')}
               </div>
 
@@ -1228,9 +1228,9 @@ export default function History() {
               </div>
 
               {useSameSettings && selectedItem.generated_prompt && (
-                <div className="p-3 bg-gray-50 rounded-lg border">
-                  <p className="text-xs text-gray-500 mb-1">Will use previous prompt:</p>
-                  <p className="text-sm text-gray-700 line-clamp-2">{selectedItem.generated_prompt}</p>
+                <div className="p-3 bg-slate-50 rounded-lg border">
+                  <p className="text-xs text-slate-500 mb-1">Will use previous prompt:</p>
+                  <p className="text-sm text-slate-700 line-clamp-2">{selectedItem.generated_prompt}</p>
                 </div>
               )}
 
@@ -1245,7 +1245,7 @@ export default function History() {
                     <img
                       src={selectedItem.original_url}
                       alt="Original"
-                      className="w-20 h-20 object-cover bg-gray-100 rounded-lg border"
+                      className="w-20 h-20 object-cover bg-slate-100 rounded-lg border"
                     />
                   </div>
                 )}
@@ -1369,7 +1369,7 @@ export default function History() {
                         <FileText className="h-3 w-3" />
                         Prompt Preview
                       </div>
-                      <p className="text-sm text-gray-700 leading-relaxed">
+                      <p className="text-sm text-slate-700 leading-relaxed">
                         {generateTemplatePrompt(templates.find(t => t.id === selectedTemplateId)!)}
                       </p>
                     </div>
@@ -1413,7 +1413,7 @@ export default function History() {
                         <Palette className="h-3 w-3" />
                         Generated Prompt
                       </div>
-                      <p className="text-sm text-gray-700 leading-relaxed">
+                      <p className="text-sm text-slate-700 leading-relaxed">
                         {generateStudioPresetPrompt(presets.find(p => p.id === selectedPresetId) as StudioPreset)}
                       </p>
                     </div>
@@ -1518,22 +1518,22 @@ export default function History() {
                       {/* Images */}
                       <div className="flex-1 grid grid-cols-2 gap-4">
                         <div>
-                          <Label className="text-xs text-gray-500 mb-1 block">Original</Label>
+                          <Label className="text-xs text-slate-500 mb-1 block">Original</Label>
                           {version.original_url && (
                             <img
                               src={version.original_url}
                               alt="Original"
-                              className="w-full h-24 object-contain bg-gray-100 rounded border"
+                              className="w-full h-24 object-contain bg-slate-100 rounded border"
                             />
                           )}
                         </div>
                         <div>
-                          <Label className="text-xs text-gray-500 mb-1 block">Optimized</Label>
+                          <Label className="text-xs text-slate-500 mb-1 block">Optimized</Label>
                           {version.optimized_url && (
                             <img
                               src={version.optimized_url}
                               alt="Optimized"
-                              className="w-full h-24 object-contain bg-gray-100 rounded border"
+                              className="w-full h-24 object-contain bg-slate-100 rounded border"
                             />
                           )}
                         </div>
@@ -1541,15 +1541,15 @@ export default function History() {
 
                       {/* Metadata */}
                       <div className="flex-shrink-0 text-right text-sm">
-                        <div className="text-gray-500">{version.ai_model || 'flux-kontext-pro'}</div>
-                        <div className="text-xs text-gray-400">
+                        <div className="text-slate-500">{version.ai_model || 'flux-kontext-pro'}</div>
+                        <div className="text-xs text-slate-400">
                           {format(new Date(version.completed_at), 'MMM d, HH:mm')}
                         </div>
                       </div>
                     </div>
 
                     {version.generated_prompt && (
-                      <div className="mt-2 text-xs text-gray-500 bg-gray-50 p-2 rounded">
+                      <div className="mt-2 text-xs text-slate-500 bg-slate-50 p-2 rounded">
                         <strong>Prompt:</strong> {version.generated_prompt.substring(0, 150)}
                         {version.generated_prompt.length > 150 && '...'}
                       </div>
@@ -1558,7 +1558,7 @@ export default function History() {
                 ))}
               </div>
             ) : (
-              <div className="text-center py-8 text-gray-500">
+              <div className="text-center py-8 text-slate-500">
                 <GitBranch className="h-8 w-8 mx-auto mb-2 opacity-50" />
                 <p>No version history available</p>
               </div>
@@ -1589,7 +1589,7 @@ export default function History() {
           <div className="space-y-4 py-4">
             {/* Selected Images Preview */}
             <div>
-              <Label className="text-sm text-gray-500 mb-2 block">Selected Images</Label>
+              <Label className="text-sm text-slate-500 mb-2 block">Selected Images</Label>
               <div className="flex gap-2 flex-wrap">
                 {selectedItems.slice(0, 5).map((item: any) => (
                   <div key={item.id} className="relative w-12 h-12">
@@ -1600,14 +1600,14 @@ export default function History() {
                         className="w-full h-full object-cover rounded border"
                       />
                     ) : (
-                      <div className="w-full h-full rounded border bg-gray-100 flex items-center justify-center">
-                        <ImageIcon className="h-4 w-4 text-gray-400" />
+                      <div className="w-full h-full rounded border bg-slate-100 flex items-center justify-center">
+                        <ImageIcon className="h-4 w-4 text-slate-400" />
                       </div>
                     )}
                   </div>
                 ))}
                 {selectedItems.length > 5 && (
-                  <div className="w-12 h-12 rounded border bg-gray-100 flex items-center justify-center text-xs text-gray-500">
+                  <div className="w-12 h-12 rounded border bg-slate-100 flex items-center justify-center text-xs text-slate-500">
                     +{selectedItems.length - 5}
                   </div>
                 )}

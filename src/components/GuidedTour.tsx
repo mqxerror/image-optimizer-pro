@@ -11,7 +11,7 @@ const getSteps = (isOwner: boolean, canProcessImages: boolean): Step[] => {
       content: (
         <div className="text-left">
           <h3 className="font-semibold text-lg mb-2">Welcome to Image Optimizer Pro!</h3>
-          <p className="text-sm text-gray-600">
+          <p className="text-sm text-slate-600">
             Let's take a quick tour to help you get started with optimizing your product images.
           </p>
         </div>
@@ -24,7 +24,7 @@ const getSteps = (isOwner: boolean, canProcessImages: boolean): Step[] => {
       content: (
         <div className="text-left">
           <h3 className="font-semibold text-lg mb-2">The Studio</h3>
-          <p className="text-sm text-gray-600">
+          <p className="text-sm text-slate-600">
             This is where the magic happens! Upload images, remove backgrounds, and optimize them for your store.
           </p>
         </div>
@@ -36,7 +36,7 @@ const getSteps = (isOwner: boolean, canProcessImages: boolean): Step[] => {
       content: (
         <div className="text-left">
           <h3 className="font-semibold text-lg mb-2">Projects</h3>
-          <p className="text-sm text-gray-600">
+          <p className="text-sm text-slate-600">
             Organize your work into projects. Perfect for managing different product lines or campaigns.
           </p>
         </div>
@@ -48,7 +48,7 @@ const getSteps = (isOwner: boolean, canProcessImages: boolean): Step[] => {
       content: (
         <div className="text-left">
           <h3 className="font-semibold text-lg mb-2">Templates</h3>
-          <p className="text-sm text-gray-600">
+          <p className="text-sm text-slate-600">
             Save your favorite settings as templates for consistent results across all your images.
           </p>
         </div>
@@ -60,7 +60,7 @@ const getSteps = (isOwner: boolean, canProcessImages: boolean): Step[] => {
       content: (
         <div className="text-left">
           <h3 className="font-semibold text-lg mb-2">Token Balance</h3>
-          <p className="text-sm text-gray-600">
+          <p className="text-sm text-slate-600">
             Tokens are used to process images. You've received 10 free tokens to get started. Click here to see details or purchase more.
           </p>
         </div>
@@ -75,7 +75,7 @@ const getSteps = (isOwner: boolean, canProcessImages: boolean): Step[] => {
     content: (
       <div className="text-left">
         <h3 className="font-semibold text-lg mb-2">Shopify Integration</h3>
-        <p className="text-sm text-gray-600">
+        <p className="text-sm text-slate-600">
           Connect your Shopify store to automatically sync and optimize product images.
         </p>
       </div>
@@ -90,7 +90,7 @@ const getSteps = (isOwner: boolean, canProcessImages: boolean): Step[] => {
       content: (
         <div className="text-left">
           <h3 className="font-semibold text-lg mb-2">Admin Dashboard</h3>
-          <p className="text-sm text-gray-600">
+          <p className="text-sm text-slate-600">
             As the owner, you can manage team members, view usage stats, and configure organization settings.
           </p>
         </div>
@@ -105,7 +105,7 @@ const getSteps = (isOwner: boolean, canProcessImages: boolean): Step[] => {
     content: (
       <div className="text-left">
         <h3 className="font-semibold text-lg mb-2">You're All Set!</h3>
-        <p className="text-sm text-gray-600">
+        <p className="text-sm text-slate-600">
           Access your profile, settings, and help from here. Ready to optimize your first image? Head to the Studio!
         </p>
       </div>

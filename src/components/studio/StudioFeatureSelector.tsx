@@ -11,7 +11,7 @@ interface StudioFeatureSelectorProps {
 
 export function StudioFeatureSelector({ feature, onChange, className }: StudioFeatureSelectorProps) {
   return (
-    <div className={cn("bg-gray-800/50 rounded-xl p-1 border border-gray-700", className)}>
+    <div className={cn("bg-slate-800/50 rounded-xl p-1 border border-slate-700", className)}>
       <div className="grid grid-cols-3 gap-1">
         {/* Single Image Mode */}
         <button
@@ -20,7 +20,7 @@ export function StudioFeatureSelector({ feature, onChange, className }: StudioFe
             'flex flex-col items-center gap-1.5 px-3 py-3 rounded-lg transition-all',
             feature === 'single'
               ? 'bg-purple-600 text-white shadow-lg'
-              : 'text-gray-400 hover:text-gray-200 hover:bg-gray-700/50'
+              : 'text-slate-400 hover:text-slate-200 hover:bg-slate-700/50'
           )}
         >
           <Image className="h-5 w-5" />
@@ -40,7 +40,7 @@ export function StudioFeatureSelector({ feature, onChange, className }: StudioFe
             'flex flex-col items-center gap-1.5 px-3 py-3 rounded-lg transition-all',
             feature === 'combination'
               ? 'bg-gradient-to-r from-blue-600 to-amber-600 text-white shadow-lg'
-              : 'text-gray-400 hover:text-gray-200 hover:bg-gray-700/50'
+              : 'text-slate-400 hover:text-slate-200 hover:bg-slate-700/50'
           )}
         >
           <Users className="h-5 w-5" />
@@ -60,7 +60,7 @@ export function StudioFeatureSelector({ feature, onChange, className }: StudioFe
             'flex flex-col items-center gap-1.5 px-3 py-3 rounded-lg transition-all relative',
             feature === 'edit'
               ? 'bg-gradient-to-r from-green-600 to-teal-600 text-white shadow-lg'
-              : 'text-gray-400 hover:text-gray-200 hover:bg-gray-700/50'
+              : 'text-slate-400 hover:text-slate-200 hover:bg-slate-700/50'
           )}
         >
           <span className="absolute -top-1 -right-1 text-[8px] bg-green-500 text-white px-1.5 py-0.5 rounded-full font-bold">

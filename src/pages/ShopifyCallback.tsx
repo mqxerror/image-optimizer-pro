@@ -92,7 +92,7 @@ export default function ShopifyCallback() {
   const currentStepIndex = OAUTH_STEPS.findIndex(s => s.id === currentStep)
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-gray-50 to-gray-100 p-4">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-slate-50 to-slate-100 p-4">
       <Card className="w-full max-w-lg shadow-lg">
         <CardContent className="pt-8 pb-6">
           {/* Header Icon */}
@@ -126,7 +126,7 @@ export default function ShopifyCallback() {
             <div className="mb-8">
               <div className="flex items-center justify-between relative">
                 {/* Progress line */}
-                <div className="absolute top-4 left-6 right-6 h-0.5 bg-gray-200 -z-10" />
+                <div className="absolute top-4 left-6 right-6 h-0.5 bg-slate-200 -z-10" />
                 <div
                   className="absolute top-4 left-6 h-0.5 bg-purple-500 transition-all duration-500 -z-10"
                   style={{
@@ -146,27 +146,27 @@ export default function ShopifyCallback() {
                         'w-8 h-8 rounded-full flex items-center justify-center transition-all duration-300 border-2',
                         isComplete ? 'bg-purple-500 border-purple-500' :
                         isActive ? 'bg-white border-purple-500 shadow-md' :
-                        'bg-gray-100 border-gray-200'
+                        'bg-slate-100 border-slate-200'
                       )}>
                         {isComplete ? (
                           <CheckCircle className="h-4 w-4 text-white" />
                         ) : isActive ? (
                           <Loader2 className="h-4 w-4 text-purple-500 animate-spin" />
                         ) : (
-                          <span className="text-xs text-gray-400">{index + 1}</span>
+                          <span className="text-xs text-slate-400">{index + 1}</span>
                         )}
                       </div>
                       <div className="mt-2 text-center">
                         <p className={cn(
                           'text-xs font-medium',
                           isActive ? 'text-purple-600' :
-                          isComplete ? 'text-gray-700' : 'text-gray-400'
+                          isComplete ? 'text-slate-700' : 'text-slate-400'
                         )}>
                           {step.label}
                         </p>
                         <p className={cn(
                           'text-[10px]',
-                          isActive ? 'text-purple-500' : 'text-gray-400'
+                          isActive ? 'text-purple-500' : 'text-slate-400'
                         )}>
                           {step.description}
                         </p>

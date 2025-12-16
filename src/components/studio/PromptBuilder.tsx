@@ -279,9 +279,9 @@ export function PromptPreview({ settings, customPrompt }: PromptPreviewProps) {
     : generatedPrompt
 
   return (
-    <div className="bg-gray-50 border rounded-lg p-3">
-      <p className="text-xs text-gray-500 mb-1">Generated Prompt</p>
-      <p className="text-sm text-gray-700 leading-relaxed">{finalPrompt}</p>
+    <div className="bg-slate-50 border rounded-lg p-3">
+      <p className="text-xs text-slate-500 mb-1">Generated Prompt</p>
+      <p className="text-sm text-slate-700 leading-relaxed">{finalPrompt}</p>
     </div>
   )
 }

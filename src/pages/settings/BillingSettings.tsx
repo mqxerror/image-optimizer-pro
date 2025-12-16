@@ -243,10 +243,10 @@ export default function BillingSettings() {
         <CardContent>
           <div className="flex items-center justify-between mb-6">
             <div>
-              <p className="text-4xl font-bold text-gray-900">
+              <p className="text-4xl font-bold text-slate-900">
                 {loadingTokens ? '...' : tokenAccount?.balance?.toLocaleString() || 0}
               </p>
-              <p className="text-sm text-gray-500 mt-1">tokens available</p>
+              <p className="text-sm text-slate-500 mt-1">tokens available</p>
             </div>
             <Button
               onClick={() => setIsPurchaseOpen(true)}
@@ -258,13 +258,13 @@ export default function BillingSettings() {
           </div>
 
           {tokenAccount && (
-            <div className="grid grid-cols-2 gap-4 p-4 bg-gray-50 rounded-lg">
+            <div className="grid grid-cols-2 gap-4 p-4 bg-slate-50 rounded-lg">
               <div>
-                <p className="text-sm text-gray-500">Lifetime Purchased</p>
+                <p className="text-sm text-slate-500">Lifetime Purchased</p>
                 <p className="text-lg font-semibold">{(tokenAccount.lifetime_purchased || 0).toLocaleString()}</p>
               </div>
               <div>
-                <p className="text-sm text-gray-500">Lifetime Used</p>
+                <p className="text-sm text-slate-500">Lifetime Used</p>
                 <p className="text-lg font-semibold">{(tokenAccount.lifetime_used || 0).toLocaleString()}</p>
               </div>
             </div>
@@ -310,7 +310,7 @@ export default function BillingSettings() {
                 <div key={tx.id} className="flex items-center justify-between py-3 border-b last:border-0">
                   <div>
                     <p className="font-medium">{tx.description}</p>
-                    <p className="text-sm text-gray-500">
+                    <p className="text-sm text-slate-500">
                       {new Date(tx.created_at).toLocaleDateString()} at{' '}
                       {new Date(tx.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                     </p>
@@ -322,7 +322,7 @@ export default function BillingSettings() {
               ))}
             </div>
           ) : (
-            <p className="text-gray-500 text-sm py-4 text-center">No transactions yet</p>
+            <p className="text-slate-500 text-sm py-4 text-center">No transactions yet</p>
           )}
         </CardContent>
       </Card>
@@ -353,7 +353,7 @@ export default function BillingSettings() {
                         ? 'border-purple-500 bg-purple-50 ring-2 ring-purple-500/20'
                         : pkg.is_popular
                         ? 'border-purple-300 bg-purple-50/50 hover:border-purple-400'
-                        : 'hover:border-gray-300'
+                        : 'hover:border-slate-300'
                     }`}
                     onClick={() => {
                       setSelectedPackage(pkg)
@@ -368,7 +368,7 @@ export default function BillingSettings() {
                     <div className="flex items-center justify-between">
                       <div>
                         <p className="font-medium">{pkg.display_name}</p>
-                        <p className="text-sm text-gray-500">
+                        <p className="text-sm text-slate-500">
                           {pkg.tokens.toLocaleString()} tokens • {pkg.description}
                         </p>
                       </div>
@@ -387,12 +387,12 @@ export default function BillingSettings() {
             <TabsContent value="subscription" className="mt-4">
               {/* Billing cycle toggle */}
               <div className="flex justify-center mb-4">
-                <div className="inline-flex items-center gap-2 p-1 bg-gray-100 rounded-lg">
+                <div className="inline-flex items-center gap-2 p-1 bg-slate-100 rounded-lg">
                   <button
                     className={`px-3 py-1.5 rounded-md text-sm font-medium transition-all ${
                       billingCycle === 'monthly'
-                        ? 'bg-white shadow text-gray-900'
-                        : 'text-gray-600 hover:text-gray-900'
+                        ? 'bg-white shadow text-slate-900'
+                        : 'text-slate-600 hover:text-slate-900'
                     }`}
                     onClick={() => setBillingCycle('monthly')}
                   >
@@ -401,8 +401,8 @@ export default function BillingSettings() {
                   <button
                     className={`px-3 py-1.5 rounded-md text-sm font-medium transition-all ${
                       billingCycle === 'yearly'
-                        ? 'bg-white shadow text-gray-900'
-                        : 'text-gray-600 hover:text-gray-900'
+                        ? 'bg-white shadow text-slate-900'
+                        : 'text-slate-600 hover:text-slate-900'
                     }`}
                     onClick={() => setBillingCycle('yearly')}
                   >
@@ -423,7 +423,7 @@ export default function BillingSettings() {
                       className={`p-4 border rounded-lg cursor-pointer transition-all ${
                         selectedPlan?.id === plan.id
                           ? 'border-purple-500 bg-purple-50 ring-2 ring-purple-500/20'
-                          : 'hover:border-gray-300'
+                          : 'hover:border-slate-300'
                       }`}
                       onClick={() => {
                         setSelectedPlan(plan)
@@ -433,13 +433,13 @@ export default function BillingSettings() {
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-3">
                           <div className={`p-2 rounded-lg ${
-                            selectedPlan?.id === plan.id ? 'bg-purple-100 text-purple-600' : 'bg-gray-100 text-gray-600'
+                            selectedPlan?.id === plan.id ? 'bg-purple-100 text-purple-600' : 'bg-slate-100 text-slate-600'
                           }`}>
                             {getPlanIcon(plan.id)}
                           </div>
                           <div>
                             <p className="font-medium">{plan.display_name}</p>
-                            <p className="text-sm text-gray-500">
+                            <p className="text-sm text-slate-500">
                               {plan.tokens_monthly.toLocaleString()} tokens/month •
                               {plan.max_team_members === -1 ? ' Unlimited' : ` ${plan.max_team_members}`} team •
                               {plan.max_stores === -1 ? ' Unlimited' : ` ${plan.max_stores}`} stores
@@ -449,7 +449,7 @@ export default function BillingSettings() {
                         <div className="flex items-center gap-2 text-right">
                           <div>
                             <span className="text-xl font-bold">{formatPrice(price)}</span>
-                            <span className="text-gray-500 text-sm">/mo</span>
+                            <span className="text-slate-500 text-sm">/mo</span>
                             {billingCycle === 'yearly' && (
                               <p className="text-xs text-green-600">
                                 {formatPrice(plan.price_yearly_cents)} billed yearly

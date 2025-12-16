@@ -802,11 +802,11 @@ export default function Studio() {
     <div className="h-screen flex flex-col md:flex-row">
       {/* Mobile Header - only visible on mobile, hidden in screenshot mode */}
       {!screenshotMode && (
-        <div className="md:hidden flex items-center justify-between px-3 py-2 bg-gray-900 border-b border-gray-700">
+        <div className="md:hidden flex items-center justify-between px-3 py-2 bg-slate-900 border-b border-slate-700">
           <Button
             variant="ghost"
             size="default"
-            className="text-gray-300 hover:text-white min-h-[44px] px-3"
+            className="text-slate-300 hover:text-white min-h-[44px] px-3"
             onClick={() => setShowMobilePresets(true)}
           >
             <Menu className="h-5 w-5 mr-2" />
@@ -816,7 +816,7 @@ export default function Studio() {
           <Button
             variant="ghost"
             size="default"
-            className="text-gray-300 hover:text-white min-h-[44px] min-w-[44px]"
+            className="text-slate-300 hover:text-white min-h-[44px] min-w-[44px]"
             onClick={() => setShowMobileSettings(true)}
           >
             <Settings2 className="h-5 w-5" />
@@ -827,7 +827,7 @@ export default function Studio() {
       {/* Left Sidebar - Mode-specific presets (collapsible) - hidden on mobile and in screenshot mode */}
       <div className={`hidden ${screenshotMode ? '' : 'md:block'} flex-shrink-0 transition-all duration-300 ${sidebarCollapsed ? 'w-12' : 'w-72'}`}>
         {sidebarCollapsed ? (
-          <div className="h-full bg-gray-50 border-r flex flex-col items-center py-4">
+          <div className="h-full bg-slate-50 border-r flex flex-col items-center py-4">
             <Button
               variant="ghost"
               size="sm"
@@ -835,7 +835,7 @@ export default function Studio() {
               className="mb-4"
               title="Expand sidebar"
             >
-              <PanelLeft className="h-5 w-5 text-gray-600" />
+              <PanelLeft className="h-5 w-5 text-slate-600" />
             </Button>
           </div>
         ) : (
@@ -867,14 +867,14 @@ export default function Studio() {
               className="absolute top-3 right-2 h-7 w-7 p-0"
               title="Collapse sidebar"
             >
-              <PanelLeftClose className="h-4 w-4 text-gray-500" />
+              <PanelLeftClose className="h-4 w-4 text-slate-500" />
             </Button>
           </div>
         )}
       </div>
 
       {/* Main Content Area */}
-      <div className="flex-1 flex flex-col bg-gradient-to-br from-gray-900 via-gray-900 to-gray-800 min-h-0">
+      <div className="flex-1 flex flex-col bg-gradient-to-br from-slate-900 via-slate-900 to-slate-800 min-h-0">
         <div className="flex-1 flex min-h-0 overflow-hidden">
           {/* Canvas Area */}
           <div className="flex-1 p-3 md:p-6 flex flex-col overflow-y-auto min-h-0">
@@ -887,7 +887,7 @@ export default function Studio() {
 
               {/* Image Upload Area - Conditional based on feature mode */}
               {featureMode === 'edit' ? (
-                <div className="bg-gray-800/50 rounded-2xl border border-gray-700 overflow-hidden">
+                <div className="bg-slate-800/50 rounded-2xl border border-slate-700 overflow-hidden">
                   <EditMode imageUrl={imageUrl} onImageChange={handleImageChange} />
                 </div>
               ) : featureMode === 'single' ? (
@@ -966,15 +966,15 @@ export default function Studio() {
                   />
 
                   {/* Live Prompt Preview - right under images */}
-                  <div className="bg-gradient-to-br from-gray-800/80 to-gray-900/80 backdrop-blur-sm border border-blue-500/30 rounded-2xl p-4 shadow-lg shadow-blue-500/10">
+                  <div className="bg-gradient-to-br from-slate-800/80 to-slate-900/80 backdrop-blur-sm border border-blue-500/30 rounded-2xl p-4 shadow-lg shadow-blue-500/10">
                     <div className="flex items-center justify-between mb-2">
                       <div className="flex items-center gap-2">
                         <div className="h-2.5 w-2.5 rounded-full bg-blue-400 animate-pulse shadow-sm shadow-blue-400/50" />
                         <span className="text-sm font-semibold text-white">Live Prompt</span>
                       </div>
-                      <span className="text-xs text-gray-400 bg-gray-700/50 px-2 py-0.5 rounded-full">{combinationPromptPreview.length} chars</span>
+                      <span className="text-xs text-slate-400 bg-slate-700/50 px-2 py-0.5 rounded-full">{combinationPromptPreview.length} chars</span>
                     </div>
-                    <div className="text-sm text-gray-200 leading-relaxed">
+                    <div className="text-sm text-slate-200 leading-relaxed">
                       <PromptDiff prompt={combinationPromptPreview} />
                     </div>
                   </div>
@@ -988,7 +988,7 @@ export default function Studio() {
                   {/* Placement Preview - shows when both images uploaded */}
                   {dualImages.model.url && dualImages.jewelry.url && (
                     <div className="space-y-2">
-                      <h4 className="text-xs font-medium text-gray-400 uppercase tracking-wider">Preview</h4>
+                      <h4 className="text-xs font-medium text-slate-400 uppercase tracking-wider">Preview</h4>
                       <PlacementPreview
                         modelImageUrl={dualImages.model.url}
                         jewelryImageUrl={dualImages.jewelry.url}
@@ -1035,7 +1035,7 @@ export default function Studio() {
                           placeholder="Add custom instructions or tap mic to speak..."
                           value={customPrompt}
                           onChange={(e) => setCustomPrompt(e.target.value)}
-                          className="bg-gray-800/50 border-gray-700 text-white placeholder:text-gray-500 resize-none rounded-xl focus:ring-purple-500 focus:border-purple-500 pr-10"
+                          className="bg-slate-800/50 border-slate-700 text-white placeholder:text-slate-500 resize-none rounded-xl focus:ring-purple-500 focus:border-purple-500 pr-10"
                           rows={2}
                         />
                         <VoiceMicButton
@@ -1062,7 +1062,7 @@ export default function Studio() {
                             variant="ghost"
                             size="sm"
                             onClick={handleSaveAsDefault}
-                            className="h-8 text-xs text-gray-400 hover:text-white hover:bg-gray-800"
+                            className="h-8 text-xs text-slate-400 hover:text-white hover:bg-slate-800"
                           >
                             <Settings2 className="h-3.5 w-3.5 mr-1.5" />
                             Set as Default
@@ -1073,7 +1073,7 @@ export default function Studio() {
                             variant="ghost"
                             size="sm"
                             onClick={handleClearDefault}
-                            className="h-8 text-xs text-gray-500 hover:text-red-400 hover:bg-gray-800"
+                            className="h-8 text-xs text-slate-500 hover:text-red-400 hover:bg-slate-800"
                           >
                             Clear Default
                           </Button>
@@ -1090,7 +1090,7 @@ export default function Studio() {
                   <div className="flex items-center justify-between">
                     <button
                       onClick={() => setShowPromptPreview(!showPromptPreview)}
-                      className="flex items-center gap-2 text-sm text-gray-400 hover:text-gray-300 transition-colors"
+                      className="flex items-center gap-2 text-sm text-slate-400 hover:text-slate-300 transition-colors"
                     >
                       {showPromptPreview ? (
                         <EyeOff className="h-4 w-4" />
@@ -1098,7 +1098,7 @@ export default function Studio() {
                         <Eye className="h-4 w-4" />
                       )}
                       {showPromptPreview ? 'Hide' : 'View'} generated prompt
-                      <span className="text-xs text-gray-500">({fullPrompt.length} chars)</span>
+                      <span className="text-xs text-slate-500">({fullPrompt.length} chars)</span>
                       {showPromptPreview ? (
                         <ChevronUp className="h-3 w-3" />
                       ) : (
@@ -1110,7 +1110,7 @@ export default function Studio() {
                       <Button
                         variant="ghost"
                         size="sm"
-                        className="h-7 px-2 text-xs text-gray-400 hover:text-gray-300 hover:bg-gray-800"
+                        className="h-7 px-2 text-xs text-slate-400 hover:text-slate-300 hover:bg-slate-800"
                         onClick={() => {
                           navigator.clipboard.writeText(fullPrompt)
                           setPromptCopied(true)
@@ -1139,7 +1139,7 @@ export default function Studio() {
                       ${showPromptPreview ? 'max-h-48 opacity-100' : 'max-h-0 opacity-0'}
                     `}
                   >
-                    <div className="bg-gray-800/70 border border-gray-700 rounded-xl p-4 text-sm text-gray-300 leading-relaxed overflow-y-auto max-h-48">
+                    <div className="bg-slate-800/70 border border-slate-700 rounded-xl p-4 text-sm text-slate-300 leading-relaxed overflow-y-auto max-h-48">
                       <p className="text-xs text-purple-400 font-medium mb-2">
                         Full prompt:
                       </p>
@@ -1200,7 +1200,7 @@ export default function Studio() {
 
         {/* Sticky Footer - Generate Button (hidden in screenshot mode) */}
         {!screenshotMode && (
-        <div className="flex-shrink-0 px-3 md:px-6 py-3 md:py-4 border-t border-gray-700/50 bg-gray-900/95 backdrop-blur-sm pb-safe">
+        <div className="flex-shrink-0 px-3 md:px-6 py-3 md:py-4 border-t border-slate-700/50 bg-slate-900/95 backdrop-blur-sm pb-safe">
           <div className="max-w-3xl mx-auto flex gap-2 md:gap-3 items-center">
             {featureMode === 'single' ? (
               <>
@@ -1238,18 +1238,18 @@ export default function Studio() {
                   </Button>
                   {/* Mobile tooltip shown below button when disabled */}
                   {!imageUrl && (
-                    <span className="md:hidden absolute -bottom-5 left-0 right-0 text-center text-[10px] text-gray-500">
+                    <span className="md:hidden absolute -bottom-5 left-0 right-0 text-center text-[10px] text-slate-500">
                       Upload an image first
                     </span>
                   )}
                 </div>
                 {/* Token cost - visible on all screen sizes */}
-                <div className="flex items-center gap-1.5 px-2 md:px-3 h-12 bg-gray-800/50 border border-gray-700 text-gray-300 rounded-xl">
+                <div className="flex items-center gap-1.5 px-2 md:px-3 h-12 bg-slate-800/50 border border-slate-700 text-slate-300 rounded-xl">
                   <Coins className="h-3.5 w-3.5 md:h-4 md:w-4 text-yellow-500" />
                   <span className="text-sm md:text-base font-medium">
                     {getModelById(settings.aiModel)?.tokenCost || 1}
                   </span>
-                  <span className="hidden sm:inline text-sm text-gray-400">
+                  <span className="hidden sm:inline text-sm text-slate-400">
                     {(getModelById(settings.aiModel)?.tokenCost || 1) === 1 ? 'token' : 'tokens'}
                   </span>
                 </div>
@@ -1284,18 +1284,18 @@ export default function Studio() {
                   </Button>
                   {/* Mobile tooltip shown below button when disabled */}
                   {(!dualImages.model.url || !dualImages.jewelry.url) && (
-                    <span className="md:hidden absolute -bottom-5 left-0 right-0 text-center text-[10px] text-gray-500">
+                    <span className="md:hidden absolute -bottom-5 left-0 right-0 text-center text-[10px] text-slate-500">
                       Upload both images
                     </span>
                   )}
                 </div>
                 {/* Token cost - visible on all screen sizes */}
-                <div className="flex items-center gap-1.5 px-2 md:px-3 h-12 bg-gray-800/50 border border-gray-700 text-gray-300 rounded-xl">
+                <div className="flex items-center gap-1.5 px-2 md:px-3 h-12 bg-slate-800/50 border border-slate-700 text-slate-300 rounded-xl">
                   <Coins className="h-3.5 w-3.5 md:h-4 md:w-4 text-yellow-500" />
                   <span className="text-sm md:text-base font-medium">
                     {getModelById(combinationSettings.ai_model)?.tokenCost || 2}
                   </span>
-                  <span className="hidden sm:inline text-sm text-gray-400">tokens</span>
+                  <span className="hidden sm:inline text-sm text-slate-400">tokens</span>
                 </div>
               </>
             )}
@@ -1304,7 +1304,7 @@ export default function Studio() {
               variant="outline"
               size="lg"
               onClick={() => setShowGenerations(true)}
-              className="gap-2 bg-gray-800/50 border-gray-700 text-gray-300 hover:bg-gray-800 h-12 rounded-xl relative px-3 md:px-4"
+              className="gap-2 bg-slate-800/50 border-slate-700 text-slate-300 hover:bg-slate-800 h-12 rounded-xl relative px-3 md:px-4"
             >
               <Clock className="h-4 w-4" />
               <span className="hidden sm:inline">History</span>
@@ -1335,7 +1335,7 @@ export default function Studio() {
             />
           </div>
           {/* Footer with View All Activity link */}
-          <div className="px-6 py-3 border-t bg-gray-50 flex-shrink-0">
+          <div className="px-6 py-3 border-t bg-slate-50 flex-shrink-0">
             <Link
               to="/activity"
               onClick={() => setShowGenerations(false)}

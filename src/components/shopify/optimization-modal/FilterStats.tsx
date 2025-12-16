@@ -57,7 +57,7 @@ export function FilterStats({ stats, compact = false }: FilterStatsProps) {
               </div>
             )}
             {stats.svgImagesSkipped > 0 && (
-              <div className="flex items-center gap-2 text-sm text-gray-500">
+              <div className="flex items-center gap-2 text-sm text-slate-500">
                 <FileX className="h-4 w-4" />
                 <span>{stats.svgImagesSkipped} SVG files</span>
               </div>

@@ -17,7 +17,7 @@ export default function ProtectedRoute({
   // Show loading while initializing
   if (!isInitialized || isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <div className="min-h-screen flex items-center justify-center bg-slate-50">
         <Loader2 className="h-12 w-12 animate-spin text-primary" />
       </div>
     )

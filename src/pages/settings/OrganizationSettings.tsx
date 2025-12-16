@@ -94,7 +94,7 @@ export default function OrganizationSettings() {
                 <SelectItem value="4K">4K (Premium - 2 tokens)</SelectItem>
               </SelectContent>
             </Select>
-            <p className="text-xs text-gray-500">
+            <p className="text-xs text-slate-500">
               This is the default resolution for new projects
             </p>
           </div>
@@ -120,20 +120,20 @@ export default function OrganizationSettings() {
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="p-4 rounded-lg bg-gray-50">
-              <p className="font-medium text-gray-900">2K Optimization</p>
+            <div className="p-4 rounded-lg bg-slate-50">
+              <p className="font-medium text-slate-900">2K Optimization</p>
               <p className="text-2xl font-bold text-primary mt-1">1 token</p>
-              <p className="text-sm text-gray-500 mt-1">Standard resolution</p>
+              <p className="text-sm text-slate-500 mt-1">Standard resolution</p>
             </div>
-            <div className="p-4 rounded-lg bg-gray-50">
-              <p className="font-medium text-gray-900">4K Optimization</p>
+            <div className="p-4 rounded-lg bg-slate-50">
+              <p className="font-medium text-slate-900">4K Optimization</p>
               <p className="text-2xl font-bold text-primary mt-1">2 tokens</p>
-              <p className="text-sm text-gray-500 mt-1">Premium resolution</p>
+              <p className="text-sm text-slate-500 mt-1">Premium resolution</p>
             </div>
-            <div className="p-4 rounded-lg bg-gray-50">
-              <p className="font-medium text-gray-900">Re-process</p>
+            <div className="p-4 rounded-lg bg-slate-50">
+              <p className="font-medium text-slate-900">Re-process</p>
               <p className="text-2xl font-bold text-primary mt-1">0.5 tokens</p>
-              <p className="text-sm text-gray-500 mt-1">Retry with adjustments</p>
+              <p className="text-sm text-slate-500 mt-1">Retry with adjustments</p>
             </div>
           </div>
         </CardContent>

@@ -47,7 +47,7 @@ function ModeCard({
         'flex-1 p-4 rounded-xl border-2 text-left transition-all',
         isSelected
           ? 'border-purple-500 bg-purple-50 ring-2 ring-purple-200'
-          : 'border-gray-200 bg-white hover:border-gray-300 hover:bg-gray-50'
+          : 'border-slate-200 bg-white hover:border-slate-300 hover:bg-slate-50'
       )}
     >
       <div className={cn(
@@ -56,9 +56,9 @@ function ModeCard({
       )}>
         <div className="text-white">{icon}</div>
       </div>
-      <h3 className="font-semibold text-gray-900 mb-1">{title}</h3>
-      <p className="text-sm text-gray-600 mb-3">{description}</p>
-      <div className="flex items-center gap-1 text-xs text-gray-500">
+      <h3 className="font-semibold text-slate-900 mb-1">{title}</h3>
+      <p className="text-sm text-slate-600 mb-3">{description}</p>
+      <div className="flex items-center gap-1 text-xs text-slate-500">
         <Coins className="h-3 w-3" />
         <span>{tokenCost} {tokenCost === 1 ? 'token' : 'tokens'} per image</span>
       </div>
@@ -84,13 +84,13 @@ function StyleOptionCard({
   iconTextClass,
 }: StyleOptionCardProps) {
   return (
-    <div className="flex-1 p-4 rounded-xl border border-gray-200 bg-white">
+    <div className="flex-1 p-4 rounded-xl border border-slate-200 bg-white">
       <div className={cn('w-12 h-12 rounded-lg flex items-center justify-center mb-3', iconBgClass)}>
         <div className={iconTextClass}>{icon}</div>
       </div>
-      <h3 className="font-semibold text-gray-900 mb-1">{title}</h3>
-      <p className="text-sm text-gray-600 mb-3">{description}</p>
-      <p className="text-xs text-gray-500">
+      <h3 className="font-semibold text-slate-900 mb-1">{title}</h3>
+      <p className="text-sm text-slate-600 mb-3">{description}</p>
+      <p className="text-xs text-slate-500">
         <span className="font-medium">Best for:</span> {bestFor}
       </p>
     </div>
@@ -203,7 +203,7 @@ export function StudioWelcomeModal({
               </Button>
               <button
                 onClick={handleSkip}
-                className="text-sm text-gray-500 hover:text-gray-700 mt-2"
+                className="text-sm text-slate-500 hover:text-slate-700 mt-2"
               >
                 Skip, I'll explore on my own
               </button>
@@ -214,9 +214,9 @@ export function StudioWelcomeModal({
             <DialogHeader className="text-center pb-2">
               <button
                 onClick={handleBack}
-                className="absolute left-4 top-4 p-2 rounded-lg hover:bg-gray-100 transition-colors"
+                className="absolute left-4 top-4 p-2 rounded-lg hover:bg-slate-100 transition-colors"
               >
-                <ChevronLeft className="h-5 w-5 text-gray-500" />
+                <ChevronLeft className="h-5 w-5 text-slate-500" />
               </button>
               <div className="flex justify-center mb-3">
                 <div className={cn(
@@ -286,7 +286,7 @@ export function StudioWelcomeModal({
               </Button>
               <button
                 onClick={handleSkip}
-                className="text-sm text-gray-500 hover:text-gray-700 mt-2"
+                className="text-sm text-slate-500 hover:text-slate-700 mt-2"
               >
                 Skip, I'll explore on my own
               </button>

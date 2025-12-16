@@ -290,12 +290,12 @@ export default function AddToQueue({
           </TabsContent>
 
           <TabsContent value="device" className="flex-1 overflow-hidden mt-4">
-            <div className="flex flex-col items-center justify-center h-full min-h-[300px] border-2 border-dashed border-gray-200 rounded-lg p-8">
-              <Smartphone className="h-12 w-12 text-gray-400 mb-4" />
-              <h3 className="text-lg font-medium text-gray-900 mb-2">
+            <div className="flex flex-col items-center justify-center h-full min-h-[300px] border-2 border-dashed border-slate-200 rounded-lg p-8">
+              <Smartphone className="h-12 w-12 text-slate-400 mb-4" />
+              <h3 className="text-lg font-medium text-slate-900 mb-2">
                 Upload from your device
               </h3>
-              <p className="text-sm text-gray-500 text-center mb-6 max-w-sm">
+              <p className="text-sm text-slate-500 text-center mb-6 max-w-sm">
                 Take a photo with your camera or select images from your gallery to add to this project
               </p>
               <MobileImageCapture

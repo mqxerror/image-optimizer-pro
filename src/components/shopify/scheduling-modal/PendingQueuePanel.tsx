@@ -41,7 +41,7 @@ const sourceLabels: Record<string, string> = {
 
 const priorityColors: Record<string, { bg: string; text: string; border: string }> = {
   high: { bg: 'bg-red-50', text: 'text-red-700', border: 'border-red-200' },
-  normal: { bg: 'bg-gray-50', text: 'text-gray-700', border: 'border-gray-200' },
+  normal: { bg: 'bg-slate-50', text: 'text-slate-700', border: 'border-slate-200' },
   low: { bg: 'bg-blue-50', text: 'text-blue-700', border: 'border-blue-200' }
 }
 
@@ -130,7 +130,7 @@ export function PendingQueuePanel({
       {/* Filters */}
       <div className="flex items-center gap-2 flex-wrap">
         {/* Source filter tabs */}
-        <div className="flex gap-1 bg-gray-100 p-1 rounded-lg">
+        <div className="flex gap-1 bg-slate-100 p-1 rounded-lg">
           {(['all', 'webhook', 'scheduled', 'manual'] as const).map(source => (
             <button
               key={source}
@@ -138,8 +138,8 @@ export function PendingQueuePanel({
               className={cn(
                 'px-3 py-1.5 text-xs font-medium rounded-md transition-colors',
                 activeSource === source
-                  ? 'bg-white text-gray-900 shadow-sm'
-                  : 'text-gray-600 hover:text-gray-900'
+                  ? 'bg-white text-slate-900 shadow-sm'
+                  : 'text-slate-600 hover:text-slate-900'
               )}
             >
               {source === 'all' ? 'All' : sourceLabels[source]}
@@ -182,7 +182,7 @@ export function PendingQueuePanel({
                 High
               </DropdownMenuItem>
               <DropdownMenuItem onClick={() => handlePriorityChange('normal')}>
-                <Minus className="h-4 w-4 mr-2 text-gray-600" />
+                <Minus className="h-4 w-4 mr-2 text-slate-600" />
                 Normal
               </DropdownMenuItem>
               <DropdownMenuItem onClick={() => handlePriorityChange('low')}>
@@ -226,7 +226,7 @@ export function PendingQueuePanel({
       {/* Queue list */}
       <div className="border rounded-lg overflow-hidden">
         {/* Header */}
-        <div className="flex items-center gap-4 px-4 py-2 bg-gray-50 border-b text-xs font-medium text-muted-foreground">
+        <div className="flex items-center gap-4 px-4 py-2 bg-slate-50 border-b text-xs font-medium text-muted-foreground">
           <Checkbox
             checked={selectedIds.size === pendingItems.length && pendingItems.length > 0}
             onCheckedChange={toggleSelectAll}
@@ -258,7 +258,7 @@ export function PendingQueuePanel({
             ))
           ) : (
             <div className="flex flex-col items-center justify-center py-8 text-center">
-              <ListOrdered className="h-8 w-8 text-gray-300 mb-2" />
+              <ListOrdered className="h-8 w-8 text-slate-300 mb-2" />
               <p className="text-sm text-muted-foreground">Queue is empty</p>
               <p className="text-xs text-muted-foreground mt-1">
                 Products will appear here when added via triggers
@@ -301,8 +301,8 @@ function QueueRow({ item, isSelected, onSelect, onRemove }: QueueRowProps) {
             className="w-10 h-10 object-cover rounded border"
           />
         ) : (
-          <div className="w-10 h-10 bg-gray-100 rounded border flex items-center justify-center">
-            <ImageIcon className="h-4 w-4 text-gray-400" />
+          <div className="w-10 h-10 bg-slate-100 rounded border flex items-center justify-center">
+            <ImageIcon className="h-4 w-4 text-slate-400" />
           </div>
         )}
         <div className="min-w-0">

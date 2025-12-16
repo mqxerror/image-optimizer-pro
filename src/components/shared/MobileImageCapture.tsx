@@ -254,7 +254,7 @@ export function MobileImageCapture({
                   {capturedImages.map((img, index) => (
                     <div
                       key={index}
-                      className="relative aspect-square rounded-lg overflow-hidden bg-gray-100"
+                      className="relative aspect-square rounded-lg overflow-hidden bg-slate-100"
                     >
                       <img
                         src={img.previewUrl}
@@ -291,15 +291,15 @@ export function MobileImageCapture({
             {/* Empty state */}
             {!hasImages && (
               <div className="flex-1 flex items-center justify-center">
-                <div className="text-center text-gray-500">
-                  <Camera className="h-12 w-12 mx-auto mb-3 text-gray-300" />
+                <div className="text-center text-slate-500">
+                  <Camera className="h-12 w-12 mx-auto mb-3 text-slate-300" />
                   <p className="text-sm">
                     {captureMode === 'camera'
                       ? 'Take a photo with your camera'
                       : 'Select photos from your gallery'
                     }
                   </p>
-                  <p className="text-xs mt-1 text-gray-400">
+                  <p className="text-xs mt-1 text-slate-400">
                     Max {maxFileSizeMB}MB per image
                   </p>
                 </div>
@@ -338,7 +338,7 @@ export function MobileImageCapture({
                     className="w-full justify-between"
                     onClick={() => setShowStorageSheet(true)}
                   >
-                    <span className="text-gray-500">Save results to:</span>
+                    <span className="text-slate-500">Save results to:</span>
                     <span className="font-medium">{getCurrentStorageLabel()}</span>
                   </Button>
                 )}
@@ -349,7 +349,7 @@ export function MobileImageCapture({
             {isUploading && (
               <div className="flex-shrink-0 space-y-2">
                 <Progress value={progress} className="h-2" />
-                <p className="text-sm text-center text-gray-500">
+                <p className="text-sm text-center text-slate-500">
                   Uploading... {progress}%
                 </p>
               </div>

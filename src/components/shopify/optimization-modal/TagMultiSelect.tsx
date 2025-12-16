@@ -149,7 +149,7 @@ export function TagMultiSelect({
                           ? variant === 'destructive'
                             ? 'bg-red-500 border-red-500'
                             : 'bg-primary border-primary'
-                          : 'border-gray-300'
+                          : 'border-slate-300'
                       )}
                     >
                       {isSelected && <Check className="h-3 w-3 text-white" />}
@@ -167,7 +167,7 @@ export function TagMultiSelect({
           )}
         </ScrollArea>
         {selectedTags.length > 0 && (
-          <div className="p-2 border-t bg-gray-50">
+          <div className="p-2 border-t bg-slate-50">
             <div className="flex items-center justify-between">
               <span className="text-xs text-muted-foreground">
                 {selectedTags.length} selected

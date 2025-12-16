@@ -19,10 +19,10 @@ interface ProjectStatusTabsProps {
 
 const tabs: { id: ProjectStatusTab; label: string; color?: string }[] = [
   { id: 'all', label: 'All' },
-  { id: 'draft', label: 'Draft', color: 'bg-gray-100 text-gray-700' },
+  { id: 'draft', label: 'Draft', color: 'bg-slate-100 text-slate-700' },
   { id: 'active', label: 'Active', color: 'bg-blue-100 text-blue-700' },
   { id: 'completed', label: 'Completed', color: 'bg-green-100 text-green-700' },
-  { id: 'archived', label: 'Archived', color: 'bg-gray-100 text-gray-500' },
+  { id: 'archived', label: 'Archived', color: 'bg-slate-100 text-slate-500' },
 ]
 
 export function ProjectStatusTabs({ activeTab, onTabChange, counts }: ProjectStatusTabsProps) {
@@ -42,15 +42,15 @@ export function ProjectStatusTabs({ activeTab, onTabChange, counts }: ProjectSta
             onClick={() => onTabChange(tab.id)}
             className={cn(
               'flex items-center gap-2 px-4 py-2 rounded-lg border-2 transition-all',
-              'hover:border-gray-300',
+              'hover:border-slate-300',
               isActive
                 ? 'border-primary bg-primary/5 shadow-sm'
-                : 'border-gray-200 bg-white'
+                : 'border-slate-200 bg-white'
             )}
           >
             <span className={cn(
               'font-medium',
-              isActive ? 'text-primary' : 'text-gray-700'
+              isActive ? 'text-primary' : 'text-slate-700'
             )}>
               {tab.label}
             </span>
@@ -58,7 +58,7 @@ export function ProjectStatusTabs({ activeTab, onTabChange, counts }: ProjectSta
               variant="secondary"
               className={cn(
                 'px-2 py-0.5 text-xs font-semibold',
-                tab.color && count > 0 ? tab.color : 'bg-gray-100 text-gray-600'
+                tab.color && count > 0 ? tab.color : 'bg-slate-100 text-slate-600'
               )}
             >
               {count}

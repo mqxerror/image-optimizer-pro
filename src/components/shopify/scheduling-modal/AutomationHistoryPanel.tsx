@@ -63,8 +63,8 @@ const statusConfig: Record<string, {
   },
   cancelled: {
     icon: AlertCircle,
-    color: 'text-gray-600',
-    bgColor: 'bg-gray-100',
+    color: 'text-slate-600',
+    bgColor: 'bg-slate-100',
     label: 'Cancelled'
   }
 }
@@ -84,15 +84,15 @@ export function AutomationHistoryPanel({
       {/* Stats summary */}
       {stats && (
         <div className="grid grid-cols-3 gap-3">
-          <div className="p-3 bg-gray-50 rounded-lg">
+          <div className="p-3 bg-slate-50 rounded-lg">
             <p className="text-2xl font-bold">{(stats.successRate * 100).toFixed(1)}%</p>
             <p className="text-xs text-muted-foreground">Success Rate</p>
           </div>
-          <div className="p-3 bg-gray-50 rounded-lg">
+          <div className="p-3 bg-slate-50 rounded-lg">
             <p className="text-2xl font-bold">{stats.totalRuns}</p>
             <p className="text-xs text-muted-foreground">Total Runs</p>
           </div>
-          <div className="p-3 bg-gray-50 rounded-lg">
+          <div className="p-3 bg-slate-50 rounded-lg">
             <p className="text-2xl font-bold">
               {stats.totalImagesProcessed >= 1000
                 ? `${(stats.totalImagesProcessed / 1000).toFixed(1)}k`
@@ -121,7 +121,7 @@ export function AutomationHistoryPanel({
           </div>
         ) : (
           <div className="flex flex-col items-center justify-center py-8 text-center border rounded-lg">
-            <History className="h-8 w-8 text-gray-300 mb-2" />
+            <History className="h-8 w-8 text-slate-300 mb-2" />
             <p className="text-sm text-muted-foreground">No runs yet</p>
             <p className="text-xs text-muted-foreground mt-1">
               History will appear here after automation runs
@@ -144,7 +144,7 @@ function RunRow({ run }: { run: AutomationRun }) {
     : run.status === 'completed' ? 100 : 0
 
   return (
-    <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg border">
+    <div className="flex items-center gap-3 p-3 bg-slate-50 rounded-lg border">
       {/* Status icon */}
       <div className={cn('p-2 rounded-lg', status.bgColor)}>
         <StatusIcon className={cn(

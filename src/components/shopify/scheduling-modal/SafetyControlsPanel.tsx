@@ -30,7 +30,7 @@ export function SafetyControlsPanel({
       </div>
 
       {/* Trust Building - Approval Requirement */}
-      <div className="space-y-4 p-4 bg-gray-50 rounded-lg border">
+      <div className="space-y-4 p-4 bg-slate-50 rounded-lg border">
         <div className="flex items-start justify-between">
           <div className="space-y-1">
             <Label className="text-sm font-medium">Trust Building</Label>
@@ -95,7 +95,7 @@ export function SafetyControlsPanel({
       </div>
 
       {/* Daily Limits */}
-      <div className="space-y-4 p-4 bg-gray-50 rounded-lg border">
+      <div className="space-y-4 p-4 bg-slate-50 rounded-lg border">
         <div className="flex items-start justify-between">
           <div className="space-y-1">
             <Label className="text-sm font-medium">Daily Limit</Label>
@@ -152,7 +152,7 @@ export function SafetyControlsPanel({
       </div>
 
       {/* Auto-Pause on Failures */}
-      <div className="space-y-4 p-4 bg-gray-50 rounded-lg border">
+      <div className="space-y-4 p-4 bg-slate-50 rounded-lg border">
         <div className="flex items-start justify-between">
           <div className="space-y-1">
             <Label className="text-sm font-medium">Auto-Pause</Label>

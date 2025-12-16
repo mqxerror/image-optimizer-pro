@@ -108,7 +108,7 @@ export function PromptOptimizer({
         size="sm"
         onClick={handleOptimize}
         disabled={disabled || isOptimizing || !currentPrompt.trim()}
-        className="gap-2 bg-gray-800/50 border-gray-700 text-gray-300 hover:bg-gray-800 hover:text-white"
+        className="gap-2 bg-slate-800/50 border-slate-700 text-slate-300 hover:bg-slate-800 hover:text-white"
       >
         {isOptimizing ? (
           <>
@@ -137,14 +137,14 @@ export function PromptOptimizer({
 
           <div className="space-y-4 py-4">
             <div>
-              <p className="text-sm font-medium text-gray-500 mb-2">Original</p>
-              <div className="bg-gray-100 p-3 rounded-lg text-sm text-gray-700 max-h-24 overflow-y-auto">
+              <p className="text-sm font-medium text-slate-500 mb-2">Original</p>
+              <div className="bg-slate-100 p-3 rounded-lg text-sm text-slate-700 max-h-24 overflow-y-auto">
                 {currentPrompt}
               </div>
             </div>
             <div>
               <p className="text-sm font-medium text-green-600 mb-2">Optimized</p>
-              <div className="bg-green-50 border border-green-200 p-3 rounded-lg text-sm text-gray-700 max-h-32 overflow-y-auto">
+              <div className="bg-green-50 border border-green-200 p-3 rounded-lg text-sm text-slate-700 max-h-32 overflow-y-auto">
                 {optimizedPrompt}
               </div>
             </div>
