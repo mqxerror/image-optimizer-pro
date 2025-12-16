@@ -165,7 +165,16 @@ export function ImageUploader({ imageUrl, onImageChange }: ImageUploaderProps) {
         onDrop={handleDrop}
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
-        className={`rounded-2xl border-2 border-dashed cursor-pointer transition-all flex flex-col items-center justify-center gap-4 py-16 px-8 ${
+        onKeyDown={(e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault()
+            handleClick()
+          }
+        }}
+        tabIndex={0}
+        role="button"
+        aria-label="Upload image. Press Enter to browse files."
+        className={`rounded-2xl border-2 border-dashed cursor-pointer transition-all flex flex-col items-center justify-center gap-4 py-16 px-8 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-500 focus-visible:ring-offset-2 focus-visible:ring-offset-gray-900 ${
           isDragging
             ? 'border-purple-500 bg-purple-500/10'
             : 'border-gray-600 bg-gray-800/30 hover:border-purple-400 hover:bg-purple-500/5'
@@ -195,7 +204,25 @@ export function ImageUploader({ imageUrl, onImageChange }: ImageUploaderProps) {
             <span className="hidden md:inline">or click to browse</span>
           </p>
         </div>
-        <p className="text-xs text-gray-600">PNG, JPG up to 10MB</p>
+        <p className="text-xs text-gray-600 mb-4">PNG, JPG up to 10MB</p>
+
+        {/* Step indicators for guidance */}
+        <div className="flex items-center justify-center gap-2 text-xs text-gray-500">
+          <div className="flex items-center gap-1.5">
+            <span className="w-5 h-5 rounded-full bg-purple-500/20 text-purple-400 flex items-center justify-center text-[10px] font-bold">1</span>
+            <span className="text-purple-400 font-medium">Upload</span>
+          </div>
+          <div className="w-4 h-px bg-gray-700" />
+          <div className="flex items-center gap-1.5">
+            <span className="w-5 h-5 rounded-full bg-gray-700 text-gray-500 flex items-center justify-center text-[10px] font-bold">2</span>
+            <span>Style</span>
+          </div>
+          <div className="w-4 h-px bg-gray-700" />
+          <div className="flex items-center gap-1.5">
+            <span className="w-5 h-5 rounded-full bg-gray-700 text-gray-500 flex items-center justify-center text-[10px] font-bold">3</span>
+            <span>Generate</span>
+          </div>
+        </div>
       </div>
 
       {/* Mobile capture modal - controlled by tap on the box */}

@@ -37,18 +37,26 @@ function ChipGroup<T extends string>({
   options,
   value,
   onChange,
+  label,
 }: {
   options: { value: T; label: string }[]
   value: T
   onChange: (value: T) => void
+  label?: string
 }) {
   return (
-    <div className="flex flex-wrap gap-1.5">
+    <div
+      className="flex flex-wrap gap-1.5"
+      role="radiogroup"
+      aria-label={label}
+    >
       {options.map(option => (
         <button
           key={option.value}
           onClick={() => onChange(option.value)}
-          className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-all ${
+          role="radio"
+          aria-checked={value === option.value}
+          className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1 ${
             value === option.value
               ? 'bg-blue-50 text-blue-700 ring-1 ring-blue-300 shadow-sm'
               : 'bg-gray-50 text-gray-600 hover:bg-gray-100 hover:text-gray-900 border border-gray-200'
@@ -70,38 +78,42 @@ export function CameraControls({ settings, onChange }: CameraControlsProps) {
     <div className="space-y-4">
       <div className="space-y-3">
         <div>
-          <Label className="text-xs text-gray-500 font-medium mb-2 block">Lens</Label>
+          <Label className="text-xs text-gray-500 font-medium mb-2 block" id="lens-label">Lens</Label>
           <ChipGroup
             options={lensOptions}
             value={settings.lens}
             onChange={(v) => updateSetting('lens', v)}
+            label="Lens selection"
           />
         </div>
 
         <div>
-          <Label className="text-xs text-gray-500 font-medium mb-2 block">Aperture</Label>
+          <Label className="text-xs text-gray-500 font-medium mb-2 block" id="aperture-label">Aperture</Label>
           <ChipGroup
             options={apertureOptions}
             value={settings.aperture}
             onChange={(v) => updateSetting('aperture', v)}
+            label="Aperture selection"
           />
         </div>
 
         <div>
-          <Label className="text-xs text-gray-500 font-medium mb-2 block">Angle</Label>
+          <Label className="text-xs text-gray-500 font-medium mb-2 block" id="angle-label">Angle</Label>
           <ChipGroup
             options={angleOptions}
             value={settings.angle}
             onChange={(v) => updateSetting('angle', v)}
+            label="Camera angle selection"
           />
         </div>
 
         <div>
-          <Label className="text-xs text-gray-500 font-medium mb-2 block">Focus</Label>
+          <Label className="text-xs text-gray-500 font-medium mb-2 block" id="focus-label">Focus</Label>
           <ChipGroup
             options={focusOptions}
             value={settings.focus}
             onChange={(v) => updateSetting('focus', v)}
+            label="Focus mode selection"
           />
         </div>
       </div>

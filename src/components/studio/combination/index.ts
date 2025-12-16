@@ -2,3 +2,4 @@
 export { DualImageUploader } from './DualImageUploader'
 export { CombinationControls } from './CombinationControls'
 export { CombinationTemplates } from './CombinationTemplates'
+export { PlacementPreview } from './PlacementPreview'

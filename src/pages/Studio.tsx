@@ -280,11 +280,13 @@ export default function Studio() {
   }, [quickSettings, studioMode])
 
   // Check if we're on mobile (used for panel behavior)
-  const [isMobile, setIsMobile] = useState(false)
+  // Initialize with actual value to prevent flash/race conditions
+  const [isMobile, setIsMobile] = useState(() =>
+    typeof window !== 'undefined' ? window.innerWidth < 768 : false
+  )
 
   useEffect(() => {
     const checkMobile = () => setIsMobile(window.innerWidth < 768)
-    checkMobile()
     window.addEventListener('resize', checkMobile)
     return () => window.removeEventListener('resize', checkMobile)
   }, [])
@@ -1136,64 +1138,92 @@ export default function Studio() {
           <div className="max-w-3xl mx-auto flex gap-2 md:gap-3 items-center">
             {featureMode === 'single' ? (
               <>
-                <Button
-                  className="flex-1 gap-2 bg-purple-600 hover:bg-purple-700 h-12 text-base rounded-xl relative overflow-hidden"
-                  size="lg"
-                  onClick={() => generateMutation.mutate()}
-                  disabled={!imageUrl || generateMutation.isPending}
-                >
-                  {generateMutation.isPending ? (
-                    <>
-                      <Loader2 className="h-5 w-5 animate-spin" />
-                      <span>Generating...</span>
-                      <span className="absolute inset-0 bg-purple-500/50 animate-pulse" />
-                    </>
-                  ) : (
-                    <>
-                      <Wand2 className="h-5 w-5" />
-                      <span>Generate</span>
-                    </>
+                {/* Generate Button with tooltip when disabled */}
+                <div className="flex-1 relative group" title={!imageUrl ? 'Upload an image to get started' : undefined}>
+                  <Button
+                    className={`w-full gap-2 h-12 text-base rounded-xl relative overflow-hidden ${
+                      !imageUrl && !generateMutation.isPending
+                        ? 'bg-purple-600/50 cursor-not-allowed'
+                        : 'bg-purple-600 hover:bg-purple-700'
+                    }`}
+                    size="lg"
+                    onClick={() => generateMutation.mutate()}
+                    disabled={!imageUrl || generateMutation.isPending}
+                  >
+                    {generateMutation.isPending ? (
+                      <>
+                        <Loader2 className="h-5 w-5 animate-spin" />
+                        <span>Generating...</span>
+                        <span className="absolute inset-0 bg-purple-500/50 animate-pulse" />
+                      </>
+                    ) : (
+                      <>
+                        <Wand2 className="h-5 w-5" />
+                        <span>Generate</span>
+                      </>
+                    )}
+                  </Button>
+                  {/* Mobile tooltip shown below button when disabled */}
+                  {!imageUrl && (
+                    <span className="md:hidden absolute -bottom-5 left-0 right-0 text-center text-[10px] text-gray-500">
+                      Upload an image first
+                    </span>
                   )}
-                </Button>
-                <Button
-                  variant="outline"
-                  size="lg"
-                  className="hidden md:flex gap-2 bg-gray-800/50 border-gray-700 text-gray-300 hover:bg-gray-800 h-12 rounded-xl"
-                >
-                  <Coins className="h-4 w-4" />
-                  {getModelById(settings.aiModel)?.tokenCost || 1} {(getModelById(settings.aiModel)?.tokenCost || 1) === 1 ? 'token' : 'tokens'}
-                </Button>
+                </div>
+                {/* Token cost - visible on all screen sizes */}
+                <div className="flex items-center gap-1.5 px-2 md:px-3 h-12 bg-gray-800/50 border border-gray-700 text-gray-300 rounded-xl">
+                  <Coins className="h-3.5 w-3.5 md:h-4 md:w-4 text-yellow-500" />
+                  <span className="text-sm md:text-base font-medium">
+                    {getModelById(settings.aiModel)?.tokenCost || 1}
+                  </span>
+                  <span className="hidden sm:inline text-sm text-gray-400">
+                    {(getModelById(settings.aiModel)?.tokenCost || 1) === 1 ? 'token' : 'tokens'}
+                  </span>
+                </div>
               </>
             ) : (
               <>
-                <Button
-                  className="flex-1 gap-2 bg-gradient-to-r from-blue-600 to-amber-600 hover:from-blue-700 hover:to-amber-700 h-12 text-base rounded-xl relative overflow-hidden"
-                  size="lg"
-                  onClick={() => combineMutation.mutate()}
-                  disabled={!dualImages.model.url || !dualImages.jewelry.url || combineMutation.isPending}
-                >
-                  {combineMutation.isPending ? (
-                    <>
-                      <Loader2 className="h-5 w-5 animate-spin" />
-                      <span className="hidden sm:inline">Combining...</span>
-                      <span className="absolute inset-0 bg-gradient-to-r from-blue-600/50 to-amber-600/50 animate-pulse" />
-                    </>
-                  ) : (
-                    <>
-                      <Wand2 className="h-5 w-5" />
-                      <span className="hidden sm:inline">Combine Images</span>
-                      <span className="sm:hidden">Combine</span>
-                    </>
+                {/* Combine Button with tooltip when disabled */}
+                <div className="flex-1 relative group" title={(!dualImages.model.url || !dualImages.jewelry.url) ? 'Upload both images to combine' : undefined}>
+                  <Button
+                    className={`w-full gap-2 h-12 text-base rounded-xl relative overflow-hidden ${
+                      (!dualImages.model.url || !dualImages.jewelry.url) && !combineMutation.isPending
+                        ? 'bg-gradient-to-r from-blue-600/50 to-amber-600/50 cursor-not-allowed'
+                        : 'bg-gradient-to-r from-blue-600 to-amber-600 hover:from-blue-700 hover:to-amber-700'
+                    }`}
+                    size="lg"
+                    onClick={() => combineMutation.mutate()}
+                    disabled={!dualImages.model.url || !dualImages.jewelry.url || combineMutation.isPending}
+                  >
+                    {combineMutation.isPending ? (
+                      <>
+                        <Loader2 className="h-5 w-5 animate-spin" />
+                        <span className="hidden sm:inline">Combining...</span>
+                        <span className="absolute inset-0 bg-gradient-to-r from-blue-600/50 to-amber-600/50 animate-pulse" />
+                      </>
+                    ) : (
+                      <>
+                        <Wand2 className="h-5 w-5" />
+                        <span className="hidden sm:inline">Combine Images</span>
+                        <span className="sm:hidden">Combine</span>
+                      </>
+                    )}
+                  </Button>
+                  {/* Mobile tooltip shown below button when disabled */}
+                  {(!dualImages.model.url || !dualImages.jewelry.url) && (
+                    <span className="md:hidden absolute -bottom-5 left-0 right-0 text-center text-[10px] text-gray-500">
+                      Upload both images
+                    </span>
                   )}
-                </Button>
-                <Button
-                  variant="outline"
-                  size="lg"
-                  className="hidden md:flex gap-2 bg-gray-800/50 border-gray-700 text-gray-300 hover:bg-gray-800 h-12 rounded-xl"
-                >
-                  <Coins className="h-4 w-4" />
-                  {getModelById(combinationSettings.ai_model)?.tokenCost || 2} tokens
-                </Button>
+                </div>
+                {/* Token cost - visible on all screen sizes */}
+                <div className="flex items-center gap-1.5 px-2 md:px-3 h-12 bg-gray-800/50 border border-gray-700 text-gray-300 rounded-xl">
+                  <Coins className="h-3.5 w-3.5 md:h-4 md:w-4 text-yellow-500" />
+                  <span className="text-sm md:text-base font-medium">
+                    {getModelById(combinationSettings.ai_model)?.tokenCost || 2}
+                  </span>
+                  <span className="hidden sm:inline text-sm text-gray-400">tokens</span>
+                </div>
               </>
             )}
             {/* View Generations Button */}
