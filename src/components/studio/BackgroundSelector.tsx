@@ -39,7 +39,7 @@ export function BackgroundSelector({ settings, onChange }: BackgroundSelectorPro
   return (
     <div className="space-y-4">
       <div>
-        <Label className="text-xs text-gray-400 mb-2 block">Type</Label>
+        <Label className="text-xs text-gray-500 font-medium mb-2 block">Type</Label>
         <div className="flex gap-2 overflow-x-auto pb-1">
           {typeOptions.map(option => (
             <button
@@ -47,12 +47,12 @@ export function BackgroundSelector({ settings, onChange }: BackgroundSelectorPro
               onClick={() => updateSetting('type', option.value)}
               className={`flex flex-col items-center gap-1.5 p-2 rounded-xl transition-all flex-shrink-0 ${
                 settings.type === option.value
-                  ? 'ring-2 ring-purple-500 ring-offset-2 ring-offset-gray-900 bg-gray-800/80'
-                  : 'bg-gray-800/50 hover:bg-gray-700/50'
+                  ? 'ring-2 ring-green-500 ring-offset-1 bg-green-50'
+                  : 'bg-gray-50 hover:bg-gray-100 border border-gray-200'
               }`}
             >
-              <div className={`w-10 h-10 rounded-lg ${option.preview} border border-gray-600/30`} />
-              <span className={`text-xs ${settings.type === option.value ? 'text-white' : 'text-gray-400'}`}>
+              <div className={`w-10 h-10 rounded-lg ${option.preview} border border-gray-300`} />
+              <span className={`text-xs font-medium ${settings.type === option.value ? 'text-green-700' : 'text-gray-600'}`}>
                 {option.label}
               </span>
             </button>
@@ -61,7 +61,7 @@ export function BackgroundSelector({ settings, onChange }: BackgroundSelectorPro
       </div>
 
       <div>
-        <Label className="text-xs text-gray-400 mb-2 block">Surface</Label>
+        <Label className="text-xs text-gray-500 font-medium mb-2 block">Surface</Label>
         <div className="flex flex-wrap gap-1.5">
           {surfaceOptions.map(option => (
             <button
@@ -69,8 +69,8 @@ export function BackgroundSelector({ settings, onChange }: BackgroundSelectorPro
               onClick={() => updateSetting('surface', option.value)}
               className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-all ${
                 settings.surface === option.value
-                  ? 'bg-gradient-to-r from-purple-500 to-purple-600 text-white shadow-md shadow-purple-500/20'
-                  : 'bg-gray-700/50 text-gray-300 hover:bg-gray-600/50 hover:text-white border border-gray-600/50'
+                  ? 'bg-green-50 text-green-700 ring-1 ring-green-300 shadow-sm'
+                  : 'bg-gray-50 text-gray-600 hover:bg-gray-100 hover:text-gray-900 border border-gray-200'
               }`}
             >
               {option.label}
@@ -80,7 +80,7 @@ export function BackgroundSelector({ settings, onChange }: BackgroundSelectorPro
       </div>
 
       <div>
-        <Label className="text-xs text-gray-400 mb-2 block">Shadow</Label>
+        <Label className="text-xs text-gray-500 font-medium mb-2 block">Shadow</Label>
         <div className="flex flex-wrap gap-1.5">
           {shadowOptions.map(option => (
             <button
@@ -88,8 +88,8 @@ export function BackgroundSelector({ settings, onChange }: BackgroundSelectorPro
               onClick={() => updateSetting('shadow', option.value)}
               className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-all ${
                 settings.shadow === option.value
-                  ? 'bg-gradient-to-r from-purple-500 to-purple-600 text-white shadow-md shadow-purple-500/20'
-                  : 'bg-gray-700/50 text-gray-300 hover:bg-gray-600/50 hover:text-white border border-gray-600/50'
+                  ? 'bg-green-50 text-green-700 ring-1 ring-green-300 shadow-sm'
+                  : 'bg-gray-50 text-gray-600 hover:bg-gray-100 hover:text-gray-900 border border-gray-200'
               }`}
             >
               {option.label}
@@ -100,8 +100,8 @@ export function BackgroundSelector({ settings, onChange }: BackgroundSelectorPro
 
       <div className="space-y-2">
         <div className="flex justify-between text-xs">
-          <span className="text-gray-400">Reflection</span>
-          <span className="text-white font-medium">{settings.reflection}%</span>
+          <span className="text-gray-500 font-medium">Reflection</span>
+          <span className="text-gray-700 font-semibold">{settings.reflection}%</span>
         </div>
         <input
           type="range"
@@ -109,7 +109,7 @@ export function BackgroundSelector({ settings, onChange }: BackgroundSelectorPro
           max={100}
           value={settings.reflection}
           onChange={(e) => updateSetting('reflection', Number(e.target.value))}
-          className="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer accent-purple-500"
+          className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-green-500"
         />
       </div>
     </div>

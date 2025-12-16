@@ -50,8 +50,8 @@ function ChipGroup<T extends string>({
           onClick={() => onChange(option.value)}
           className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-all ${
             value === option.value
-              ? 'bg-gradient-to-r from-purple-500 to-purple-600 text-white shadow-md shadow-purple-500/20'
-              : 'bg-gray-700/50 text-gray-300 hover:bg-gray-600/50 hover:text-white border border-gray-600/50'
+              ? 'bg-blue-50 text-blue-700 ring-1 ring-blue-300 shadow-sm'
+              : 'bg-gray-50 text-gray-600 hover:bg-gray-100 hover:text-gray-900 border border-gray-200'
           }`}
         >
           {option.label}
@@ -70,7 +70,7 @@ export function CameraControls({ settings, onChange }: CameraControlsProps) {
     <div className="space-y-4">
       <div className="space-y-3">
         <div>
-          <Label className="text-xs text-gray-400 mb-2 block">Lens</Label>
+          <Label className="text-xs text-gray-500 font-medium mb-2 block">Lens</Label>
           <ChipGroup
             options={lensOptions}
             value={settings.lens}
@@ -79,7 +79,7 @@ export function CameraControls({ settings, onChange }: CameraControlsProps) {
         </div>
 
         <div>
-          <Label className="text-xs text-gray-400 mb-2 block">Aperture</Label>
+          <Label className="text-xs text-gray-500 font-medium mb-2 block">Aperture</Label>
           <ChipGroup
             options={apertureOptions}
             value={settings.aperture}
@@ -88,7 +88,7 @@ export function CameraControls({ settings, onChange }: CameraControlsProps) {
         </div>
 
         <div>
-          <Label className="text-xs text-gray-400 mb-2 block">Angle</Label>
+          <Label className="text-xs text-gray-500 font-medium mb-2 block">Angle</Label>
           <ChipGroup
             options={angleOptions}
             value={settings.angle}
@@ -97,7 +97,7 @@ export function CameraControls({ settings, onChange }: CameraControlsProps) {
         </div>
 
         <div>
-          <Label className="text-xs text-gray-400 mb-2 block">Focus</Label>
+          <Label className="text-xs text-gray-500 font-medium mb-2 block">Focus</Label>
           <ChipGroup
             options={focusOptions}
             value={settings.focus}

@@ -24,6 +24,7 @@ interface SectionConfig {
   id: string
   title: string
   icon: string
+  iconBg: string
   defaultExpanded: boolean
   component: React.ReactNode
 }
@@ -33,7 +34,7 @@ export function AdvancedControls({
   onSettingsChange,
   expandedSections,
   onToggleSection,
-  darkTheme = true,
+  darkTheme = false,
   maxHeight = 'calc(100vh - 200px)'
 }: AdvancedControlsProps) {
   const sectionOrder = ['camera', 'lighting', 'background', 'jewelry', 'composition']
@@ -45,6 +46,7 @@ export function AdvancedControls({
       id: 'camera',
       title: 'Camera Settings',
       icon: '📷',
+      iconBg: 'bg-blue-100',
       defaultExpanded: false,
       component: (
         <CameraControls
@@ -57,6 +59,7 @@ export function AdvancedControls({
       id: 'lighting',
       title: 'Lighting',
       icon: '💡',
+      iconBg: 'bg-yellow-100',
       defaultExpanded: false,
       component: (
         <LightingMixer
@@ -69,6 +72,7 @@ export function AdvancedControls({
       id: 'background',
       title: 'Background',
       icon: '🖼️',
+      iconBg: 'bg-green-100',
       defaultExpanded: false,
       component: (
         <BackgroundSelector
@@ -81,6 +85,7 @@ export function AdvancedControls({
       id: 'jewelry',
       title: 'Jewelry Enhancements',
       icon: '💎',
+      iconBg: 'bg-pink-100',
       defaultExpanded: false,
       component: (
         <JewelryEnhancements
@@ -93,6 +98,7 @@ export function AdvancedControls({
       id: 'composition',
       title: 'Composition',
       icon: '📐',
+      iconBg: 'bg-purple-100',
       defaultExpanded: false,
       component: (
         <CompositionControls
@@ -157,6 +163,7 @@ export function AdvancedControls({
                 key={sectionId}
                 title={section.title}
                 icon={section.icon}
+                iconBg={section.iconBg}
                 isExpanded={expandedSections[sectionId] ?? section.defaultExpanded}
                 onToggle={() => onToggleSection(sectionId)}
               >

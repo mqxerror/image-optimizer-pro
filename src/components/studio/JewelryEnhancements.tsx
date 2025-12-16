@@ -34,8 +34,8 @@ function Slider({
   return (
     <div className="space-y-2">
       <div className="flex justify-between text-xs">
-        <span className="text-gray-400">{label}</span>
-        <span className="text-white font-medium">{value}%</span>
+        <span className="text-gray-500 font-medium">{label}</span>
+        <span className="text-gray-700 font-semibold">{value}%</span>
       </div>
       <input
         type="range"
@@ -43,7 +43,7 @@ function Slider({
         max={100}
         value={value}
         onChange={(e) => onChange(Number(e.target.value))}
-        className="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer accent-purple-500"
+        className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-pink-500"
       />
     </div>
   )
@@ -57,7 +57,7 @@ export function JewelryEnhancements({ settings, onChange }: JewelryEnhancementsP
   return (
     <div className="space-y-4">
       <div>
-        <Label className="text-xs text-gray-400 mb-2 block">Metal Type</Label>
+        <Label className="text-xs text-gray-500 font-medium mb-2 block">Metal Type</Label>
         <div className="flex flex-wrap gap-2">
           {metalOptions.map(option => (
             <button
@@ -65,12 +65,12 @@ export function JewelryEnhancements({ settings, onChange }: JewelryEnhancementsP
               onClick={() => updateSetting('metal', option.value)}
               className={`flex items-center gap-2 px-3 py-2 rounded-xl transition-all ${
                 settings.metal === option.value
-                  ? 'ring-2 ring-purple-500 ring-offset-2 ring-offset-gray-900 bg-gray-800/80'
-                  : 'bg-gray-800/50 hover:bg-gray-700/50'
+                  ? 'ring-2 ring-pink-400 ring-offset-1 bg-pink-50'
+                  : 'bg-gray-50 hover:bg-gray-100 border border-gray-200'
               }`}
             >
-              <div className={`w-5 h-5 rounded-full ${option.color} shadow-inner`} />
-              <span className={`text-xs font-medium ${settings.metal === option.value ? 'text-white' : 'text-gray-300'}`}>
+              <div className={`w-5 h-5 rounded-full ${option.color} shadow-sm border border-gray-300`} />
+              <span className={`text-xs font-medium ${settings.metal === option.value ? 'text-pink-700' : 'text-gray-600'}`}>
                 {option.label}
               </span>
             </button>
@@ -79,7 +79,7 @@ export function JewelryEnhancements({ settings, onChange }: JewelryEnhancementsP
       </div>
 
       <div>
-        <Label className="text-xs text-gray-400 mb-2 block">Finish</Label>
+        <Label className="text-xs text-gray-500 font-medium mb-2 block">Finish</Label>
         <div className="flex flex-wrap gap-1.5">
           {finishOptions.map(option => (
             <button
@@ -87,8 +87,8 @@ export function JewelryEnhancements({ settings, onChange }: JewelryEnhancementsP
               onClick={() => updateSetting('finish', option.value)}
               className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-all ${
                 settings.finish === option.value
-                  ? 'bg-gradient-to-r from-purple-500 to-blue-500 text-white shadow-md shadow-purple-500/20'
-                  : 'bg-gray-700/50 text-gray-300 hover:bg-gray-600/50 hover:text-white border border-gray-600/50'
+                  ? 'bg-pink-50 text-pink-700 ring-1 ring-pink-300 shadow-sm'
+                  : 'bg-gray-50 text-gray-600 hover:bg-gray-100 hover:text-gray-900 border border-gray-200'
               }`}
             >
               {option.label}

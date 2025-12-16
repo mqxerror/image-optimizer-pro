@@ -37,8 +37,8 @@ function Slider({
   return (
     <div className="space-y-2">
       <div className="flex justify-between text-xs">
-        <span className="text-gray-400">{label}</span>
-        <span className="text-white font-medium">{value}%</span>
+        <span className="text-gray-500 font-medium">{label}</span>
+        <span className="text-gray-700 font-semibold">{value}%</span>
       </div>
       <input
         type="range"
@@ -46,7 +46,7 @@ function Slider({
         max={max}
         value={value}
         onChange={(e) => onChange(Number(e.target.value))}
-        className="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer accent-purple-500"
+        className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-yellow-500"
       />
     </div>
   )
@@ -60,7 +60,7 @@ export function LightingMixer({ settings, onChange }: LightingMixerProps) {
   return (
     <div className="space-y-4">
       <div>
-        <Label className="text-xs text-gray-400 mb-2 block">Style</Label>
+        <Label className="text-xs text-gray-500 font-medium mb-2 block">Style</Label>
         <div className="flex flex-wrap gap-1.5">
           {styleOptions.map(option => (
             <button
@@ -68,8 +68,8 @@ export function LightingMixer({ settings, onChange }: LightingMixerProps) {
               onClick={() => updateSetting('style', option.value)}
               className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-all ${
                 settings.style === option.value
-                  ? 'bg-gradient-to-r from-yellow-500 to-orange-500 text-white shadow-md shadow-yellow-500/20'
-                  : 'bg-gray-700/50 text-gray-300 hover:bg-gray-600/50 hover:text-white border border-gray-600/50'
+                  ? 'bg-yellow-50 text-yellow-700 ring-1 ring-yellow-300 shadow-sm'
+                  : 'bg-gray-50 text-gray-600 hover:bg-gray-100 hover:text-gray-900 border border-gray-200'
               }`}
             >
               {option.label}
@@ -97,8 +97,8 @@ export function LightingMixer({ settings, onChange }: LightingMixerProps) {
       />
 
       <div>
-        <Label className="text-xs text-gray-400 mb-2 block">Direction</Label>
-        <div className="inline-grid grid-cols-3 gap-1 bg-gray-800/80 p-1.5 rounded-xl">
+        <Label className="text-xs text-gray-500 font-medium mb-2 block">Direction</Label>
+        <div className="inline-grid grid-cols-3 gap-1 bg-gray-100 p-1.5 rounded-xl">
           {directionGrid.map((row) =>
             row.map((dir) => (
               <button
@@ -106,8 +106,8 @@ export function LightingMixer({ settings, onChange }: LightingMixerProps) {
                 onClick={() => updateSetting('direction', dir)}
                 className={`w-9 h-9 rounded-lg flex items-center justify-center text-sm transition-all ${
                   settings.direction === dir
-                    ? 'bg-gradient-to-br from-yellow-500 to-orange-500 text-white shadow-md'
-                    : 'bg-gray-700/50 text-gray-400 hover:bg-gray-600/50 hover:text-white'
+                    ? 'bg-yellow-400 text-yellow-900 shadow-sm'
+                    : 'bg-white text-gray-500 hover:bg-gray-50 hover:text-gray-700 border border-gray-200'
                 }`}
               >
                 {dir === 'center' ? '○' : getArrow(dir)}
