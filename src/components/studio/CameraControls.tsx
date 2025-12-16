@@ -1,4 +1,3 @@
-import { Label } from '@/components/ui/label'
 import { Circle, Eye, Focus, ArrowUp, ArrowDownRight, ArrowRight, ArrowDown } from 'lucide-react'
 import type { CameraSettings, CameraLens, CameraAperture, CameraAngle, CameraFocus } from '@/types/studio'
 
@@ -22,16 +21,16 @@ const apertureOptions: { value: CameraAperture; label: string; desc: string; blu
 ]
 
 const angleOptions: { value: CameraAngle; label: string; icon: React.ReactNode }[] = [
-  { value: 'top-down', label: 'Top-down', icon: <ArrowDown className="w-4 h-4" /> },
-  { value: '45deg', label: '45°', icon: <ArrowDownRight className="w-4 h-4" /> },
-  { value: 'eye-level', label: 'Eye level', icon: <ArrowRight className="w-4 h-4" /> },
-  { value: 'low-angle', label: 'Low angle', icon: <ArrowUp className="w-4 h-4" /> },
+  { value: 'top-down', label: 'Top-down', icon: <ArrowDown className="w-3.5 h-3.5" /> },
+  { value: '45deg', label: '45°', icon: <ArrowDownRight className="w-3.5 h-3.5" /> },
+  { value: 'eye-level', label: 'Eye level', icon: <ArrowRight className="w-3.5 h-3.5" /> },
+  { value: 'low-angle', label: 'Low angle', icon: <ArrowUp className="w-3.5 h-3.5" /> },
 ]
 
 const focusOptions: { value: CameraFocus; label: string; icon: React.ReactNode }[] = [
-  { value: 'sharp', label: 'All Sharp', icon: <Focus className="w-4 h-4" /> },
-  { value: 'shallow-dof', label: 'Shallow', icon: <Circle className="w-4 h-4" /> },
-  { value: 'tilt-shift', label: 'Tilt-shift', icon: <Eye className="w-4 h-4" /> },
+  { value: 'sharp', label: 'All Sharp', icon: <Focus className="w-3.5 h-3.5" /> },
+  { value: 'shallow-dof', label: 'Shallow', icon: <Circle className="w-3.5 h-3.5" /> },
+  { value: 'tilt-shift', label: 'Tilt-shift', icon: <Eye className="w-3.5 h-3.5" /> },
 ]
 
 export function CameraControls({ settings, onChange }: CameraControlsProps) {
@@ -40,25 +39,25 @@ export function CameraControls({ settings, onChange }: CameraControlsProps) {
   }
 
   return (
-    <div className="space-y-5">
-      {/* Lens - 2 per row with descriptions */}
+    <div className="space-y-4">
+      {/* Lens - 2 per row */}
       <div>
-        <Label className="text-xs text-gray-500 font-medium mb-2 block">Lens</Label>
-        <div className="grid grid-cols-2 gap-2">
+        <div className="text-[11px] text-slate-500 font-medium mb-1.5">Lens</div>
+        <div className="grid grid-cols-2 gap-1.5">
           {lensOptions.map(option => (
             <button
               key={option.value}
               onClick={() => updateSetting('lens', option.value)}
-              className={`flex flex-col items-center py-3 px-2 rounded-xl transition-all ${
+              className={`flex flex-col items-center py-2 px-2 rounded-lg transition-all ${
                 settings.lens === option.value
-                  ? 'bg-blue-50 ring-2 ring-blue-400 ring-offset-1'
-                  : 'bg-gray-50 hover:bg-gray-100 border border-gray-200'
+                  ? 'bg-blue-50 ring-1 ring-blue-400'
+                  : 'bg-slate-50 hover:bg-slate-100 border border-slate-200'
               }`}
             >
-              <span className={`text-sm font-semibold ${settings.lens === option.value ? 'text-blue-700' : 'text-gray-700'}`}>
+              <span className={`text-xs font-semibold ${settings.lens === option.value ? 'text-blue-700' : 'text-slate-700'}`}>
                 {option.label}
               </span>
-              <span className={`text-[10px] mt-0.5 ${settings.lens === option.value ? 'text-blue-500' : 'text-gray-400'}`}>
+              <span className={`text-[9px] ${settings.lens === option.value ? 'text-blue-500' : 'text-slate-400'}`}>
                 {option.desc}
               </span>
             </button>
@@ -66,40 +65,39 @@ export function CameraControls({ settings, onChange }: CameraControlsProps) {
         </div>
       </div>
 
-      {/* Aperture - 4 per row with blur indicator */}
+      {/* Aperture - 4 per row */}
       <div>
-        <Label className="text-xs text-gray-500 font-medium mb-2 block">Aperture</Label>
-        <div className="grid grid-cols-4 gap-2">
+        <div className="text-[11px] text-slate-500 font-medium mb-1.5">Aperture</div>
+        <div className="grid grid-cols-4 gap-1.5">
           {apertureOptions.map(option => (
             <button
               key={option.value}
               onClick={() => updateSetting('aperture', option.value)}
-              className={`flex flex-col items-center py-3 px-1 rounded-xl transition-all ${
+              className={`flex flex-col items-center py-2 px-1 rounded-lg transition-all ${
                 settings.aperture === option.value
-                  ? 'bg-blue-50 ring-2 ring-blue-400 ring-offset-1'
-                  : 'bg-gray-50 hover:bg-gray-100 border border-gray-200'
+                  ? 'bg-blue-50 ring-1 ring-blue-400'
+                  : 'bg-slate-50 hover:bg-slate-100 border border-slate-200'
               }`}
             >
-              {/* Blur indicator circles */}
+              {/* Blur indicator */}
               <div className="flex gap-0.5 mb-1">
                 {[1, 2, 3, 4].map(i => (
                   <div
                     key={i}
-                    className={`w-1.5 h-1.5 rounded-full transition-all ${
+                    className={`w-1 h-1 rounded-full transition-all ${
                       i <= option.blur
                         ? settings.aperture === option.value
                           ? 'bg-blue-500'
-                          : 'bg-gray-400'
-                        : 'bg-gray-200'
+                          : 'bg-slate-400'
+                        : 'bg-slate-200'
                     }`}
-                    style={{ filter: i <= option.blur ? `blur(${(option.blur - i) * 0.3}px)` : 'none' }}
                   />
                 ))}
               </div>
-              <span className={`text-xs font-semibold ${settings.aperture === option.value ? 'text-blue-700' : 'text-gray-700'}`}>
+              <span className={`text-[10px] font-semibold ${settings.aperture === option.value ? 'text-blue-700' : 'text-slate-700'}`}>
                 {option.label}
               </span>
-              <span className={`text-[9px] ${settings.aperture === option.value ? 'text-blue-500' : 'text-gray-400'}`}>
+              <span className={`text-[8px] ${settings.aperture === option.value ? 'text-blue-500' : 'text-slate-400'}`}>
                 {option.desc}
               </span>
             </button>
@@ -107,24 +105,24 @@ export function CameraControls({ settings, onChange }: CameraControlsProps) {
         </div>
       </div>
 
-      {/* Angle - 2 per row with icons */}
+      {/* Angle - 2 per row */}
       <div>
-        <Label className="text-xs text-gray-500 font-medium mb-2 block">Angle</Label>
-        <div className="grid grid-cols-2 gap-2">
+        <div className="text-[11px] text-slate-500 font-medium mb-1.5">Angle</div>
+        <div className="grid grid-cols-2 gap-1.5">
           {angleOptions.map(option => (
             <button
               key={option.value}
               onClick={() => updateSetting('angle', option.value)}
-              className={`flex items-center justify-center gap-2 py-3 px-2 rounded-xl transition-all ${
+              className={`flex items-center justify-center gap-1.5 py-2 px-2 rounded-lg transition-all ${
                 settings.angle === option.value
-                  ? 'bg-blue-50 ring-2 ring-blue-400 ring-offset-1'
-                  : 'bg-gray-50 hover:bg-gray-100 border border-gray-200'
+                  ? 'bg-blue-50 ring-1 ring-blue-400'
+                  : 'bg-slate-50 hover:bg-slate-100 border border-slate-200'
               }`}
             >
-              <span className={settings.angle === option.value ? 'text-blue-600' : 'text-gray-400'}>
+              <span className={settings.angle === option.value ? 'text-blue-500' : 'text-slate-400'}>
                 {option.icon}
               </span>
-              <span className={`text-xs font-medium ${settings.angle === option.value ? 'text-blue-700' : 'text-gray-600'}`}>
+              <span className={`text-[11px] font-medium ${settings.angle === option.value ? 'text-blue-700' : 'text-slate-600'}`}>
                 {option.label}
               </span>
             </button>
@@ -132,24 +130,24 @@ export function CameraControls({ settings, onChange }: CameraControlsProps) {
         </div>
       </div>
 
-      {/* Focus - 3 per row with icons */}
+      {/* Focus - 3 per row */}
       <div>
-        <Label className="text-xs text-gray-500 font-medium mb-2 block">Focus</Label>
-        <div className="grid grid-cols-3 gap-2">
+        <div className="text-[11px] text-slate-500 font-medium mb-1.5">Focus</div>
+        <div className="grid grid-cols-3 gap-1.5">
           {focusOptions.map(option => (
             <button
               key={option.value}
               onClick={() => updateSetting('focus', option.value)}
-              className={`flex flex-col items-center gap-1.5 py-3 px-2 rounded-xl transition-all ${
+              className={`flex flex-col items-center gap-1 py-2 px-1 rounded-lg transition-all ${
                 settings.focus === option.value
-                  ? 'bg-blue-50 ring-2 ring-blue-400 ring-offset-1'
-                  : 'bg-gray-50 hover:bg-gray-100 border border-gray-200'
+                  ? 'bg-blue-50 ring-1 ring-blue-400'
+                  : 'bg-slate-50 hover:bg-slate-100 border border-slate-200'
               }`}
             >
-              <span className={settings.focus === option.value ? 'text-blue-600' : 'text-gray-400'}>
+              <span className={settings.focus === option.value ? 'text-blue-500' : 'text-slate-400'}>
                 {option.icon}
               </span>
-              <span className={`text-[11px] font-medium ${settings.focus === option.value ? 'text-blue-700' : 'text-gray-600'}`}>
+              <span className={`text-[10px] font-medium ${settings.focus === option.value ? 'text-blue-700' : 'text-slate-600'}`}>
                 {option.label}
               </span>
             </button>
