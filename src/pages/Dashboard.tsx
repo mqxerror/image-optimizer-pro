@@ -21,7 +21,6 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { supabase } from '@/lib/supabase'
 import { useAuthStore } from '@/stores/auth'
 import { ProcessQueueButton } from '@/components/processing'
-import { OnboardingTour, useOnboardingTour } from '@/components/onboarding/OnboardingTour'
 
 // Setup step component for onboarding progress
 function SetupStep({ number, label, completed }: { number: number; label: string; completed: boolean }) {
@@ -46,7 +45,6 @@ function SetupStep({ number, label, completed }: { number: number; label: string
 export default function Dashboard() {
   const navigate = useNavigate()
   const { organization } = useAuthStore()
-  const { runTour, completeTour } = useOnboardingTour()
 
   // Fetch token balance
   const { data: tokenAccount, isLoading: loadingTokens } = useQuery({
@@ -449,9 +447,6 @@ export default function Dashboard() {
           </CardContent>
         </Card>
       </div>
-
-      {/* Onboarding Tour for first-time users */}
-      <OnboardingTour run={runTour} onComplete={completeTour} />
     </div>
   )
 }
