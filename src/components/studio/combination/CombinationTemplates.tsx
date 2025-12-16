@@ -55,6 +55,15 @@ export function CombinationTemplates({
           const isSelected = selectedTemplateId === template.id
           const isHovered = hoveredId === template.id
 
+          // Category-based gradient backgrounds for visual previews
+          const categoryGradients: Record<string, string> = {
+            natural: 'from-amber-500/20 via-yellow-500/10 to-orange-500/20',
+            studio: 'from-gray-400/20 via-white/10 to-gray-400/20',
+            dramatic: 'from-purple-600/20 via-pink-500/10 to-rose-600/20',
+            outdoor: 'from-green-500/20 via-teal-500/10 to-emerald-500/20',
+            custom: 'from-blue-500/20 via-purple-500/10 to-indigo-500/20',
+          }
+
           return (
             <button
               key={template.id}
@@ -62,7 +71,7 @@ export function CombinationTemplates({
               onMouseEnter={() => setHoveredId(template.id)}
               onMouseLeave={() => setHoveredId(null)}
               className={cn(
-                "relative p-3 rounded-lg border-2 transition-all text-left",
+                "relative rounded-xl border-2 transition-all text-left overflow-hidden",
                 isSelected
                   ? "border-purple-500 bg-purple-500/10"
                   : isHovered
@@ -70,30 +79,52 @@ export function CombinationTemplates({
                     : "border-gray-700/50 bg-gray-800/30 hover:border-gray-600"
               )}
             >
-              {/* Selection indicator */}
-              {isSelected && (
-                <div className="absolute top-2 right-2">
-                  <Check className="h-4 w-4 text-purple-400" />
-                </div>
-              )}
+              {/* Visual Preview Area */}
+              <div className={cn(
+                "h-20 w-full relative flex items-center justify-center",
+                template.thumbnail_url
+                  ? "bg-gray-900"
+                  : `bg-gradient-to-br ${categoryGradients[template.category] || categoryGradients.custom}`
+              )}>
+                {template.thumbnail_url ? (
+                  <img
+                    src={template.thumbnail_url}
+                    alt={template.name}
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  // Placeholder preview with icon
+                  <div className="flex flex-col items-center gap-1">
+                    <span className="text-3xl opacity-80">{info.icon}</span>
+                    <span className="text-[10px] text-gray-400 font-medium">{info.label}</span>
+                  </div>
+                )}
 
-              {/* Icon and name */}
-              <div className="flex items-center gap-2 mb-1">
-                <span className="text-lg">{info.icon}</span>
-                <span className="text-sm font-medium text-gray-200">{template.name}</span>
+                {/* Selection indicator */}
+                {isSelected && (
+                  <div className="absolute top-2 right-2 h-5 w-5 rounded-full bg-purple-500 flex items-center justify-center">
+                    <Check className="h-3 w-3 text-white" />
+                  </div>
+                )}
               </div>
 
-              {/* Description */}
-              <p className="text-xs text-gray-500 line-clamp-2">
-                {template.description || info.description}
-              </p>
+              {/* Content */}
+              <div className="p-2.5">
+                {/* Name */}
+                <span className="text-sm font-medium text-gray-200 block truncate">{template.name}</span>
 
-              {/* Usage count */}
-              {template.usage_count > 0 && (
-                <p className="text-[10px] text-gray-600 mt-1.5">
-                  Used {template.usage_count} times
+                {/* Description */}
+                <p className="text-[10px] text-gray-500 line-clamp-1 mt-0.5">
+                  {template.description || info.description}
                 </p>
-              )}
+
+                {/* Usage count */}
+                {template.usage_count > 0 && (
+                  <p className="text-[9px] text-gray-600 mt-1">
+                    {template.usage_count} uses
+                  </p>
+                )}
+              </div>
             </button>
           )
         })}

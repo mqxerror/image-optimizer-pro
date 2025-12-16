@@ -343,6 +343,7 @@ export function GenerationsHistory({ onReuse }: GenerationsHistoryProps) {
               <Loader2 className="absolute inset-0 m-auto h-3 w-3 md:h-4 md:w-4 text-white animate-pulse" />
             </div>
             <span className="text-white text-[10px] md:text-xs font-medium">Processing</span>
+            <span className="text-white/70 text-[8px] md:text-[10px]">~15 sec</span>
             <div className="flex gap-0.5">
               <div className="w-1 h-1 md:w-1.5 md:h-1.5 bg-purple-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
               <div className="w-1 h-1 md:w-1.5 md:h-1.5 bg-purple-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
@@ -388,10 +389,10 @@ export function GenerationsHistory({ onReuse }: GenerationsHistoryProps) {
             <p className="text-white text-xs md:text-sm font-medium truncate">
               {processingCount} {processingCount === 1 ? 'task' : 'tasks'} {pendingResultCount > 0 ? 'checking' : 'processing'}
             </p>
-            <p className="text-white/70 text-[10px] md:text-xs truncate hidden md:block">
+            <p className="text-white/70 text-[10px] md:text-xs truncate">
               {pendingResultCount > 0
-                ? 'Taking longer than usual - checking for results...'
-                : 'AI is generating your images...'}
+                ? 'Taking longer than usual...'
+                : <>Usually ~15 seconds<span className="hidden md:inline"> per image</span></>}
             </p>
           </div>
           <div className="flex gap-0.5 flex-shrink-0">

@@ -39,7 +39,7 @@ export function QuickControls({
     <div className={`${STUDIO_SPACING.quickPanel} bg-white border-l border-gray-200 ${STUDIO_SPACING.panel} ${STUDIO_SPACING.section} overflow-y-auto max-h-[calc(100vh-120px)]`}>
       <div>
         <h3 className="text-sm font-semibold text-gray-900 mb-4">Quick Adjustments</h3>
-        <p className="text-xs text-gray-500 mb-6">
+        <p className="text-xs text-gray-600 mb-6">
           Fine-tune your image with these essential controls.
           Switch to Advanced Mode for full control.
         </p>
@@ -126,9 +126,9 @@ export function QuickControls({
           aria-valuenow={lighting}
           aria-valuetext={`${lighting} percent`}
         />
-        <div className="flex justify-between text-xs text-gray-500">
+        <div className="flex justify-between text-xs text-gray-600">
           <span>Dim</span>
-          <span className="font-medium text-gray-700">{lighting}%</span>
+          <span className="font-medium text-gray-800">{lighting}%</span>
           <span>Bright</span>
         </div>
       </div>
@@ -154,9 +154,9 @@ export function QuickControls({
           aria-valuenow={contrast}
           aria-valuetext={`${contrast} percent`}
         />
-        <div className="flex justify-between text-xs text-gray-500">
+        <div className="flex justify-between text-xs text-gray-600">
           <span>Soft</span>
-          <span className="font-medium text-gray-700">{contrast}%</span>
+          <span className="font-medium text-gray-800">{contrast}%</span>
           <span>High</span>
         </div>
       </div>
@@ -182,9 +182,9 @@ export function QuickControls({
           aria-valuenow={sharpness}
           aria-valuetext={`${sharpness} percent`}
         />
-        <div className="flex justify-between text-xs text-gray-500">
+        <div className="flex justify-between text-xs text-gray-600">
           <span>Smooth</span>
-          <span className="font-medium text-gray-700">{sharpness}%</span>
+          <span className="font-medium text-gray-800">{sharpness}%</span>
           <span>Sharp</span>
         </div>
       </div>

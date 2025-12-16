@@ -38,13 +38,14 @@ import {
   PromptModeIndicator,
   TemplatePromptDisplay,
   PromptOptimizer,
+  GenerateConfirmSheet,
 } from '@/components/studio'
 import { StudioModeToggle } from '@/components/studio/StudioModeToggle'
 import { StudioFeatureSelector, type StudioFeature } from '@/components/studio/StudioFeatureSelector'
 import { QuickControls } from '@/components/studio/QuickControls'
 import { AdvancedPanel } from '@/components/studio/AdvancedPanel'
 import { AdvancedControls } from '@/components/studio/AdvancedControls'
-import { DualImageUploader, CombinationControls, CombinationTemplates } from '@/components/studio/combination'
+import { DualImageUploader, CombinationControls, CombinationTemplates, PlacementPreview } from '@/components/studio/combination'
 import { VoiceMicButton } from '@/components/shared'
 import type {
   StudioSettings,
@@ -144,6 +145,9 @@ export default function Studio() {
   // Mobile sidebars state
   const [showMobilePresets, setShowMobilePresets] = useState(false)
   const [showMobileSettings, setShowMobileSettings] = useState(false)
+
+  // Mobile generate confirmation sheet
+  const [showGenerateConfirm, setShowGenerateConfirm] = useState(false)
 
   // Get processing count for History button badge
   const processingCount = useGenerationsProcessingCount()
@@ -864,6 +868,22 @@ export default function Studio() {
                     onModelChange={handleModelImageChange}
                     onJewelryChange={handleJewelryImageChange}
                   />
+
+                  {/* Placement Preview - shows when both images uploaded */}
+                  {dualImages.model.url && dualImages.jewelry.url && (
+                    <div className="space-y-2">
+                      <h4 className="text-xs font-medium text-gray-400 uppercase tracking-wider">Preview</h4>
+                      <PlacementPreview
+                        modelImageUrl={dualImages.model.url}
+                        jewelryImageUrl={dualImages.jewelry.url}
+                        settings={combinationSettings}
+                      />
+                      <p className="text-[10px] text-gray-500 text-center">
+                        Adjust sliders on the right to reposition jewelry
+                      </p>
+                    </div>
+                  )}
+
                   {/* Combination Templates - always visible */}
                   <CombinationTemplates
                     selectedTemplateId={selectedCombinationTemplateId}
@@ -1147,7 +1167,14 @@ export default function Studio() {
                         : 'bg-purple-600 hover:bg-purple-700'
                     }`}
                     size="lg"
-                    onClick={() => generateMutation.mutate()}
+                    onClick={() => {
+                      // On mobile, show confirmation sheet first
+                      if (isMobile && imageUrl && !generateMutation.isPending) {
+                        setShowGenerateConfirm(true)
+                      } else {
+                        generateMutation.mutate()
+                      }
+                    }}
                     disabled={!imageUrl || generateMutation.isPending}
                   >
                     {generateMutation.isPending ? (
@@ -1464,6 +1491,27 @@ export default function Studio() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Mobile Generate Confirmation Sheet */}
+      <GenerateConfirmSheet
+        open={showGenerateConfirm}
+        onOpenChange={setShowGenerateConfirm}
+        onConfirm={() => {
+          setShowGenerateConfirm(false)
+          generateMutation.mutate()
+        }}
+        onEditSettings={() => {
+          setShowGenerateConfirm(false)
+          setShowMobileSettings(true)
+        }}
+        isGenerating={generateMutation.isPending}
+        imageFile={imageFile}
+        imageUrl={imageUrl}
+        aiModel={settings.aiModel}
+        aspectRatio={settings.composition.aspectRatio}
+        presetName={selectedPresetName}
+        lightingIntensity={quickSettings.lighting}
+      />
     </div>
   )
 }

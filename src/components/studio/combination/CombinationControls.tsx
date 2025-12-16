@@ -21,7 +21,7 @@ export function CombinationControls({
     <div className={`${STUDIO_SPACING.quickPanel} bg-white border-l border-gray-200 ${STUDIO_SPACING.panel} ${STUDIO_SPACING.section} overflow-y-auto max-h-[calc(100vh-120px)]`}>
       <div>
         <h3 className="text-sm font-semibold text-gray-900 mb-4">Combination Settings</h3>
-        <p className="text-xs text-gray-500 mb-6">
+        <p className="text-xs text-gray-600 mb-6">
           Adjust how the jewelry is placed on the model.
           Switch to Advanced for fine-tuning.
         </p>
@@ -44,9 +44,9 @@ export function CombinationControls({
           className="w-full"
           aria-label="Vertical position"
         />
-        <div className="flex justify-between text-xs text-gray-500">
+        <div className="flex justify-between text-xs text-gray-600">
           <span>Higher</span>
-          <span className="font-medium text-gray-700">{settings.position_y}%</span>
+          <span className="font-medium text-gray-800">{settings.position_y}%</span>
           <span>Lower</span>
         </div>
       </div>
@@ -68,9 +68,9 @@ export function CombinationControls({
           className="w-full"
           aria-label="Jewelry scale"
         />
-        <div className="flex justify-between text-xs text-gray-500">
+        <div className="flex justify-between text-xs text-gray-600">
           <span>50%</span>
-          <span className="font-medium text-gray-700">{settings.scale}%</span>
+          <span className="font-medium text-gray-800">{settings.scale}%</span>
           <span>150%</span>
         </div>
       </div>
@@ -92,9 +92,9 @@ export function CombinationControls({
           className="w-full"
           aria-label="Blend intensity"
         />
-        <div className="flex justify-between text-xs text-gray-500">
+        <div className="flex justify-between text-xs text-gray-600">
           <span>Subtle</span>
-          <span className="font-medium text-gray-700">{settings.blend_intensity}%</span>
+          <span className="font-medium text-gray-800">{settings.blend_intensity}%</span>
           <span>Strong</span>
         </div>
       </div>
@@ -116,9 +116,9 @@ export function CombinationControls({
           className="w-full"
           aria-label="Lighting match"
         />
-        <div className="flex justify-between text-xs text-gray-500">
+        <div className="flex justify-between text-xs text-gray-600">
           <span>Natural</span>
-          <span className="font-medium text-gray-700">{settings.lighting_match}%</span>
+          <span className="font-medium text-gray-800">{settings.lighting_match}%</span>
           <span>Match</span>
         </div>
       </div>
@@ -140,9 +140,9 @@ export function CombinationControls({
           className="w-full"
           aria-label="Rotation angle"
         />
-        <div className="flex justify-between text-xs text-gray-500">
+        <div className="flex justify-between text-xs text-gray-600">
           <span>-45°</span>
-          <span className="font-medium text-gray-700">{settings.rotation}°</span>
+          <span className="font-medium text-gray-800">{settings.rotation}°</span>
           <span>+45°</span>
         </div>
       </div>
@@ -159,7 +159,7 @@ export function CombinationControls({
 
       {/* Advanced Mode CTA */}
       <div className="pt-4 border-t">
-        <p className="text-xs text-gray-600 mb-3">
+        <p className="text-xs text-gray-500 mb-3">
           Need more control? Switch to Advanced Mode for placement presets, shadow settings, and realism options.
         </p>
       </div>
