@@ -852,18 +852,62 @@ export default function Studio() {
                     <ImageUploader imageUrl={imageUrl} onImageChange={handleImageChange} />
                   </div>
 
-                  {/* Live Prompt Preview - prominent under image */}
-                  <div className="bg-gradient-to-br from-gray-800/80 to-gray-900/80 backdrop-blur-sm border border-purple-500/30 rounded-2xl p-4 shadow-lg shadow-purple-500/10">
-                    <div className="flex items-center justify-between mb-2">
-                      <div className="flex items-center gap-2">
-                        <div className="h-2.5 w-2.5 rounded-full bg-green-400 animate-pulse shadow-sm shadow-green-400/50" />
-                        <span className="text-sm font-semibold text-white">Live Prompt</span>
+                  {/* Live Prompt Preview - compact with expand */}
+                  <div className="bg-slate-800/60 backdrop-blur-sm border border-slate-700/50 rounded-xl overflow-hidden">
+                    <button
+                      onClick={() => setShowPromptPreview(!showPromptPreview)}
+                      className="w-full flex items-center justify-between px-3 py-2 hover:bg-slate-700/30 transition-colors"
+                    >
+                      <div className="flex items-center gap-2 min-w-0">
+                        <div className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
+                        <span className="text-xs font-medium text-slate-300">Live Prompt</span>
+                        {!showPromptPreview && (
+                          <span className="text-xs text-slate-500 truncate max-w-[200px]">
+                            {generatedPrompt.slice(0, 60)}...
+                          </span>
+                        )}
                       </div>
-                      <span className="text-xs text-gray-400 bg-gray-700/50 px-2 py-0.5 rounded-full">{generatedPrompt.length} chars</span>
-                    </div>
-                    <div className="text-sm text-gray-200 leading-relaxed">
-                      <PromptDiff prompt={generatedPrompt} />
-                    </div>
+                      <div className="flex items-center gap-1.5 flex-shrink-0">
+                        <span className="text-[10px] text-slate-500">{generatedPrompt.length} chars</span>
+                        {showPromptPreview ? (
+                          <ChevronUp className="h-3.5 w-3.5 text-slate-400" />
+                        ) : (
+                          <ChevronDown className="h-3.5 w-3.5 text-slate-400" />
+                        )}
+                      </div>
+                    </button>
+                    {showPromptPreview && (
+                      <div className="px-3 pb-3 border-t border-slate-700/50">
+                        <div className="text-xs text-slate-300 leading-relaxed pt-2 max-h-24 overflow-y-auto">
+                          <PromptDiff prompt={generatedPrompt} />
+                        </div>
+                        <div className="flex items-center gap-2 mt-2 pt-2 border-t border-slate-700/30">
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="h-6 px-2 text-[10px] text-slate-400 hover:text-white hover:bg-slate-700"
+                            onClick={(e) => {
+                              e.stopPropagation()
+                              navigator.clipboard.writeText(generatedPrompt)
+                              setPromptCopied(true)
+                              setTimeout(() => setPromptCopied(false), 2000)
+                            }}
+                          >
+                            {promptCopied ? <Check className="h-3 w-3 mr-1 text-emerald-400" /> : <Copy className="h-3 w-3 mr-1" />}
+                            {promptCopied ? 'Copied' : 'Copy'}
+                          </Button>
+                          {/* Setting chips */}
+                          <div className="flex items-center gap-1 ml-auto">
+                            <span className="text-[9px] px-1.5 py-0.5 bg-slate-700 text-slate-400 rounded">
+                              {settings.composition.aspectRatio}
+                            </span>
+                            <span className="text-[9px] px-1.5 py-0.5 bg-slate-700 text-slate-400 rounded">
+                              {settings.lighting.style}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    )}
                   </div>
 
                   {/* Ideas to Explore - only show when no image */}
@@ -1064,12 +1108,13 @@ export default function Studio() {
           </div>
 
           {/* Settings Panel - hidden on mobile */}
-          <div className={`hidden md:flex flex-col w-80 flex-shrink-0 h-full max-h-[calc(100vh-80px)] ${PANEL_TRANSITION.enter} animate-in slide-in-from-right-4`}>
+          <div className={`hidden md:flex flex-col w-80 flex-shrink-0 h-full max-h-[calc(100vh-80px)] ${PANEL_TRANSITION.enter} animate-in slide-in-from-right-4 bg-slate-900 border-l border-slate-700/50`}>
             {/* Compact mode toggle only */}
-            <div className="flex-shrink-0 p-2 border-b border-gray-200 bg-white">
+            <div className="flex-shrink-0 p-3 border-b border-slate-700/50">
               <StudioModeToggle
                 mode={studioMode}
                 onChange={setStudioMode}
+                darkTheme
               />
             </div>
             {/* Conditional Controls based on mode and feature */}
@@ -1092,11 +1137,13 @@ export default function Studio() {
                         composition: { ...prev.composition, aspectRatio: ratio }
                       }))
                     }}
+                    darkTheme
                   />
                 ) : (
                   <CombinationControls
                     settings={combinationSettings}
                     onChange={handleCombinationSettingsChange}
+                    darkTheme
                   />
                 )
               ) : (
@@ -1104,6 +1151,7 @@ export default function Studio() {
                 <AdvancedTabs
                   settings={settings}
                   onSettingsChange={setSettings}
+                  darkTheme
                 />
               )}
             </div>

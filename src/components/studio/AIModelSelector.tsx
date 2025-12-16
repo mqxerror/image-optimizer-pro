@@ -13,6 +13,7 @@ interface AIModelSelectorProps {
   mode?: StudioMode
   className?: string
   compact?: boolean
+  darkTheme?: boolean
 }
 
 /**
@@ -27,6 +28,7 @@ export function AIModelSelector({
   mode,
   className,
   compact = false,
+  darkTheme = false,
 }: AIModelSelectorProps) {
   // Get models filtered by mode, or all models if no mode specified
   const models = mode ? getModelsForMode(mode) : getModelsForMode('single')
@@ -48,6 +50,7 @@ export function AIModelSelector({
           isSelected={value === model.id}
           onSelect={() => onChange(model.id)}
           compact={compact}
+          darkTheme={darkTheme}
         />
       ))}
     </div>
@@ -59,9 +62,10 @@ interface ModelCardProps {
   isSelected: boolean
   onSelect: () => void
   compact?: boolean
+  darkTheme?: boolean
 }
 
-function ModelCard({ model, isSelected, onSelect, compact }: ModelCardProps) {
+function ModelCard({ model, isSelected, onSelect, compact, darkTheme = false }: ModelCardProps) {
   return (
     <button
       type="button"
@@ -70,8 +74,12 @@ function ModelCard({ model, isSelected, onSelect, compact }: ModelCardProps) {
         'w-full text-left rounded-lg border transition-all',
         compact ? 'p-2' : 'p-2.5',
         isSelected
-          ? 'border-purple-400 bg-purple-50 ring-1 ring-purple-400'
-          : 'border-slate-200 hover:border-slate-300 hover:bg-slate-50 bg-white'
+          ? (darkTheme
+            ? 'border-purple-400 bg-purple-500/20 ring-1 ring-purple-400'
+            : 'border-purple-400 bg-purple-50 ring-1 ring-purple-400')
+          : (darkTheme
+            ? 'border-slate-700/50 hover:border-slate-600 hover:bg-slate-700/50 bg-slate-800/50'
+            : 'border-slate-200 hover:border-slate-300 hover:bg-slate-50 bg-white')
       )}
     >
       {/* Header Row */}
@@ -82,8 +90,8 @@ function ModelCard({ model, isSelected, onSelect, compact }: ModelCardProps) {
             className={cn(
               'w-3.5 h-3.5 rounded-full border-2 flex items-center justify-center flex-shrink-0',
               isSelected
-                ? 'border-purple-500 bg-purple-500'
-                : 'border-slate-300'
+                ? 'border-purple-400 bg-purple-400'
+                : (darkTheme ? 'border-slate-500' : 'border-slate-300')
             )}
           >
             {isSelected && (
@@ -95,7 +103,9 @@ function ModelCard({ model, isSelected, onSelect, compact }: ModelCardProps) {
           <span className={cn(
             'font-medium truncate',
             compact ? 'text-xs' : 'text-sm',
-            isSelected ? 'text-purple-900' : 'text-slate-700'
+            isSelected
+              ? (darkTheme ? 'text-purple-300' : 'text-purple-900')
+              : (darkTheme ? 'text-slate-200' : 'text-slate-700')
           )}>
             {formatModelDisplayName(model)}
           </span>
@@ -104,17 +114,26 @@ function ModelCard({ model, isSelected, onSelect, compact }: ModelCardProps) {
         {/* Badges */}
         <div className="flex items-center gap-1 flex-shrink-0">
           {model.recommended && (
-            <span className="text-[9px] px-1.5 py-0.5 bg-emerald-100 text-emerald-700 rounded font-medium">
+            <span className={cn(
+              "text-[9px] px-1.5 py-0.5 rounded font-medium",
+              darkTheme ? 'bg-emerald-500/20 text-emerald-400' : 'bg-emerald-100 text-emerald-700'
+            )}>
               Best
             </span>
           )}
           {model.isNew && (
-            <span className="text-[9px] px-1.5 py-0.5 bg-blue-100 text-blue-700 rounded font-medium">
+            <span className={cn(
+              "text-[9px] px-1.5 py-0.5 rounded font-medium",
+              darkTheme ? 'bg-blue-500/20 text-blue-400' : 'bg-blue-100 text-blue-700'
+            )}>
               New
             </span>
           )}
           {model.isPremium && (
-            <span className="text-[9px] px-1.5 py-0.5 bg-amber-100 text-amber-700 rounded font-medium">
+            <span className={cn(
+              "text-[9px] px-1.5 py-0.5 rounded font-medium",
+              darkTheme ? 'bg-amber-500/20 text-amber-400' : 'bg-amber-100 text-amber-700'
+            )}>
               Pro
             </span>
           )}
@@ -125,7 +144,9 @@ function ModelCard({ model, isSelected, onSelect, compact }: ModelCardProps) {
       {!compact && (
         <p className={cn(
           'text-[11px] mt-1 ml-5',
-          isSelected ? 'text-purple-600' : 'text-slate-500'
+          isSelected
+            ? (darkTheme ? 'text-purple-300' : 'text-purple-600')
+            : (darkTheme ? 'text-slate-400' : 'text-slate-500')
         )}>
           {model.description}
         </p>
@@ -139,13 +160,12 @@ function ModelCard({ model, isSelected, onSelect, compact }: ModelCardProps) {
         {/* Quality */}
         <div className="flex items-center gap-1">
           <Star className={cn(
-            'flex-shrink-0',
-            'h-2.5 w-2.5',
-            isSelected ? 'text-purple-400' : 'text-slate-400'
+            'flex-shrink-0 h-2.5 w-2.5',
+            isSelected ? 'text-purple-400' : (darkTheme ? 'text-slate-500' : 'text-slate-400')
           )} />
           <span className={cn(
             'font-mono tracking-tight text-[9px]',
-            isSelected ? 'text-purple-500' : 'text-slate-400'
+            isSelected ? 'text-purple-400' : (darkTheme ? 'text-slate-500' : 'text-slate-400')
           )}>
             {renderRating(model.quality)}
           </span>
@@ -154,13 +174,12 @@ function ModelCard({ model, isSelected, onSelect, compact }: ModelCardProps) {
         {/* Speed */}
         <div className="flex items-center gap-1">
           <Zap className={cn(
-            'flex-shrink-0',
-            'h-2.5 w-2.5',
-            isSelected ? 'text-purple-400' : 'text-slate-400'
+            'flex-shrink-0 h-2.5 w-2.5',
+            isSelected ? 'text-purple-400' : (darkTheme ? 'text-slate-500' : 'text-slate-400')
           )} />
           <span className={cn(
             'font-mono tracking-tight text-[9px]',
-            isSelected ? 'text-purple-500' : 'text-slate-400'
+            isSelected ? 'text-purple-400' : (darkTheme ? 'text-slate-500' : 'text-slate-400')
           )}>
             {renderRating(model.speed)}
           </span>
@@ -169,13 +188,12 @@ function ModelCard({ model, isSelected, onSelect, compact }: ModelCardProps) {
         {/* Token Cost */}
         <div className="flex items-center gap-1">
           <Coins className={cn(
-            'flex-shrink-0',
-            'h-2.5 w-2.5',
-            isSelected ? 'text-purple-400' : 'text-slate-400'
+            'flex-shrink-0 h-2.5 w-2.5',
+            isSelected ? 'text-purple-400' : (darkTheme ? 'text-slate-500' : 'text-slate-400')
           )} />
           <span className={cn(
             'text-[9px]',
-            isSelected ? 'text-purple-500' : 'text-slate-400'
+            isSelected ? 'text-purple-400' : (darkTheme ? 'text-slate-500' : 'text-slate-400')
           )}>
             {model.tokenCost}
           </span>
