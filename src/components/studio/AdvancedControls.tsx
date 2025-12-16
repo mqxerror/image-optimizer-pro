@@ -1,6 +1,5 @@
 import { ChevronDown, ChevronUp } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { ScrollArea } from '@/components/ui/scroll-area'
 import { AdvancedPanelSection } from './AdvancedPanelSection'
 import { CameraControls } from './CameraControls'
 import { LightingMixer } from './LightingMixer'
@@ -16,8 +15,6 @@ interface AdvancedControlsProps {
   onToggleSection: (section: string) => void
   /** If true, uses dark theme styling (for overlay panel) */
   darkTheme?: boolean
-  /** Optional max height for scroll area */
-  maxHeight?: string
 }
 
 interface SectionConfig {
@@ -34,8 +31,7 @@ export function AdvancedControls({
   onSettingsChange,
   expandedSections,
   onToggleSection,
-  darkTheme = false,
-  maxHeight = 'calc(100vh - 200px)'
+  darkTheme = false
 }: AdvancedControlsProps) {
   const sectionOrder = ['camera', 'lighting', 'background', 'jewelry', 'composition']
 
@@ -120,59 +116,58 @@ export function AdvancedControls({
 
   return (
     <div className={darkTheme ? 'bg-gray-900' : 'bg-white'}>
-      {/* Header with expand/collapse all */}
-      <div className={`flex items-center justify-between px-4 py-3 border-b ${
-        darkTheme ? 'border-gray-700/50' : 'border-gray-200'
+      {/* Compact Header with expand/collapse all */}
+      <div className={`flex items-center justify-between px-3 py-2 border-b ${
+        darkTheme ? 'border-gray-700/50' : 'border-gray-100'
       }`}>
-        <p className={`text-xs ${darkTheme ? 'text-gray-400' : 'text-gray-500'}`}>
+        <p className={`text-[10px] ${darkTheme ? 'text-gray-400' : 'text-gray-500'}`}>
           Full control over all parameters
         </p>
         <Button
           variant="ghost"
           size="sm"
           onClick={toggleAllSections}
-          className={`h-8 px-2 text-xs ${
+          className={`h-6 px-2 text-[10px] ${
             darkTheme
               ? 'text-gray-400 hover:text-white hover:bg-gray-800'
-              : 'text-gray-600 hover:text-gray-900'
+              : 'text-gray-500 hover:text-gray-900'
           }`}
         >
           {allExpanded ? (
             <>
-              <ChevronUp className="h-3.5 w-3.5 mr-1" />
+              <ChevronUp className="h-3 w-3 mr-1" />
               Collapse
             </>
           ) : (
             <>
-              <ChevronDown className="h-3.5 w-3.5 mr-1" />
+              <ChevronDown className="h-3 w-3 mr-1" />
               Expand
             </>
           )}
         </Button>
       </div>
 
-      {/* Scrollable sections */}
-      <ScrollArea style={{ maxHeight }}>
-        <div className="p-4 space-y-3">
-          {sectionOrder.map((sectionId) => {
-            const section = sectionsConfig[sectionId]
-            if (!section) return null
+      {/* Sections - parent handles scrolling */}
+      <div className="p-3 space-y-2">
+        {sectionOrder.map((sectionId) => {
+          const section = sectionsConfig[sectionId]
+          if (!section) return null
 
-            return (
-              <AdvancedPanelSection
-                key={sectionId}
-                title={section.title}
-                icon={section.icon}
-                iconBg={section.iconBg}
-                isExpanded={expandedSections[sectionId] ?? section.defaultExpanded}
-                onToggle={() => onToggleSection(sectionId)}
-              >
-                {section.component}
-              </AdvancedPanelSection>
-            )
-          })}
-        </div>
-      </ScrollArea>
+          return (
+            <AdvancedPanelSection
+              key={sectionId}
+              title={section.title}
+              icon={section.icon}
+              iconBg={section.iconBg}
+              isExpanded={expandedSections[sectionId] ?? section.defaultExpanded}
+              onToggle={() => onToggleSection(sectionId)}
+              compact
+            >
+              {section.component}
+            </AdvancedPanelSection>
+          )
+        })}
+      </div>
     </div>
   )
 }

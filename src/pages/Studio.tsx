@@ -39,12 +39,12 @@ import {
   TemplatePromptDisplay,
   PromptOptimizer,
   GenerateConfirmSheet,
+  PromptDiff,
 } from '@/components/studio'
 import { StudioModeToggle } from '@/components/studio/StudioModeToggle'
 import { StudioFeatureSelector, type StudioFeature } from '@/components/studio/StudioFeatureSelector'
 import { QuickControls } from '@/components/studio/QuickControls'
-import { AdvancedPanel } from '@/components/studio/AdvancedPanel'
-import { AdvancedControls } from '@/components/studio/AdvancedControls'
+import { AdvancedTabs } from '@/components/studio/AdvancedTabs'
 import { DualImageUploader, CombinationControls, CombinationTemplates, PlacementPreview } from '@/components/studio/combination'
 import { VoiceMicButton } from '@/components/shared'
 import type {
@@ -113,11 +113,8 @@ export default function Studio() {
     const saved = localStorage.getItem('studioMode')
     return (saved === 'advanced' ? 'advanced' : 'quick')
   })
-  const [advancedPanelOpen, setAdvancedPanelOpen] = useState(false)
   const [quickSettings, setQuickSettings] = useState({
-    lighting: 70,
-    contrast: 50,
-    sharpness: 60
+    lighting: 70
   })
   const [promptCopied, setPromptCopied] = useState(false)
 
@@ -295,15 +292,6 @@ export default function Studio() {
     return () => window.removeEventListener('resize', checkMobile)
   }, [])
 
-  // Open/close advanced panel based on mode (desktop only)
-  // On mobile, advanced controls are shown inside the mobile settings sheet
-  useEffect(() => {
-    if (studioMode === 'advanced' && !isMobile) {
-      setAdvancedPanelOpen(true)
-    } else if (studioMode === 'quick') {
-      setAdvancedPanelOpen(false)
-    }
-  }, [studioMode, isMobile])
 
   // Welcome modal handlers
   const handleWelcomeClose = useCallback(() => {
@@ -845,7 +833,7 @@ export default function Studio() {
         <div className="flex-1 flex min-h-0 overflow-hidden">
           {/* Canvas Area */}
           <div className="flex-1 p-3 md:p-6 flex flex-col overflow-y-auto min-h-0">
-            <div className={`${STUDIO_SPACING.canvas} mx-auto w-full space-y-3 md:space-y-5`}>
+            <div className={`${STUDIO_SPACING.canvas} mx-auto w-full space-y-3`}>
               {/* Feature Mode Selector */}
               <StudioFeatureSelector
                 feature={featureMode}
@@ -858,6 +846,21 @@ export default function Studio() {
                   <div className="w-full">
                     <ImageUploader imageUrl={imageUrl} onImageChange={handleImageChange} />
                   </div>
+
+                  {/* Live Prompt Preview - prominent under image */}
+                  <div className="bg-gradient-to-br from-gray-800/80 to-gray-900/80 backdrop-blur-sm border border-purple-500/30 rounded-2xl p-4 shadow-lg shadow-purple-500/10">
+                    <div className="flex items-center justify-between mb-2">
+                      <div className="flex items-center gap-2">
+                        <div className="h-2.5 w-2.5 rounded-full bg-green-400 animate-pulse shadow-sm shadow-green-400/50" />
+                        <span className="text-sm font-semibold text-white">Live Prompt</span>
+                      </div>
+                      <span className="text-xs text-gray-400 bg-gray-700/50 px-2 py-0.5 rounded-full">{generatedPrompt.length} chars</span>
+                    </div>
+                    <div className="text-sm text-gray-200 leading-relaxed">
+                      <PromptDiff prompt={generatedPrompt} />
+                    </div>
+                  </div>
+
                   {/* Ideas to Explore - only show when no image */}
                   {!imageUrl && <IdeasToExplore onSelectIdea={handleSelectIdea} />}
                 </>
@@ -869,6 +872,26 @@ export default function Studio() {
                     onJewelryChange={handleJewelryImageChange}
                   />
 
+                  {/* Live Prompt Preview - right under images */}
+                  <div className="bg-gradient-to-br from-gray-800/80 to-gray-900/80 backdrop-blur-sm border border-blue-500/30 rounded-2xl p-4 shadow-lg shadow-blue-500/10">
+                    <div className="flex items-center justify-between mb-2">
+                      <div className="flex items-center gap-2">
+                        <div className="h-2.5 w-2.5 rounded-full bg-blue-400 animate-pulse shadow-sm shadow-blue-400/50" />
+                        <span className="text-sm font-semibold text-white">Live Prompt</span>
+                      </div>
+                      <span className="text-xs text-gray-400 bg-gray-700/50 px-2 py-0.5 rounded-full">{combinationPromptPreview.length} chars</span>
+                    </div>
+                    <div className="text-sm text-gray-200 leading-relaxed">
+                      <PromptDiff prompt={combinationPromptPreview} />
+                    </div>
+                  </div>
+
+                  {/* Style Templates */}
+                  <CombinationTemplates
+                    selectedTemplateId={selectedCombinationTemplateId}
+                    onSelectTemplate={handleSelectCombinationTemplate}
+                  />
+
                   {/* Placement Preview - shows when both images uploaded */}
                   {dualImages.model.url && dualImages.jewelry.url && (
                     <div className="space-y-2">
@@ -878,79 +901,8 @@ export default function Studio() {
                         jewelryImageUrl={dualImages.jewelry.url}
                         settings={combinationSettings}
                       />
-                      <p className="text-[10px] text-gray-500 text-center">
-                        Adjust sliders on the right to reposition jewelry
-                      </p>
                     </div>
                   )}
-
-                  {/* Combination Templates - always visible */}
-                  <CombinationTemplates
-                    selectedTemplateId={selectedCombinationTemplateId}
-                    onSelectTemplate={handleSelectCombinationTemplate}
-                  />
-                  {/* Generated Prompt Preview for Combination Mode */}
-                  <div className="space-y-2">
-                    <div className="flex items-center justify-between">
-                      <button
-                        onClick={() => setShowPromptPreview(!showPromptPreview)}
-                        className="flex items-center gap-2 text-sm text-gray-400 hover:text-gray-300 transition-colors"
-                      >
-                        {showPromptPreview ? (
-                          <EyeOff className="h-4 w-4" />
-                        ) : (
-                          <Eye className="h-4 w-4" />
-                        )}
-                        {showPromptPreview ? 'Hide' : 'View'} AI prompt preview
-                        <span className="text-xs text-gray-500">({combinationPromptPreview.length} chars)</span>
-                        {showPromptPreview ? (
-                          <ChevronUp className="h-3 w-3" />
-                        ) : (
-                          <ChevronDown className="h-3 w-3" />
-                        )}
-                      </button>
-
-                      {showPromptPreview && (
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          className="h-7 px-2 text-xs text-gray-400 hover:text-gray-300 hover:bg-gray-800"
-                          onClick={() => {
-                            navigator.clipboard.writeText(combinationPromptPreview)
-                            setPromptCopied(true)
-                            setTimeout(() => setPromptCopied(false), 2000)
-                          }}
-                        >
-                          {promptCopied ? (
-                            <>
-                              <Check className="h-3 w-3 mr-1 text-green-400" />
-                              Copied!
-                            </>
-                          ) : (
-                            <>
-                              <Copy className="h-3 w-3 mr-1" />
-                              Copy
-                            </>
-                          )}
-                        </Button>
-                      )}
-                    </div>
-
-                    <div
-                      className={`
-                        ${PANEL_TRANSITION.enter}
-                        overflow-hidden
-                        ${showPromptPreview ? 'max-h-48 opacity-100' : 'max-h-0 opacity-0'}
-                      `}
-                    >
-                      <div className="bg-gray-800/70 border border-gray-700 rounded-xl p-4 text-sm text-gray-300 leading-relaxed overflow-y-auto max-h-48">
-                        <p className="text-xs text-blue-400 font-medium mb-2">
-                          Prompt sent to AI ({combinationSettings.ai_model}):
-                        </p>
-                        {combinationPromptPreview}
-                      </div>
-                    </div>
-                  </div>
                 </>
               )}
 
@@ -1106,51 +1058,51 @@ export default function Studio() {
             </div>
           </div>
 
-          {/* Settings Panel - Quick Controls - hidden on mobile */}
-          {studioMode === 'quick' && (
-            <div className={`hidden md:flex flex-col ${PANEL_TRANSITION.enter} animate-in slide-in-from-right-4`}>
-              {/* Header with mode toggle */}
-              <div className={`${STUDIO_SPACING.card} border-b border-gray-200 bg-white ${STUDIO_SPACING.group}`}>
-                <div>
-                  <h3 className="font-semibold text-gray-900">Settings</h3>
-                  <p className="text-xs text-gray-500 mt-0.5">
-                    {featureMode === 'single' ? 'Customize your image generation' : 'Adjust combination settings'}
-                  </p>
-                </div>
-                <StudioModeToggle
-                  mode={studioMode}
-                  onChange={setStudioMode}
-                />
-              </div>
-              {/* Conditional Controls based on feature mode */}
-              {featureMode === 'single' ? (
-                <QuickControls
-                  lighting={quickSettings.lighting}
-                  contrast={quickSettings.contrast}
-                  sharpness={quickSettings.sharpness}
-                  aiModel={settings.aiModel}
-                  aspectRatio={settings.composition.aspectRatio}
-                  onChange={(key, value) => {
-                    setQuickSettings(prev => ({ ...prev, [key]: value }))
-                  }}
-                  onModelChange={(model) => {
-                    setSettings(prev => ({ ...prev, aiModel: model }))
-                  }}
-                  onAspectRatioChange={(ratio) => {
-                    setSettings(prev => ({
-                      ...prev,
-                      composition: { ...prev.composition, aspectRatio: ratio }
-                    }))
-                  }}
-                />
+          {/* Settings Panel - hidden on mobile */}
+          <div className={`hidden md:flex flex-col w-80 flex-shrink-0 h-full max-h-[calc(100vh-80px)] ${PANEL_TRANSITION.enter} animate-in slide-in-from-right-4`}>
+            {/* Compact mode toggle only */}
+            <div className="flex-shrink-0 p-2 border-b border-gray-200 bg-white">
+              <StudioModeToggle
+                mode={studioMode}
+                onChange={setStudioMode}
+              />
+            </div>
+            {/* Conditional Controls based on mode and feature */}
+            <div className="flex-1 min-h-0 overflow-hidden">
+              {studioMode === 'quick' ? (
+                featureMode === 'single' ? (
+                  <QuickControls
+                    lighting={quickSettings.lighting}
+                    aiModel={settings.aiModel}
+                    aspectRatio={settings.composition.aspectRatio}
+                    onChange={(key, value) => {
+                      setQuickSettings(prev => ({ ...prev, [key]: value }))
+                    }}
+                    onModelChange={(model) => {
+                      setSettings(prev => ({ ...prev, aiModel: model }))
+                    }}
+                    onAspectRatioChange={(ratio) => {
+                      setSettings(prev => ({
+                        ...prev,
+                        composition: { ...prev.composition, aspectRatio: ratio }
+                      }))
+                    }}
+                  />
+                ) : (
+                  <CombinationControls
+                    settings={combinationSettings}
+                    onChange={handleCombinationSettingsChange}
+                  />
+                )
               ) : (
-                <CombinationControls
-                  settings={combinationSettings}
-                  onChange={handleCombinationSettingsChange}
+                /* Advanced Mode - tab-based */
+                <AdvancedTabs
+                  settings={settings}
+                  onSettingsChange={setSettings}
                 />
               )}
             </div>
-          )}
+          </div>
         </div>
 
         {/* Sticky Footer - Generate Button (always visible) */}
@@ -1378,8 +1330,6 @@ export default function Studio() {
               featureMode === 'single' ? (
                 <QuickControls
                   lighting={quickSettings.lighting}
-                  contrast={quickSettings.contrast}
-                  sharpness={quickSettings.sharpness}
                   aiModel={settings.aiModel}
                   aspectRatio={settings.composition.aspectRatio}
                   onChange={(key, value) => {
@@ -1402,32 +1352,17 @@ export default function Studio() {
                 />
               )
             ) : (
-              // Advanced Mode Controls - inside the same sheet
-              <AdvancedControls
+              // Advanced Mode Controls - tab-based inside sheet
+              <AdvancedTabs
                 settings={settings}
                 onSettingsChange={setSettings}
-                expandedSections={expandedSections}
-                onToggleSection={toggleSection}
                 darkTheme={true}
-                maxHeight="calc(100vh - 180px)"
               />
             )}
           </div>
         </SheetContent>
       </Sheet>
 
-      {/* Advanced Panel (sliding overlay) */}
-      <AdvancedPanel
-        isOpen={advancedPanelOpen}
-        onClose={() => {
-          setAdvancedPanelOpen(false)
-          setStudioMode('quick')
-        }}
-        settings={settings}
-        onSettingsChange={setSettings}
-        expandedSections={expandedSections}
-        onToggleSection={toggleSection}
-      />
 
       {/* Welcome Modal for First-Time Users */}
       <StudioWelcomeModal

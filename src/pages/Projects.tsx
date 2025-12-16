@@ -18,8 +18,7 @@ import {
   LayoutGrid,
   List,
   ArrowUpDown,
-  Zap,
-  ChevronDown
+  ImageIcon
 } from 'lucide-react'
 import { VisualProjectCard } from '@/components/projects/VisualProjectCard'
 import { ProjectStatusTabs, type ProjectStatusTab } from '@/components/projects/ProjectStatusTabs'
@@ -63,7 +62,6 @@ import { supabase } from '@/lib/supabase'
 import { useAuthStore } from '@/stores/auth'
 import { UnifiedProjectModal } from '@/components/projects/UnifiedProjectModal'
 import { CreateProjectWizard } from '@/components/project-wizard'
-import { QuickCreateProject } from '@/components/project-wizard/QuickCreateProject'
 import { InsufficientTokensPrompt } from '@/components/tokens/InsufficientTokensPrompt'
 import type { Project } from '@/types/database'
 
@@ -87,7 +85,6 @@ export default function Projects() {
     return (saved === 'grid' ? 'grid' : 'table') as 'table' | 'grid'
   })
   const [isCreateOpen, setIsCreateOpen] = useState(false)
-  const [isQuickCreateOpen, setIsQuickCreateOpen] = useState(false)
   const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null)
   const [isInsufficientTokensOpen, setIsInsufficientTokensOpen] = useState(false)
   const [projectToStart, setProjectToStart] = useState<Project | null>(null)
@@ -270,90 +267,79 @@ export default function Projects() {
   return (
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900">Projects</h1>
-          <p className="text-gray-500 mt-1 text-sm sm:text-base">Manage your image optimization projects</p>
+        <div className="flex items-center gap-4">
+          <div className="p-3 rounded-2xl bg-gradient-to-br from-purple-100 to-violet-50 shadow-sm">
+            <FolderKanban className="h-6 w-6 text-purple-600" />
+          </div>
+          <div>
+            <h1 className="text-2xl font-bold text-gray-900">Projects</h1>
+            <p className="text-gray-500 mt-0.5 text-sm">Manage your image optimization projects</p>
+          </div>
         </div>
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button className="gap-2">
-              <Plus className="h-4 w-4" />
-              New Project
-              <ChevronDown className="h-3 w-3 ml-1" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-56">
-            <DropdownMenuItem onClick={() => setIsQuickCreateOpen(true)} className="gap-2">
-              <Zap className="h-4 w-4 text-amber-500" />
-              <div>
-                <div className="font-medium">Quick Create</div>
-                <div className="text-xs text-muted-foreground">Simple, fast project setup</div>
-              </div>
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={() => setIsCreateOpen(true)} className="gap-2">
-              <Cog className="h-4 w-4 text-gray-500" />
-              <div>
-                <div className="font-medium">Full Wizard</div>
-                <div className="text-xs text-muted-foreground">All options & folder selection</div>
-              </div>
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+        <Button className="gap-2 shadow-sm" onClick={() => setIsCreateOpen(true)}>
+          <Plus className="h-4 w-4" />
+          New Project
+        </Button>
       </div>
 
       {/* Stats Summary */}
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3">
-        <Card className="p-3 bg-gray-50 border-gray-200">
-          <div className="flex items-center justify-between">
+        <Card className="p-4 bg-white border-gray-200 hover:shadow-md transition-all hover:border-gray-300">
+          <div className="flex items-center gap-3">
+            <div className="p-2 rounded-xl bg-gray-100">
+              <FolderKanban className="h-4 w-4 text-gray-600" />
+            </div>
             <div>
-              <p className="text-xs font-medium text-gray-500">Total</p>
               <p className="text-xl font-bold text-gray-900">{projectStats.total}</p>
+              <p className="text-xs font-medium text-gray-500">Total</p>
             </div>
-            <FolderKanban className="h-5 w-5 text-gray-400" />
           </div>
         </Card>
-        <Card className={`p-3 ${projectStats.draft > 0 ? 'bg-gray-50 border-gray-300' : 'bg-gray-50 border-gray-200'}`}>
-          <div className="flex items-center justify-between">
+        <Card className={`p-4 hover:shadow-md transition-all ${projectStats.draft > 0 ? 'bg-white border-gray-300' : 'bg-white border-gray-200 hover:border-gray-300'}`}>
+          <div className="flex items-center gap-3">
+            <div className="p-2 rounded-xl bg-gray-100">
+              <FileEdit className="h-4 w-4 text-gray-600" />
+            </div>
             <div>
-              <p className="text-xs font-medium text-gray-500">Draft</p>
               <p className="text-xl font-bold text-gray-700">{projectStats.draft}</p>
+              <p className="text-xs font-medium text-gray-500">Draft</p>
             </div>
-            <FileEdit className="h-5 w-5 text-gray-400" />
           </div>
         </Card>
-        <Card className={`p-3 ${projectStats.active > 0 ? 'bg-blue-50 border-blue-200' : 'bg-gray-50 border-gray-200'}`}>
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-xs font-medium text-blue-600">Active</p>
-              <p className="text-xl font-bold text-blue-700">{projectStats.active}</p>
+        <Card className={`p-4 hover:shadow-md transition-all ${projectStats.active > 0 ? 'bg-gradient-to-br from-blue-50 to-white border-blue-200 ring-1 ring-blue-100' : 'bg-white border-gray-200 hover:border-gray-300'}`}>
+          <div className="flex items-center gap-3">
+            <div className={`p-2 rounded-xl ${projectStats.active > 0 ? 'bg-blue-100' : 'bg-gray-100'}`}>
+              <Cog className={`h-4 w-4 ${projectStats.active > 0 ? 'text-blue-600 animate-spin' : 'text-gray-600'}`} style={{ animationDuration: '3s' }} />
             </div>
-            <Cog className={`h-5 w-5 text-blue-500 ${projectStats.active > 0 ? 'animate-spin' : ''}`} style={{ animationDuration: '3s' }} />
+            <div>
+              <p className={`text-xl font-bold ${projectStats.active > 0 ? 'text-blue-700' : 'text-gray-700'}`}>{projectStats.active}</p>
+              <p className={`text-xs font-medium ${projectStats.active > 0 ? 'text-blue-600' : 'text-gray-500'}`}>Active</p>
+            </div>
           </div>
         </Card>
-        <Card className={`p-3 ${projectStats.completed > 0 ? 'bg-green-50 border-green-200' : 'bg-gray-50 border-gray-200'}`}>
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-xs font-medium text-green-600">Completed</p>
-              <p className="text-xl font-bold text-green-700">{projectStats.completed}</p>
+        <Card className={`p-4 hover:shadow-md transition-all ${projectStats.completed > 0 ? 'bg-gradient-to-br from-green-50 to-white border-green-200 ring-1 ring-green-100' : 'bg-white border-gray-200 hover:border-gray-300'}`}>
+          <div className="flex items-center gap-3">
+            <div className={`p-2 rounded-xl ${projectStats.completed > 0 ? 'bg-green-100' : 'bg-gray-100'}`}>
+              <CheckCircle2 className={`h-4 w-4 ${projectStats.completed > 0 ? 'text-green-600' : 'text-gray-600'}`} />
             </div>
-            <CheckCircle2 className="h-5 w-5 text-green-500" />
+            <div>
+              <p className={`text-xl font-bold ${projectStats.completed > 0 ? 'text-green-700' : 'text-gray-700'}`}>{projectStats.completed}</p>
+              <p className={`text-xs font-medium ${projectStats.completed > 0 ? 'text-green-600' : 'text-gray-500'}`}>Completed</p>
+            </div>
           </div>
         </Card>
-        <Card className="p-3 bg-purple-50 border-purple-200">
-          <div className="flex items-center justify-between">
+        <Card className="p-4 bg-gradient-to-br from-purple-50 to-white border-purple-200 ring-1 ring-purple-100 hover:shadow-md transition-all">
+          <div className="flex items-center gap-3">
+            <div className="p-2 rounded-xl bg-purple-100">
+              <ImageIcon className="h-4 w-4 text-purple-600" />
+            </div>
             <div>
-              <p className="text-xs font-medium text-purple-600">Images</p>
               <p className="text-xl font-bold text-purple-700">
                 {projectStats.processedImages}
                 <span className="text-sm font-normal text-purple-500">/{projectStats.totalImages}</span>
               </p>
-            </div>
-            <div className="text-right">
-              <p className="text-xs text-purple-500">
-                {projectStats.totalImages > 0
-                  ? Math.round((projectStats.processedImages / projectStats.totalImages) * 100)
-                  : 0}%
+              <p className="text-xs font-medium text-purple-600">
+                Images ({projectStats.totalImages > 0 ? Math.round((projectStats.processedImages / projectStats.totalImages) * 100) : 0}%)
               </p>
             </div>
           </div>
@@ -629,16 +615,6 @@ export default function Projects() {
       <CreateProjectWizard
         open={isCreateOpen}
         onOpenChange={setIsCreateOpen}
-      />
-
-      {/* Quick Create Project */}
-      <QuickCreateProject
-        open={isQuickCreateOpen}
-        onOpenChange={setIsQuickCreateOpen}
-        onUseWizard={() => {
-          setIsQuickCreateOpen(false)
-          setIsCreateOpen(true)
-        }}
       />
 
       {/* Unified Project Modal - Combines view, edit, and management */}

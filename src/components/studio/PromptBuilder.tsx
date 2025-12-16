@@ -72,6 +72,16 @@ function buildCameraDescription(camera: StudioSettings['camera']): string {
     parts.push('tilt-shift effect for miniature look')
   }
 
+  // Distance/shot type
+  const distanceMap: Record<string, string> = {
+    'close-up': 'close-up detail shot',
+    'medium': 'medium shot',
+    'full': 'wide shot showing full context',
+  }
+  if (distanceMap[camera.distance]) {
+    parts.push(distanceMap[camera.distance])
+  }
+
   return parts.join(', ')
 }
 
@@ -110,6 +120,13 @@ function buildLightingDescription(lighting: StudioSettings['lighting']): string 
     parts.push('subtle key light')
   }
 
+  // Fill intensity
+  if (lighting.fillIntensity > 70) {
+    parts.push('with strong fill lighting for even illumination')
+  } else if (lighting.fillIntensity < 30) {
+    parts.push('with minimal fill creating dramatic shadows')
+  }
+
   if (lighting.rimIntensity > 60) {
     parts.push('strong rim lighting for edge separation')
   }
@@ -128,7 +145,14 @@ function buildBackgroundDescription(bg: StudioSettings['background']): string {
     'transparent': 'transparent background for compositing',
     'scene': 'lifestyle scene setting',
   }
-  parts.push(typeMap[bg.type] || bg.type)
+
+  // Check if custom color is set for solid backgrounds
+  if (bg.color && bg.type !== 'scene' && bg.type !== 'transparent') {
+    // Use the custom color instead of the type description
+    parts.push(`${bg.color} solid color background`)
+  } else {
+    parts.push(typeMap[bg.type] || bg.type)
+  }
 
   // Surface
   if (bg.surface !== 'none') {

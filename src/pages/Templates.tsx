@@ -311,14 +311,14 @@ export default function Templates() {
     const isFavorite = template.is_favorite || false
 
     return (
-      <Card className="hover:shadow-md transition-shadow">
+      <Card className="hover:shadow-lg transition-all hover:border-gray-300 group">
         <CardHeader className="pb-3">
           <div className="flex items-start justify-between">
             <div className="flex-1">
-              <CardTitle className="text-lg flex items-center gap-2">
+              <CardTitle className="text-base font-semibold flex items-center gap-2">
                 {template.name}
                 {template.is_system && (
-                  <Badge variant="secondary" className="text-xs">
+                  <Badge variant="secondary" className="text-[10px] bg-gradient-to-r from-purple-100 to-blue-100 text-purple-700 border-0">
                     <Sparkles className="h-3 w-3 mr-1" />
                     System
                   </Badge>
@@ -327,28 +327,29 @@ export default function Templates() {
                   <Star className="h-4 w-4 text-amber-500 fill-amber-500" />
                 )}
               </CardTitle>
-              <CardDescription className="mt-1">
+              <CardDescription className="mt-1 text-xs">
                 {template.category} {template.subcategory && `/ ${template.subcategory}`}
               </CardDescription>
             </div>
-            <div className="flex gap-1">
+            <div className="flex gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
               <Button
                 variant="ghost"
                 size="icon"
+                className="h-8 w-8"
                 onClick={() => toggleFavoriteMutation.mutate({ id: template.id, isFavorite })}
                 title={isFavorite ? 'Remove from favorites' : 'Add to favorites'}
               >
                 <Star className={isFavorite ? 'h-4 w-4 text-amber-500 fill-amber-500' : 'h-4 w-4 text-gray-400'} />
               </Button>
-              <Button variant="ghost" size="icon" onClick={() => handleView(template)}>
+              <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => handleView(template)}>
                 <Eye className="h-4 w-4" />
               </Button>
               {!template.is_system && (
                 <>
-                  <Button variant="ghost" size="icon" onClick={() => handleEdit(template)}>
+                  <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => handleEdit(template)}>
                     <Pencil className="h-4 w-4" />
                   </Button>
-                  <Button variant="ghost" size="icon" onClick={() => handleDeleteConfirm(template)}>
+                  <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => handleDeleteConfirm(template)}>
                     <Trash2 className="h-4 w-4 text-red-500" />
                   </Button>
                 </>
@@ -357,12 +358,12 @@ export default function Templates() {
           </div>
         </CardHeader>
         <CardContent>
-          <p className="text-sm text-gray-600 line-clamp-2">
+          <p className="text-sm text-gray-600 line-clamp-2 leading-relaxed">
             {template.base_prompt}
           </p>
-          <div className="flex gap-2 mt-3 flex-wrap">
-            {template.style && <Badge variant="outline">{template.style}</Badge>}
-            {template.background && <Badge variant="outline">{template.background}</Badge>}
+          <div className="flex gap-1.5 mt-3 flex-wrap">
+            {template.style && <Badge variant="outline" className="text-[10px] font-medium">{template.style}</Badge>}
+            {template.background && <Badge variant="outline" className="text-[10px] font-medium">{template.background}</Badge>}
           </div>
         </CardContent>
       </Card>
@@ -372,11 +373,16 @@ export default function Templates() {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900">Prompt Templates</h1>
-          <p className="text-gray-500 mt-1">Manage AI prompt templates for image optimization</p>
+        <div className="flex items-center gap-4">
+          <div className="p-3 rounded-2xl bg-gradient-to-br from-amber-100 to-orange-50 shadow-sm">
+            <FileText className="h-6 w-6 text-amber-600" />
+          </div>
+          <div>
+            <h1 className="text-2xl font-bold text-gray-900">Prompt Templates</h1>
+            <p className="text-gray-500 mt-0.5 text-sm">Manage AI prompt templates for image optimization</p>
+          </div>
         </div>
-        <Button onClick={() => { reset(); setIsCreateOpen(true) }} className="gap-2">
+        <Button onClick={() => { reset(); setIsCreateOpen(true) }} className="gap-2 shadow-sm">
           <Plus className="h-4 w-4" />
           New Template
         </Button>

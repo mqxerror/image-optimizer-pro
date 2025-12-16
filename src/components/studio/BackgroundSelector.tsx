@@ -6,29 +6,29 @@ interface BackgroundSelectorProps {
   onChange: (settings: BackgroundSettings) => void
 }
 
-const typeOptions: { value: BackgroundType; label: string; preview: string }[] = [
-  { value: 'white', label: 'White', preview: 'bg-white' },
-  { value: 'gradient', label: 'Gradient', preview: 'bg-gradient-to-b from-gray-200 to-gray-400' },
-  { value: 'black', label: 'Black', preview: 'bg-gray-900' },
-  { value: 'transparent', label: 'None', preview: 'bg-[url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2216%22%20height%3D%2216%22%3E%3Crect%20width%3D%228%22%20height%3D%228%22%20fill%3D%22%23555%22%2F%3E%3Crect%20x%3D%228%22%20y%3D%228%22%20width%3D%228%22%20height%3D%228%22%20fill%3D%22%23555%22%2F%3E%3C%2Fsvg%3E")]' },
-  { value: 'scene', label: 'Scene', preview: 'bg-gradient-to-br from-amber-600 to-orange-700' },
+const typeOptions: { value: BackgroundType; label: string; desc: string; preview: string }[] = [
+  { value: 'white', label: 'White', desc: 'Clean', preview: 'bg-white' },
+  { value: 'gradient', label: 'Gradient', desc: 'Smooth', preview: 'bg-gradient-to-b from-gray-200 to-gray-400' },
+  { value: 'black', label: 'Black', desc: 'Bold', preview: 'bg-gray-900' },
+  { value: 'transparent', label: 'None', desc: 'Cutout', preview: 'bg-[url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2216%22%20height%3D%2216%22%3E%3Crect%20width%3D%228%22%20height%3D%228%22%20fill%3D%22%23555%22%2F%3E%3Crect%20x%3D%228%22%20y%3D%228%22%20width%3D%228%22%20height%3D%228%22%20fill%3D%22%23555%22%2F%3E%3C%2Fsvg%3E")]' },
+  { value: 'scene', label: 'Scene', desc: 'Lifestyle', preview: 'bg-gradient-to-br from-amber-600 to-orange-700' },
 ]
 
-const surfaceOptions: { value: BackgroundSurface; label: string }[] = [
-  { value: 'none', label: 'None' },
-  { value: 'marble', label: 'Marble' },
-  { value: 'velvet', label: 'Velvet' },
-  { value: 'wood', label: 'Wood' },
-  { value: 'mirror', label: 'Mirror' },
-  { value: 'silk', label: 'Silk' },
-  { value: 'concrete', label: 'Concrete' },
+const surfaceOptions: { value: BackgroundSurface; label: string; desc: string }[] = [
+  { value: 'none', label: 'None', desc: 'Plain' },
+  { value: 'marble', label: 'Marble', desc: 'Luxury' },
+  { value: 'velvet', label: 'Velvet', desc: 'Rich' },
+  { value: 'wood', label: 'Wood', desc: 'Natural' },
+  { value: 'mirror', label: 'Mirror', desc: 'Reflective' },
+  { value: 'silk', label: 'Silk', desc: 'Elegant' },
+  { value: 'concrete', label: 'Concrete', desc: 'Modern' },
 ]
 
-const shadowOptions: { value: ShadowStyle; label: string }[] = [
-  { value: 'none', label: 'None' },
-  { value: 'soft', label: 'Soft' },
-  { value: 'hard', label: 'Hard' },
-  { value: 'floating', label: 'Float' },
+const shadowOptions: { value: ShadowStyle; label: string; desc: string }[] = [
+  { value: 'none', label: 'None', desc: 'Flat' },
+  { value: 'soft', label: 'Soft', desc: 'Subtle' },
+  { value: 'hard', label: 'Hard', desc: 'Defined' },
+  { value: 'floating', label: 'Float', desc: 'Lifted' },
 ]
 
 export function BackgroundSelector({ settings, onChange }: BackgroundSelectorProps) {
@@ -37,67 +37,84 @@ export function BackgroundSelector({ settings, onChange }: BackgroundSelectorPro
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-5">
+      {/* Type - 3 per row with preview */}
       <div>
         <Label className="text-xs text-gray-500 font-medium mb-2 block">Type</Label>
-        <div className="flex gap-2 overflow-x-auto pb-1">
+        <div className="grid grid-cols-3 gap-2">
           {typeOptions.map(option => (
             <button
               key={option.value}
               onClick={() => updateSetting('type', option.value)}
-              className={`flex flex-col items-center gap-1.5 p-2 rounded-xl transition-all flex-shrink-0 ${
+              className={`flex flex-col items-center gap-1 py-3 px-2 rounded-xl transition-all ${
                 settings.type === option.value
                   ? 'ring-2 ring-green-500 ring-offset-1 bg-green-50'
                   : 'bg-gray-50 hover:bg-gray-100 border border-gray-200'
               }`}
             >
               <div className={`w-10 h-10 rounded-lg ${option.preview} border border-gray-300`} />
-              <span className={`text-xs font-medium ${settings.type === option.value ? 'text-green-700' : 'text-gray-600'}`}>
+              <span className={`text-xs font-semibold ${settings.type === option.value ? 'text-green-700' : 'text-gray-700'}`}>
                 {option.label}
+              </span>
+              <span className={`text-[9px] ${settings.type === option.value ? 'text-green-500' : 'text-gray-400'}`}>
+                {option.desc}
               </span>
             </button>
           ))}
         </div>
       </div>
 
+      {/* Surface - 4 per row with descriptions */}
       <div>
         <Label className="text-xs text-gray-500 font-medium mb-2 block">Surface</Label>
-        <div className="flex flex-wrap gap-1.5">
+        <div className="grid grid-cols-4 gap-2">
           {surfaceOptions.map(option => (
             <button
               key={option.value}
               onClick={() => updateSetting('surface', option.value)}
-              className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-all ${
+              className={`flex flex-col items-center py-3 px-1 rounded-xl transition-all ${
                 settings.surface === option.value
-                  ? 'bg-green-50 text-green-700 ring-1 ring-green-300 shadow-sm'
-                  : 'bg-gray-50 text-gray-600 hover:bg-gray-100 hover:text-gray-900 border border-gray-200'
+                  ? 'bg-green-50 ring-2 ring-green-400 ring-offset-1'
+                  : 'bg-gray-50 hover:bg-gray-100 border border-gray-200'
               }`}
             >
-              {option.label}
+              <span className={`text-xs font-semibold ${settings.surface === option.value ? 'text-green-700' : 'text-gray-700'}`}>
+                {option.label}
+              </span>
+              <span className={`text-[9px] ${settings.surface === option.value ? 'text-green-500' : 'text-gray-400'}`}>
+                {option.desc}
+              </span>
             </button>
           ))}
         </div>
       </div>
 
+      {/* Shadow - 4 per row with descriptions */}
       <div>
         <Label className="text-xs text-gray-500 font-medium mb-2 block">Shadow</Label>
-        <div className="flex flex-wrap gap-1.5">
+        <div className="grid grid-cols-4 gap-2">
           {shadowOptions.map(option => (
             <button
               key={option.value}
               onClick={() => updateSetting('shadow', option.value)}
-              className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-all ${
+              className={`flex flex-col items-center py-3 px-1 rounded-xl transition-all ${
                 settings.shadow === option.value
-                  ? 'bg-green-50 text-green-700 ring-1 ring-green-300 shadow-sm'
-                  : 'bg-gray-50 text-gray-600 hover:bg-gray-100 hover:text-gray-900 border border-gray-200'
+                  ? 'bg-green-50 ring-2 ring-green-400 ring-offset-1'
+                  : 'bg-gray-50 hover:bg-gray-100 border border-gray-200'
               }`}
             >
-              {option.label}
+              <span className={`text-xs font-semibold ${settings.shadow === option.value ? 'text-green-700' : 'text-gray-700'}`}>
+                {option.label}
+              </span>
+              <span className={`text-[9px] ${settings.shadow === option.value ? 'text-green-500' : 'text-gray-400'}`}>
+                {option.desc}
+              </span>
             </button>
           ))}
         </div>
       </div>
 
+      {/* Reflection slider */}
       <div className="space-y-2">
         <div className="flex justify-between text-xs">
           <span className="text-gray-500 font-medium">Reflection</span>

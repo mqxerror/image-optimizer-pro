@@ -174,25 +174,25 @@ export function ImageUploader({ imageUrl, onImageChange }: ImageUploaderProps) {
         tabIndex={0}
         role="button"
         aria-label="Upload image. Press Enter to browse files."
-        className={`rounded-2xl border-2 border-dashed cursor-pointer transition-all flex flex-col items-center justify-center gap-4 py-16 px-8 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-500 focus-visible:ring-offset-2 focus-visible:ring-offset-gray-900 ${
+        className={`rounded-2xl border-2 border-dashed cursor-pointer transition-all flex flex-col items-center justify-center gap-3 py-10 px-6 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-500 focus-visible:ring-offset-2 focus-visible:ring-offset-gray-900 ${
           isDragging
             ? 'border-purple-500 bg-purple-500/10'
             : 'border-gray-600 bg-gray-800/30 hover:border-purple-400 hover:bg-purple-500/5'
         }`}
       >
         {fileInput}
-        <div className={`p-4 rounded-full ${isDragging ? 'bg-purple-500/20' : 'bg-gray-700/50'}`}>
+        <div className={`p-3 rounded-full ${isDragging ? 'bg-purple-500/20' : 'bg-gray-700/50'}`}>
           {isDragging ? (
-            <Upload className="h-10 w-10 text-purple-400" />
+            <Upload className="h-8 w-8 text-purple-400" />
           ) : (
-            <Camera className="h-10 w-10 text-gray-500 md:hidden" />
+            <Camera className="h-8 w-8 text-gray-500 md:hidden" />
           )}
           {!isDragging && (
-            <ImageIcon className="h-10 w-10 text-gray-500 hidden md:block" />
+            <ImageIcon className="h-8 w-8 text-gray-500 hidden md:block" />
           )}
         </div>
         <div className="text-center">
-          <p className="font-medium text-gray-300 text-lg">
+          <p className="font-medium text-gray-300 text-base">
             {isDragging ? 'Drop your image' : (
               <>
                 <span className="md:hidden">Tap to capture or browse</span>
@@ -200,11 +200,11 @@ export function ImageUploader({ imageUrl, onImageChange }: ImageUploaderProps) {
               </>
             )}
           </p>
-          <p className="text-sm text-gray-500 mt-1">
+          <p className="text-sm text-gray-500 mt-0.5">
             <span className="hidden md:inline">or click to browse</span>
           </p>
         </div>
-        <p className="text-xs text-gray-600 mb-4">PNG, JPG up to 10MB</p>
+        <p className="text-xs text-gray-600">PNG, JPG up to 10MB</p>
 
         {/* Step indicators for guidance */}
         <div className="flex items-center justify-center gap-2 text-xs text-gray-500">

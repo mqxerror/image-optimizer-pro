@@ -88,7 +88,7 @@ export function GenerateConfirmSheet({
               <Sparkles className="h-5 w-5 text-purple-600" />
             </div>
             <div className="flex-1 min-w-0">
-              <p className="font-medium text-gray-900 text-sm">{model?.name || aiModel}</p>
+              <p className="font-medium text-gray-900 text-sm">{model?.friendlyName || aiModel}</p>
               <p className="text-xs text-gray-500">
                 {model?.description || 'AI Model'} • {model?.tokenCost || 1} token
               </p>

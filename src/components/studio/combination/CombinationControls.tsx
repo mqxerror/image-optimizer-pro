@@ -1,7 +1,5 @@
-import { MoveVertical, ZoomIn, Layers, Sun, RotateCcw } from 'lucide-react'
+import { MoveVertical, ZoomIn, Layers, Sun, RotateCcw, Sparkles } from 'lucide-react'
 import { Label } from '@/components/ui/label'
-import { Slider } from '@/components/ui/slider'
-import { STUDIO_SPACING } from '@/constants/spacing'
 import type { CombinationQuickSettings } from '@/types/combination'
 import { AIModelSelector } from '../AIModelSelector'
 
@@ -18,150 +16,138 @@ export function CombinationControls({
   onChange
 }: CombinationControlsProps) {
   return (
-    <div className={`${STUDIO_SPACING.quickPanel} bg-white border-l border-gray-200 ${STUDIO_SPACING.panel} ${STUDIO_SPACING.section} overflow-y-auto max-h-[calc(100vh-120px)]`}>
-      <div>
-        <h3 className="text-sm font-semibold text-gray-900 mb-4">Combination Settings</h3>
-        <p className="text-xs text-gray-600 mb-6">
-          Adjust how the jewelry is placed on the model.
-          Switch to Advanced for fine-tuning.
-        </p>
-      </div>
-
-      {/* Position Control */}
-      <div className="space-y-3">
-        <div className="flex items-center gap-2">
-          <div className="p-1.5 rounded-md bg-blue-100">
-            <MoveVertical className="h-4 w-4 text-blue-600" />
-          </div>
-          <Label className="text-sm font-medium">Position</Label>
-        </div>
-        <Slider
-          value={[settings.position_y]}
-          onValueChange={([value]) => onChange('position_y', value)}
-          min={0}
-          max={100}
-          step={1}
-          className="w-full"
-          aria-label="Vertical position"
+    <div className="bg-white flex flex-col h-full">
+      {/* Scrollable Content */}
+      <div className="flex-1 overflow-y-auto p-4 space-y-5">
+        {/* AI Model Selection */}
+        <AIModelSelector
+          value={settings.ai_model}
+          onChange={(modelId) => onChange('ai_model', modelId as any)}
+          mode="combination"
         />
-        <div className="flex justify-between text-xs text-gray-600">
-          <span>Higher</span>
-          <span className="font-medium text-gray-800">{settings.position_y}%</span>
-          <span>Lower</span>
-        </div>
-      </div>
 
-      {/* Scale Control */}
-      <div className="space-y-3">
-        <div className="flex items-center gap-2">
-          <div className="p-1.5 rounded-md bg-green-100">
-            <ZoomIn className="h-4 w-4 text-green-600" />
+        {/* Position Control */}
+        <div>
+          <Label className="text-xs text-gray-500 font-medium mb-2 block">Position</Label>
+          <div className="flex items-center gap-3">
+            <MoveVertical className={`w-4 h-4 flex-shrink-0 ${settings.position_y !== 50 ? 'text-blue-500' : 'text-gray-400'}`} />
+            <div className="flex-1 space-y-1.5">
+              <input
+                type="range"
+                min={0}
+                max={100}
+                value={settings.position_y}
+                onChange={(e) => onChange('position_y', Number(e.target.value))}
+                className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-blue-500"
+              />
+              <div className="flex justify-between text-[10px] text-gray-500">
+                <span>Higher</span>
+                <span className="font-semibold text-gray-700">{settings.position_y}%</span>
+                <span>Lower</span>
+              </div>
+            </div>
           </div>
-          <Label className="text-sm font-medium">Scale</Label>
         </div>
-        <Slider
-          value={[settings.scale]}
-          onValueChange={([value]) => onChange('scale', value)}
-          min={50}
-          max={150}
-          step={1}
-          className="w-full"
-          aria-label="Jewelry scale"
-        />
-        <div className="flex justify-between text-xs text-gray-600">
-          <span>50%</span>
-          <span className="font-medium text-gray-800">{settings.scale}%</span>
-          <span>150%</span>
-        </div>
-      </div>
 
-      {/* Blend Intensity Control */}
-      <div className="space-y-3">
-        <div className="flex items-center gap-2">
-          <div className="p-1.5 rounded-md bg-purple-100">
-            <Layers className="h-4 w-4 text-purple-600" />
+        {/* Scale Control */}
+        <div>
+          <Label className="text-xs text-gray-500 font-medium mb-2 block">Scale</Label>
+          <div className="flex items-center gap-3">
+            <ZoomIn className={`w-4 h-4 flex-shrink-0 ${settings.scale !== 100 ? 'text-green-500' : 'text-gray-400'}`} />
+            <div className="flex-1 space-y-1.5">
+              <input
+                type="range"
+                min={50}
+                max={150}
+                value={settings.scale}
+                onChange={(e) => onChange('scale', Number(e.target.value))}
+                className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-green-500"
+              />
+              <div className="flex justify-between text-[10px] text-gray-500">
+                <span>50%</span>
+                <span className="font-semibold text-gray-700">{settings.scale}%</span>
+                <span>150%</span>
+              </div>
+            </div>
           </div>
-          <Label className="text-sm font-medium">Blend</Label>
         </div>
-        <Slider
-          value={[settings.blend_intensity]}
-          onValueChange={([value]) => onChange('blend_intensity', value)}
-          min={0}
-          max={100}
-          step={1}
-          className="w-full"
-          aria-label="Blend intensity"
-        />
-        <div className="flex justify-between text-xs text-gray-600">
-          <span>Subtle</span>
-          <span className="font-medium text-gray-800">{settings.blend_intensity}%</span>
-          <span>Strong</span>
-        </div>
-      </div>
 
-      {/* Lighting Match Control */}
-      <div className="space-y-3">
-        <div className="flex items-center gap-2">
-          <div className="p-1.5 rounded-md bg-yellow-100">
-            <Sun className="h-4 w-4 text-yellow-600" />
+        {/* Blend Intensity Control */}
+        <div>
+          <Label className="text-xs text-gray-500 font-medium mb-2 block">Blend</Label>
+          <div className="flex items-center gap-3">
+            <Layers className={`w-4 h-4 flex-shrink-0 ${settings.blend_intensity > 50 ? 'text-purple-500' : 'text-gray-400'}`} />
+            <div className="flex-1 space-y-1.5">
+              <input
+                type="range"
+                min={0}
+                max={100}
+                value={settings.blend_intensity}
+                onChange={(e) => onChange('blend_intensity', Number(e.target.value))}
+                className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-purple-500"
+              />
+              <div className="flex justify-between text-[10px] text-gray-500">
+                <span>Subtle</span>
+                <span className="font-semibold text-gray-700">{settings.blend_intensity}%</span>
+                <span>Strong</span>
+              </div>
+            </div>
           </div>
-          <Label className="text-sm font-medium">Lighting Match</Label>
         </div>
-        <Slider
-          value={[settings.lighting_match]}
-          onValueChange={([value]) => onChange('lighting_match', value)}
-          min={0}
-          max={100}
-          step={1}
-          className="w-full"
-          aria-label="Lighting match"
-        />
-        <div className="flex justify-between text-xs text-gray-600">
-          <span>Natural</span>
-          <span className="font-medium text-gray-800">{settings.lighting_match}%</span>
-          <span>Match</span>
-        </div>
-      </div>
 
-      {/* Rotation Control */}
-      <div className="space-y-3">
-        <div className="flex items-center gap-2">
-          <div className="p-1.5 rounded-md bg-orange-100">
-            <RotateCcw className="h-4 w-4 text-orange-600" />
+        {/* Lighting Match Control */}
+        <div>
+          <Label className="text-xs text-gray-500 font-medium mb-2 block">Lighting</Label>
+          <div className="flex items-center gap-3">
+            <Sun className={`w-4 h-4 flex-shrink-0 ${settings.lighting_match > 50 ? 'text-yellow-500' : 'text-gray-400'}`} />
+            <div className="flex-1 space-y-1.5">
+              <input
+                type="range"
+                min={0}
+                max={100}
+                value={settings.lighting_match}
+                onChange={(e) => onChange('lighting_match', Number(e.target.value))}
+                className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-yellow-500"
+              />
+              <div className="flex justify-between text-[10px] text-gray-500">
+                <span>Natural</span>
+                <span className="font-semibold text-gray-700">{settings.lighting_match}%</span>
+                <span>Match</span>
+              </div>
+            </div>
           </div>
-          <Label className="text-sm font-medium">Angle</Label>
         </div>
-        <Slider
-          value={[settings.rotation]}
-          onValueChange={([value]) => onChange('rotation', value)}
-          min={-45}
-          max={45}
-          step={1}
-          className="w-full"
-          aria-label="Rotation angle"
-        />
-        <div className="flex justify-between text-xs text-gray-600">
-          <span>-45°</span>
-          <span className="font-medium text-gray-800">{settings.rotation}°</span>
-          <span>+45°</span>
+
+        {/* Rotation Control */}
+        <div>
+          <Label className="text-xs text-gray-500 font-medium mb-2 block">Angle</Label>
+          <div className="flex items-center gap-3">
+            <RotateCcw className={`w-4 h-4 flex-shrink-0 ${settings.rotation !== 0 ? 'text-orange-500' : 'text-gray-400'}`} />
+            <div className="flex-1 space-y-1.5">
+              <input
+                type="range"
+                min={-45}
+                max={45}
+                value={settings.rotation}
+                onChange={(e) => onChange('rotation', Number(e.target.value))}
+                className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-orange-500"
+              />
+              <div className="flex justify-between text-[10px] text-gray-500">
+                <span>-45°</span>
+                <span className="font-semibold text-gray-700">{settings.rotation}°</span>
+                <span>+45°</span>
+              </div>
+            </div>
+          </div>
         </div>
-      </div>
 
-      {/* Divider */}
-      <div className="border-t border-gray-100 my-4" />
-
-      {/* AI Model Selector - Using shared component */}
-      <AIModelSelector
-        value={settings.ai_model}
-        onChange={(modelId) => onChange('ai_model', modelId as any)}
-        mode="combination"
-      />
-
-      {/* Advanced Mode CTA */}
-      <div className="pt-4 border-t">
-        <p className="text-xs text-gray-500 mb-3">
-          Need more control? Switch to Advanced Mode for placement presets, shadow settings, and realism options.
-        </p>
+        {/* Advanced Mode CTA */}
+        <div className="pt-3 border-t border-gray-100">
+          <div className="flex items-center gap-2 text-xs text-gray-500">
+            <Sparkles className="w-4 h-4 text-purple-400" />
+            <span>Switch to <strong className="text-purple-600">Advanced</strong> for more</span>
+          </div>
+        </div>
       </div>
     </div>
   )

@@ -10,6 +10,7 @@ export { GenerationsHistory, useGenerationsProcessingCount } from './Generations
 export { ModelSelector } from './ModelSelector'
 export { IdeasToExplore } from './IdeasToExplore'
 export { buildPromptFromSettings, PromptPreview } from './PromptBuilder'
+export { PromptDiff } from './PromptDiff'
 export { PromptModeIndicator } from './PromptModeIndicator'
 export { AIModelSelector } from './AIModelSelector'
 export { TemplatePromptDisplay } from './TemplatePromptDisplay'

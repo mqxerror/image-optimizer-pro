@@ -144,7 +144,7 @@ function SingleImageUpload({
       onDragOver={handleDragOver}
       onDragLeave={handleDragLeave}
       className={cn(
-        "rounded-xl border-2 border-dashed cursor-pointer transition-all flex flex-col items-center justify-center gap-3 py-10 px-4",
+        "rounded-xl border-2 border-dashed cursor-pointer transition-all flex flex-col items-center justify-center gap-2 py-6 px-3",
         isDragging
           ? isModel
             ? 'border-blue-500 bg-blue-500/10'
@@ -159,33 +159,30 @@ function SingleImageUpload({
 
       {/* Icon */}
       <div className={cn(
-        "p-3 rounded-full",
+        "p-2.5 rounded-full",
         isDragging
           ? isModel ? 'bg-blue-500/20' : 'bg-amber-500/20'
           : isModel ? 'bg-blue-500/10' : 'bg-amber-500/10'
       )}>
         {isDragging ? (
-          <Upload className={cn("h-8 w-8", isModel ? "text-blue-400" : "text-amber-400")} />
+          <Upload className={cn("h-6 w-6", isModel ? "text-blue-400" : "text-amber-400")} />
         ) : isUploading ? (
-          <div className="h-8 w-8 border-2 border-t-transparent rounded-full animate-spin border-current" />
+          <div className="h-6 w-6 border-2 border-t-transparent rounded-full animate-spin border-current" />
         ) : (
-          <Icon className={cn("h-8 w-8", isModel ? "text-blue-400" : "text-amber-400")} />
+          <Icon className={cn("h-6 w-6", isModel ? "text-blue-400" : "text-amber-400")} />
         )}
       </div>
 
       {/* Title */}
       <div className="text-center">
         <p className={cn(
-          "font-medium text-base",
+          "font-medium text-sm",
           isModel ? "text-blue-300" : "text-amber-300"
         )}>
           {isDragging ? 'Drop here' : title}
         </p>
-        <p className="text-xs text-gray-500 mt-1 max-w-[180px]">{subtitle}</p>
+        <p className="text-[10px] text-gray-500 mt-0.5 max-w-[140px]">{subtitle}</p>
       </div>
-
-      {/* Hint */}
-      <p className="text-[10px] text-gray-600 text-center max-w-[160px]">{hint}</p>
     </div>
   )
 }
@@ -207,30 +204,10 @@ export function DualImageUploader({
   onJewelryChange,
   className
 }: DualImageUploaderProps) {
-  const bothUploaded = images.model.url && images.jewelry.url
-
   return (
-    <div className={cn("space-y-4", className)}>
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h3 className="text-sm font-medium text-gray-300">Upload Images</h3>
-          <p className="text-xs text-gray-500 mt-0.5">
-            {bothUploaded
-              ? 'Both images ready - adjust settings and generate'
-              : 'Upload a model photo and jewelry image to combine'}
-          </p>
-        </div>
-        {bothUploaded && (
-          <div className="flex items-center gap-1.5 text-xs text-green-400 bg-green-500/10 px-2 py-1 rounded-md">
-            <Check className="h-3.5 w-3.5" />
-            Ready
-          </div>
-        )}
-      </div>
-
+    <div className={cn("space-y-3", className)}>
       {/* Side-by-side upload zones */}
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-2 gap-3">
         <SingleImageUpload
           type="model"
           imageUrl={images.model.url}
@@ -244,16 +221,6 @@ export function DualImageUploader({
           onImageChange={onJewelryChange}
         />
       </div>
-
-      {/* Tips when both not uploaded */}
-      {!bothUploaded && (
-        <div className="bg-gray-800/30 rounded-lg p-3 border border-gray-700/50">
-          <p className="text-xs text-gray-400">
-            <span className="font-medium text-gray-300">Tip:</span>{' '}
-            For best results, use a model photo with good lighting and a jewelry image with a transparent or white background.
-          </p>
-        </div>
-      )}
     </div>
   )
 }

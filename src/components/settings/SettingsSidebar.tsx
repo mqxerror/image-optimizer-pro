@@ -47,9 +47,9 @@ export function SettingsSidebar() {
               to={item.href}
               className={({ isActive }) =>
                 cn(
-                  'flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-colors',
+                  'flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium whitespace-nowrap transition-all',
                   isActive
-                    ? 'bg-primary text-primary-foreground'
+                    ? 'bg-purple-600 text-white shadow-md shadow-purple-200'
                     : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                 )
               }
@@ -65,7 +65,7 @@ export function SettingsSidebar() {
       <div className="hidden md:block space-y-6">
         {settingsNav.map((group) => (
           <div key={group.group}>
-            <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2 px-3">
+            <h3 className="text-[10px] font-semibold text-gray-400 uppercase tracking-wider mb-2 px-3">
               {group.group}
             </h3>
             <div className="space-y-1">
@@ -75,15 +75,24 @@ export function SettingsSidebar() {
                   to={item.href}
                   className={({ isActive }) =>
                     cn(
-                      'flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors',
+                      'flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all',
                       isActive
-                        ? 'bg-primary/10 text-primary'
+                        ? 'bg-gradient-to-r from-purple-50 to-blue-50 text-purple-700 ring-1 ring-purple-200 shadow-sm'
                         : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
                     )
                   }
                 >
-                  <item.icon className="h-4 w-4" />
-                  {item.name}
+                  {({ isActive }) => (
+                    <>
+                      <div className={cn(
+                        "p-1.5 rounded-lg transition-colors",
+                        isActive ? "bg-purple-100" : "bg-gray-100"
+                      )}>
+                        <item.icon className={cn("h-4 w-4", isActive ? "text-purple-600" : "text-gray-500")} />
+                      </div>
+                      <span>{item.name}</span>
+                    </>
+                  )}
                 </NavLink>
               ))}
             </div>
