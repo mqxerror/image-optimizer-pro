@@ -1,7 +1,6 @@
 import { useState, useMemo, useEffect } from 'react'
 import { useParams, useNavigate, Link } from 'react-router-dom'
 import {
-  ArrowLeft,
   Search,
   Loader2,
   Image as ImageIcon,
@@ -23,6 +22,7 @@ import {
   LayoutGrid
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import { Breadcrumb } from '@/components/ui/breadcrumb'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { Card, CardContent } from '@/components/ui/card'
@@ -428,13 +428,18 @@ export default function ShopifyProducts() {
 
   return (
     <div className="space-y-4 md:space-y-6 pb-24 md:pb-6">
+      {/* Breadcrumb */}
+      <Breadcrumb
+        items={[
+          { label: 'Shopify', href: '/shopify' },
+          { label: store?.shop_name || store?.shop_domain || 'Store', href: `/shopify/${storeId}/settings` },
+          { label: 'Products' }
+        ]}
+      />
+
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div className="flex items-center gap-2 sm:gap-4">
-          <Button variant="ghost" size="sm" onClick={() => navigate('/shopify')} className="px-2 sm:px-3">
-            <ArrowLeft className="h-4 w-4 sm:mr-2" />
-            <span className="hidden sm:inline">Back</span>
-          </Button>
           <div className="min-w-0 flex-1">
             <h1 className="text-lg sm:text-2xl font-bold flex items-center gap-2 truncate">
               <Store className="h-5 w-5 sm:h-6 sm:w-6 flex-shrink-0" />

@@ -1,11 +1,12 @@
 import { useState, useMemo } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { useQueryClient } from '@tanstack/react-query'
-import { Loader2, Activity as ActivityIcon, CheckCircle2, AlertCircle, RefreshCw, ListOrdered, Cog, Trash2, Sparkles } from 'lucide-react'
+import { Loader2, Activity as ActivityIcon, CheckCircle2, AlertCircle, RefreshCw, ListOrdered, Cog, Trash2, Sparkles, Inbox, Clock, XCircle } from 'lucide-react'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { ScrollArea } from '@/components/ui/scroll-area'
+import { EmptyState } from '@/components/ui/empty-state'
 import { useActivityData, type ActivityFilter, type ActivityItem as ActivityItemType } from '@/hooks/useActivityData'
 import { ActivityItem } from '@/components/activity/ActivityItem'
 import { GenerationDetailModal, type GenerationDetail } from '@/components/shared/GenerationDetailModal'
@@ -84,6 +85,7 @@ export default function Activity() {
   const queryClient = useQueryClient()
   const { toast } = useToast()
   const { organization } = useAuthStore()
+  const navigate = useNavigate()
 
   // Delete an activity item
   const handleDelete = async (item: ActivityItemType) => {
@@ -297,25 +299,47 @@ export default function Activity() {
 
         <TabsContent value={filter} className="mt-4">
           {isLoading ? (
-            <div className="flex items-center justify-center py-12">
+            <div className="flex items-center justify-center py-12" role="status" aria-label="Loading activity">
               <Loader2 className="h-8 w-8 animate-spin text-slate-400" />
             </div>
           ) : items.length === 0 ? (
-            <div className="text-center py-12 text-slate-500">
-              <ActivityIcon className="h-12 w-12 mx-auto mb-4 text-slate-300" />
-              <p className="text-lg font-medium">No activity yet</p>
-              <p className="text-sm mt-1">
-                {filter === 'all'
-                  ? 'Start processing images in Studio or create a Project'
+            <EmptyState
+              icon={
+                filter === 'all' ? Inbox :
+                filter === 'queued' ? ListOrdered :
+                filter === 'processing' ? Clock :
+                filter === 'complete' ? CheckCircle2 :
+                XCircle
+              }
+              title={
+                filter === 'all' ? 'No activity yet' :
+                filter === 'queued' ? 'Queue is empty' :
+                filter === 'processing' ? 'Nothing processing' :
+                filter === 'complete' ? 'No completed items' :
+                'No failed items'
+              }
+              description={
+                filter === 'all'
+                  ? 'Start processing images in Studio or create a Project to see activity here.'
                   : filter === 'queued'
-                  ? 'No items waiting in queue'
+                  ? 'Items you add to the processing queue will appear here.'
                   : filter === 'processing'
-                  ? 'No items currently processing'
+                  ? 'Currently processing items will show progress here.'
                   : filter === 'complete'
-                  ? 'No completed items'
-                  : 'No failed items'}
-              </p>
-            </div>
+                  ? 'Successfully processed images will be listed here.'
+                  : 'Any processing errors will appear here for review.'
+              }
+              variant={
+                filter === 'complete' ? 'success' :
+                filter === 'failed' ? 'warning' :
+                'brand'
+              }
+              actions={filter === 'all' ? [
+                { label: 'Open Studio', onClick: () => navigate('/studio'), variant: 'brand', icon: Sparkles },
+                { label: 'Create Project', onClick: () => navigate('/projects'), variant: 'outline' }
+              ] : undefined}
+              compact
+            />
           ) : (
             <ScrollArea className="h-[calc(100vh-350px)]">
               <div className="space-y-2 pr-4">

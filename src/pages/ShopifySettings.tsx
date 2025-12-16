@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import {
-  ArrowLeft,
   Save,
   Loader2,
   Bell,
@@ -17,6 +16,7 @@ import {
   ShieldCheck
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import { Breadcrumb } from '@/components/ui/breadcrumb'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Label } from '@/components/ui/label'
 import { Switch } from '@/components/ui/switch'
@@ -150,15 +150,14 @@ export default function ShopifySettings() {
 
   return (
     <div className="space-y-6 max-w-2xl">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-4">
-          <Button variant="ghost" size="sm" onClick={() => navigate(`/shopify/${storeId}/products`)}>
-            <ArrowLeft className="h-4 w-4 mr-2" />
-            Back to Products
-          </Button>
-        </div>
-      </div>
+      {/* Breadcrumb */}
+      <Breadcrumb
+        items={[
+          { label: 'Shopify', href: '/shopify' },
+          { label: store.shop_name || store.shop_domain, href: `/shopify/${storeId}/products` },
+          { label: 'Settings' }
+        ]}
+      />
 
       <div>
         <h1 className="text-2xl font-bold flex items-center gap-2">

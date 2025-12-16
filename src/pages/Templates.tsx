@@ -14,7 +14,8 @@ import {
   Sparkles,
   Filter,
   Wand2,
-  Star
+  Star,
+  BookTemplate
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -23,6 +24,7 @@ import { Textarea } from '@/components/ui/textarea'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Skeleton } from '@/components/ui/skeleton'
+import { EmptyState } from '@/components/ui/empty-state'
 import {
   Dialog,
   DialogContent,
@@ -452,26 +454,33 @@ export default function Templates() {
                 ))}
               </div>
             ) : (
-              <div className="text-center py-12">
-                <FileText className="h-12 w-12 text-slate-300 mx-auto mb-3" />
-                <p className="text-slate-500">No custom templates yet</p>
-                <Button variant="link" onClick={() => setIsCreateOpen(true)}>
-                  Create your first template
-                </Button>
-              </div>
+              <EmptyState
+                icon={BookTemplate}
+                title="No custom templates yet"
+                description="Create your own templates to save time with consistent image processing settings."
+                variant="brand"
+                actions={[
+                  { label: 'Create Template', onClick: () => setIsCreateOpen(true), variant: 'brand', icon: Plus }
+                ]}
+                compact
+              />
             )}
           </TabsContent>
         </Tabs>
       ) : (
-        <div className="bg-white rounded-xl border border-slate-200 p-12 text-center">
-          <FileText className="h-12 w-12 text-slate-400 mx-auto" />
-          <h3 className="text-lg font-medium text-slate-900 mt-4">No templates found</h3>
-          <p className="text-slate-500 mt-2">
-            {searchQuery || categoryFilter !== 'all'
-              ? 'Try adjusting your search or filters'
-              : 'Create prompt templates to customize how AI enhances your images'}
-          </p>
-        </div>
+        <EmptyState
+          icon={FileText}
+          title={searchQuery || categoryFilter !== 'all' ? 'No templates found' : 'Create your first template'}
+          description={
+            searchQuery || categoryFilter !== 'all'
+              ? 'Try adjusting your search or filters to find what you\'re looking for.'
+              : 'Templates help you save and reuse your favorite AI prompts for consistent, professional results.'
+          }
+          variant={searchQuery || categoryFilter !== 'all' ? 'default' : 'brand'}
+          actions={!(searchQuery || categoryFilter !== 'all') ? [
+            { label: 'Create Template', onClick: () => setIsCreateOpen(true), variant: 'brand', icon: Plus }
+          ] : undefined}
+        />
       )}
 
       {/* Create/Edit Dialog */}
