@@ -57,6 +57,12 @@ export default function AddToQueue({
     const { data: { session } } = await supabase.auth.getSession()
     if (!session) return
 
+    // Update project status to 'active' when processing starts
+    await supabase
+      .from('projects')
+      .update({ status: 'active' })
+      .eq('id', projectId)
+
     // Fire-and-forget processing calls (don't await)
     queueItemIds.forEach((id) => {
       fetch(
@@ -138,17 +144,21 @@ export default function AddToQueue({
       setUploadProgress(0)
       setIsUploading(false)
 
-      // Auto-process a batch of items if enabled
+      // Auto-process a batch of items if enabled (trial run)
       if (autoProcess && data.insertedIds.length > 0) {
         const idsToProcess = data.insertedIds.slice(0, autoProcessBatchSize)
-        triggerProcessing(idsToProcess)
+        await triggerProcessing(idsToProcess)
+
+        // Invalidate project queries to show "Processing" status
+        queryClient.invalidateQueries({ queryKey: ['unified-project', projectId] })
+        queryClient.invalidateQueries({ queryKey: ['project-queue-stats', projectId] })
 
         const remainingCount = data.inserted - idsToProcess.length
         toast({
-          title: 'Processing started',
+          title: 'Trial batch started',
           description: remainingCount > 0
-            ? `Processing ${idsToProcess.length} images, ${remainingCount} more in queue`
-            : `Processing ${idsToProcess.length} images`
+            ? `Processing ${idsToProcess.length} trial images, ${remainingCount} more in queue`
+            : `Processing ${idsToProcess.length} trial images`
         })
       } else {
         toast({

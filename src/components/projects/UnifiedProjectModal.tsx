@@ -502,8 +502,8 @@ export function UnifiedProjectModal({
               </Badge>
             </div>
 
-            {/* Header Actions */}
-            <div className="flex items-center gap-2 shrink-0">
+            {/* Header Actions - add margin-right for dialog close button */}
+            <div className="flex items-center gap-2 shrink-0 mr-8">
               {/* Download Button - Prominent */}
               {processedCount > 0 && (
                 <Button
@@ -526,7 +526,8 @@ export function UnifiedProjectModal({
               <AddToQueue
                 projectId={project.id}
                 projectName={project.name}
-                autoProcess={false}
+                autoProcess={true}
+                autoProcessBatchSize={project.trial_count || 3}
               />
 
               <DropdownMenu>
