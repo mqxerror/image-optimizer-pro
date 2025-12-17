@@ -39,8 +39,24 @@ export const useAuthStore = create<AuthState>()(
       isInitialized: false,
 
       initialize: async () => {
+        // Timeout to prevent infinite loading - mark as initialized after 10s max
+        const initTimeout = setTimeout(() => {
+          const state = get()
+          if (!state.isInitialized) {
+            console.warn('Auth initialization timed out - marking as initialized')
+            set({ isLoading: false, isInitialized: true })
+          }
+        }, 10000)
+
         try {
-          const { data: { session } } = await supabase.auth.getSession()
+          const { data: { session }, error: sessionError } = await supabase.auth.getSession()
+
+          if (sessionError) {
+            console.error('Session error:', sessionError)
+            clearTimeout(initTimeout)
+            set({ isLoading: false, isInitialized: true })
+            return
+          }
 
           if (session?.user) {
             set({
@@ -52,8 +68,10 @@ export const useAuthStore = create<AuthState>()(
             // AWAIT organization fetch to prevent race condition with ProtectedRoute
             await get().fetchUserOrganizations()
             // NOW mark as initialized after organization is loaded
+            clearTimeout(initTimeout)
             set({ isInitialized: true })
           } else {
+            clearTimeout(initTimeout)
             set({
               user: null,
               session: null,
@@ -81,6 +99,7 @@ export const useAuthStore = create<AuthState>()(
           })
         } catch (error) {
           console.error('Auth initialization error:', error)
+          clearTimeout(initTimeout)
           set({ isLoading: false, isInitialized: true })
         }
       },
