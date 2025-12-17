@@ -10,6 +10,16 @@ export default function AuthCallback() {
 
   useEffect(() => {
     const handleCallback = async () => {
+      // Check URL hash for recovery flow (password reset)
+      const hashParams = new URLSearchParams(window.location.hash.substring(1))
+      const type = hashParams.get('type')
+
+      // If this is a password recovery flow, redirect to reset password page
+      if (type === 'recovery') {
+        navigate('/auth/reset-password')
+        return
+      }
+
       const { data: { session }, error } = await supabase.auth.getSession()
 
       if (error) {
