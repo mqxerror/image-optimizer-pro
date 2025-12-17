@@ -113,20 +113,34 @@ Deno.serve(async (req: Request) => {
       )
     }
 
-    // SECURITY: Verify user has access to this connection's organization
-    const { data: membership, error: membershipError } = await supabase
-      .from("user_organizations")
-      .select("id")
-      .eq("user_id", user.id)
-      .eq("organization_id", connection.organization_id)
-      .single()
+    // SECURITY: Verify user has access to this connection
+    // User has access if they:
+    // 1. Are the one who connected it (connected_by)
+    // 2. OR are a member of the organization that owns it
+    const isConnectionOwner = connection.connected_by === user.id
 
-    if (membershipError || !membership) {
+    let hasOrgAccess = false
+    if (!isConnectionOwner && connection.organization_id) {
+      const { data: membership } = await supabase
+        .from("user_organizations")
+        .select("user_id")
+        .eq("user_id", user.id)
+        .eq("organization_id", connection.organization_id)
+        .single()
+
+      hasOrgAccess = !!membership
+    }
+
+    if (!isConnectionOwner && !hasOrgAccess) {
+      console.error(`[google-drive-files] Access denied for user ${user.id}`)
+      console.error(`[google-drive-files] connected_by: ${connection.connected_by}, org_id: ${connection.organization_id}`)
       return new Response(
         JSON.stringify({ error: "Access denied: You don't have permission to access this connection" }),
         { status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       )
     }
+
+    console.log(`[google-drive-files] Access granted for user ${user.id} (owner: ${isConnectionOwner}, org: ${hasOrgAccess})`)
 
     let accessToken = connection.access_token
     const tokenExpires = new Date(connection.token_expires_at)
