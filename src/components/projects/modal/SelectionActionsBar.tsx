@@ -243,6 +243,8 @@ export function SelectionActionsBar({
   }, [selectedIds, isDownloading, toast])
 
   // Send to Studio
+  const [isLoadingStudio, setIsLoadingStudio] = useState(false)
+
   const handleSendToStudio = async () => {
     if (selectedIds.length !== 1) {
       toast({
@@ -271,28 +273,81 @@ export function SelectionActionsBar({
       }
     }
 
-    // If not in history, try processing_queue - queued images may have file_url or thumbnail
+    // If not in history, try processing_queue - for Google Drive images we need to download first
     const { data: queueItem } = await supabase
       .from('processing_queue')
       .select('file_url, thumbnail_url, file_name, file_id')
       .eq('id', selectedIds[0])
       .single()
 
+    if (queueItem && queueItem.file_id) {
+      // For Google Drive images, download the full resolution image via proxy
+      setIsLoadingStudio(true)
+      toast({
+        title: 'Loading image...',
+        description: 'Downloading full resolution from Google Drive'
+      })
+
+      try {
+        const { data: { session } } = await supabase.auth.getSession()
+        if (!session) {
+          throw new Error('Not authenticated')
+        }
+
+        // Download full resolution image via thumbnail-proxy with fullRes=true
+        const proxyUrl = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/thumbnail-proxy?fileId=${encodeURIComponent(queueItem.file_id)}&fullRes=true`
+        const response = await fetch(proxyUrl, {
+          headers: {
+            'Authorization': `Bearer ${session.access_token}`
+          }
+        })
+
+        if (!response.ok) {
+          throw new Error('Failed to download image')
+        }
+
+        // Convert to blob URL
+        const blob = await response.blob()
+        const blobUrl = URL.createObjectURL(blob)
+
+        // Open Studio with the full resolution blob URL
+        window.open(
+          `/studio?image=${encodeURIComponent(blobUrl)}&name=${encodeURIComponent(queueItem.file_name || 'image')}&source=queue`,
+          '_blank'
+        )
+      } catch (error) {
+        console.error('Failed to load image for Studio:', error)
+        // Fall back to thumbnail with warning
+        const fallbackUrl = queueItem.thumbnail_url || queueItem.file_url
+        if (fallbackUrl) {
+          toast({
+            title: 'Using preview quality',
+            description: 'Process the image first for best results',
+            variant: 'destructive'
+          })
+          window.open(
+            `/studio?image=${encodeURIComponent(fallbackUrl)}&name=${encodeURIComponent(queueItem.file_name || 'image')}&source=queue`,
+            '_blank'
+          )
+        } else {
+          toast({
+            title: 'Failed to load image',
+            description: 'Could not download the image from Google Drive',
+            variant: 'destructive'
+          })
+        }
+      } finally {
+        setIsLoadingStudio(false)
+      }
+      return
+    }
+
+    // Fallback for non-Google Drive images
     if (queueItem) {
-      // Use file_url if available (direct URL), otherwise thumbnail
       const url = queueItem.file_url || queueItem.thumbnail_url
       if (url) {
         window.open(
-          `/studio?image=${encodeURIComponent(url)}&name=${encodeURIComponent(queueItem.file_name || 'image')}&source=queue&fileId=${queueItem.file_id || ''}`,
-          '_blank'
-        )
-        return
-      }
-
-      // If we have a file_id (Google Drive), we can still open Studio with that info
-      if (queueItem.file_id) {
-        window.open(
-          `/studio?driveFileId=${queueItem.file_id}&name=${encodeURIComponent(queueItem.file_name || 'image')}`,
+          `/studio?image=${encodeURIComponent(url)}&name=${encodeURIComponent(queueItem.file_name || 'image')}&source=queue`,
           '_blank'
         )
         return
@@ -306,7 +361,7 @@ export function SelectionActionsBar({
     })
   }
 
-  const isLoading = retryMutation.isPending || removeMutation.isPending || isProcessing || isDownloading
+  const isLoading = retryMutation.isPending || removeMutation.isPending || isProcessing || isDownloading || isLoadingStudio
 
   return (
     <div className="px-4 py-3 bg-primary/5 border-t flex items-center justify-between shrink-0">

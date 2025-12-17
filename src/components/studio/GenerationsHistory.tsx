@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, useMemo } from 'react'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
-import { Clock, Heart, Loader2, Download, RotateCcw, Users, Image, Trash2, AlertTriangle, ImageOff } from 'lucide-react'
+import { Clock, Heart, Loader2, Download, RotateCcw, Users, Image, Trash2, AlertTriangle, ImageOff, Eye } from 'lucide-react'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
@@ -503,79 +503,58 @@ export function GenerationsHistory({ onReuse }: GenerationsHistoryProps) {
                   </div>
                 </button>
 
-                {/* Action buttons - visible on hover (desktop) or always visible (mobile) for completed generations */}
+                {/* Action buttons - visible on hover for completed generations */}
                 {generation.status !== 'processing' && generation.status !== 'pending' && (
-                  <div className="absolute bottom-1 left-1 right-1 md:bottom-2 md:left-2 md:right-2 flex gap-0.5 md:gap-1 md:opacity-0 md:group-hover:opacity-100 transition-opacity">
-                    {/* Desktop: show reuse button */}
-                    {generation.type === 'single' && (
+                  <div className="absolute bottom-0 left-0 right-0 p-1.5 md:p-2 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity">
+                    <div className="flex items-center gap-1">
+                      {/* Reuse button - only for single images */}
+                      {generation.type === 'single' && (
+                        <Button
+                          size="sm"
+                          variant="secondary"
+                          className="h-6 md:h-7 text-[10px] md:text-xs px-2 bg-white/90 hover:bg-white"
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            onReuse(generation as any)
+                          }}
+                        >
+                          <RotateCcw className="h-2.5 w-2.5 md:h-3 md:w-3 mr-1" />
+                          Reuse
+                        </Button>
+                      )}
+                      {/* Spacer */}
+                      <div className="flex-1" />
+                      {/* Action icons */}
                       <Button
                         size="sm"
                         variant="secondary"
-                        className="hidden md:flex flex-1 h-6 md:h-7 text-[10px] md:text-xs"
-                        onClick={(e) => {
-                          e.stopPropagation()
-                          onReuse(generation as any)
-                        }}
-                      >
-                        <RotateCcw className="h-2.5 w-2.5 md:h-3 md:w-3 mr-0.5 md:mr-1" />
-                        Reuse
-                      </Button>
-                    )}
-                    {/* Mobile: minimal buttons, tap for details */}
-                    <div className="flex md:hidden gap-0.5 ml-auto">
-                      <Button
-                        size="sm"
-                        variant="secondary"
-                        className="h-6 w-6 p-0"
-                        onClick={(e) => {
-                          e.stopPropagation()
-                          toggleFavorite(generation)
-                        }}
-                      >
-                        <Heart
-                          className={`h-2.5 w-2.5 ${generation.is_favorite ? 'fill-red-500 text-red-500' : ''}`}
-                        />
-                      </Button>
-                    </div>
-                    {/* Desktop: full action bar */}
-                    <div className="hidden md:flex gap-1">
-                      <Button
-                        size="sm"
-                        variant="secondary"
-                        className="h-7 px-2"
+                        className="h-6 w-6 md:h-7 md:w-7 p-0 bg-white/90 hover:bg-white"
                         onClick={(e) => {
                           e.stopPropagation()
                           toggleFavorite(generation)
                         }}
+                        title="Favorite"
                       >
                         <Heart
                           className={`h-3 w-3 ${generation.is_favorite ? 'fill-red-500 text-red-500' : ''}`}
                         />
                       </Button>
+                      {/* Eye icon for preview */}
                       {generation.result_url && (
                         <Button
                           size="sm"
                           variant="secondary"
-                          className="h-7 px-2"
+                          className="h-6 w-6 md:h-7 md:w-7 p-0 bg-white/90 hover:bg-white"
                           onClick={(e) => {
                             e.stopPropagation()
-                            window.open(generation.result_url!, '_blank')
+                            setSelectedGeneration(generation)
+                            setModalOpen(true)
                           }}
+                          title="View full size"
                         >
-                          <Download className="h-3 w-3" />
+                          <Eye className="h-3 w-3" />
                         </Button>
                       )}
-                      <Button
-                        size="sm"
-                        variant="secondary"
-                        className={`h-7 px-2 ${generation.status === 'failed' ? 'bg-red-100 hover:bg-red-200 text-red-600' : ''}`}
-                        onClick={(e) => {
-                          e.stopPropagation()
-                          deleteGeneration(generation)
-                        }}
-                      >
-                        <Trash2 className="h-3 w-3" />
-                      </Button>
                     </div>
                   </div>
                 )}

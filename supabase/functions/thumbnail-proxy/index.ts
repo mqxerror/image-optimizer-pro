@@ -17,6 +17,7 @@ Deno.serve(async (req: Request) => {
     const url = new URL(req.url)
     const fileId = url.searchParams.get('fileId')
     const thumbnailUrl = url.searchParams.get('url')
+    const fullRes = url.searchParams.get('fullRes') === 'true'
 
     if (!fileId && !thumbnailUrl) {
       return new Response(
@@ -114,27 +115,37 @@ Deno.serve(async (req: Request) => {
       }
     }
 
-    // Fetch thumbnail from Google Drive
+    // Fetch image from Google Drive
     let targetUrl: string
 
     if (fileId) {
-      // Fetch thumbnail directly using Drive API
-      targetUrl = `https://www.googleapis.com/drive/v3/files/${fileId}?alt=media&fields=thumbnailLink`
+      if (fullRes) {
+        // Download full resolution image directly
+        targetUrl = `https://www.googleapis.com/drive/v3/files/${fileId}?alt=media`
+        console.log('[thumbnail-proxy] Fetching full resolution image for', fileId)
+      } else {
+        // Get thumbnail for preview
+        const metaResponse = await fetch(
+          `https://www.googleapis.com/drive/v3/files/${fileId}?fields=thumbnailLink`,
+          {
+            headers: {
+              'Authorization': `Bearer ${accessToken}`,
+            },
+          }
+        )
 
-      // Try to get thumbnail link first
-      const metaResponse = await fetch(
-        `https://www.googleapis.com/drive/v3/files/${fileId}?fields=thumbnailLink`,
-        {
-          headers: {
-            'Authorization': `Bearer ${accessToken}`,
-          },
-        }
-      )
-
-      if (metaResponse.ok) {
-        const meta = await metaResponse.json()
-        if (meta.thumbnailLink) {
-          targetUrl = meta.thumbnailLink.replace('=s220', '=s400')
+        if (metaResponse.ok) {
+          const meta = await metaResponse.json()
+          if (meta.thumbnailLink) {
+            // Use larger thumbnail size (s800 instead of s220)
+            targetUrl = meta.thumbnailLink.replace('=s220', '=s800')
+          } else {
+            // No thumbnail, fall back to full file download
+            targetUrl = `https://www.googleapis.com/drive/v3/files/${fileId}?alt=media`
+          }
+        } else {
+          // Fallback to direct download
+          targetUrl = `https://www.googleapis.com/drive/v3/files/${fileId}?alt=media`
         }
       }
     } else if (thumbnailUrl) {
