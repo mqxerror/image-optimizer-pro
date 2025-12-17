@@ -281,11 +281,11 @@ export function SelectionActionsBar({
       .single()
 
     if (queueItem && queueItem.file_id) {
-      // For Google Drive images, download the full resolution image via proxy
+      // For Google Drive images, download and upload to storage for Studio access
       setIsLoadingStudio(true)
       toast({
-        title: 'Loading image...',
-        description: 'Downloading full resolution from Google Drive'
+        title: 'Preparing image...',
+        description: 'Downloading from Google Drive and uploading to storage'
       })
 
       try {
@@ -306,36 +306,41 @@ export function SelectionActionsBar({
           throw new Error('Failed to download image')
         }
 
-        // Convert to blob URL
+        // Get the blob
         const blob = await response.blob()
-        const blobUrl = URL.createObjectURL(blob)
 
-        // Open Studio with the full resolution blob URL
+        // Upload to Supabase storage so AI can access it
+        const fileExt = queueItem.file_name?.split('.').pop()?.toLowerCase() || 'jpg'
+        const storagePath = `studio-temp/${session.user.id}/${Date.now()}.${fileExt}`
+
+        const { error: uploadError } = await supabase.storage
+          .from('processed-images')
+          .upload(storagePath, blob, {
+            contentType: blob.type || 'image/jpeg',
+            upsert: true
+          })
+
+        if (uploadError) {
+          throw new Error(`Upload failed: ${uploadError.message}`)
+        }
+
+        // Get public URL for the uploaded image
+        const { data: { publicUrl } } = supabase.storage
+          .from('processed-images')
+          .getPublicUrl(storagePath)
+
+        // Open Studio with the public URL (accessible by AI service)
         window.open(
-          `/studio?image=${encodeURIComponent(blobUrl)}&name=${encodeURIComponent(queueItem.file_name || 'image')}&source=queue`,
+          `/studio?image=${encodeURIComponent(publicUrl)}&name=${encodeURIComponent(queueItem.file_name || 'image')}&source=queue`,
           '_blank'
         )
       } catch (error) {
-        console.error('Failed to load image for Studio:', error)
-        // Fall back to thumbnail with warning
-        const fallbackUrl = queueItem.thumbnail_url || queueItem.file_url
-        if (fallbackUrl) {
-          toast({
-            title: 'Using preview quality',
-            description: 'Process the image first for best results',
-            variant: 'destructive'
-          })
-          window.open(
-            `/studio?image=${encodeURIComponent(fallbackUrl)}&name=${encodeURIComponent(queueItem.file_name || 'image')}&source=queue`,
-            '_blank'
-          )
-        } else {
-          toast({
-            title: 'Failed to load image',
-            description: 'Could not download the image from Google Drive',
-            variant: 'destructive'
-          })
-        }
+        console.error('Failed to prepare image for Studio:', error)
+        toast({
+          title: 'Failed to prepare image',
+          description: error instanceof Error ? error.message : 'Could not prepare image for Studio',
+          variant: 'destructive'
+        })
       } finally {
         setIsLoadingStudio(false)
       }
