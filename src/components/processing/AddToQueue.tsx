@@ -134,7 +134,7 @@ export default function AddToQueue({
 
       return { inserted: insertedCount, total: totalFiles, insertedIds: allInsertedIds }
     },
-    onSuccess: (data) => {
+    onSuccess: async (data) => {
       queryClient.invalidateQueries({ queryKey: ['queue-page'] })
       queryClient.invalidateQueries({ queryKey: ['queue-stats'] })
       queryClient.invalidateQueries({ queryKey: ['queue-folder-stats'] })
