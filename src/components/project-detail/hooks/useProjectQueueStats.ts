@@ -6,6 +6,7 @@ export interface ProjectQueueStats {
   queued: number
   processing: number
   failed: number
+  completed: number
   total: number
 }
 
@@ -13,20 +14,31 @@ export function useProjectQueueStats(projectId: string | undefined) {
   return useQuery({
     queryKey: ['project-queue-stats', projectId],
     queryFn: async (): Promise<ProjectQueueStats> => {
-      if (!projectId) return { queued: 0, processing: 0, failed: 0, total: 0 }
+      if (!projectId) return { queued: 0, processing: 0, failed: 0, completed: 0, total: 0 }
 
-      const { data, error } = await supabase
+      // Get queue stats
+      const { data: queueData, error: queueError } = await supabase
         .from('processing_queue')
         .select('status')
         .eq('project_id', projectId)
 
-      if (error) throw error
+      if (queueError) throw queueError
+
+      // Get completed count from processing_history
+      const { count: completedCount, error: historyError } = await supabase
+        .from('processing_history')
+        .select('id', { count: 'exact', head: true })
+        .eq('project_id', projectId)
+        .in('status', ['success', 'completed'])
+
+      if (historyError) throw historyError
 
       const stats = {
-        queued: data?.filter(i => i.status === 'queued').length || 0,
-        processing: data?.filter(i => ['processing', 'optimizing', 'submitted'].includes(i.status)).length || 0,
-        failed: data?.filter(i => i.status === 'failed').length || 0,
-        total: data?.length || 0
+        queued: queueData?.filter(i => i.status === 'queued').length || 0,
+        processing: queueData?.filter(i => ['processing', 'optimizing', 'submitted'].includes(i.status)).length || 0,
+        failed: queueData?.filter(i => i.status === 'failed').length || 0,
+        completed: completedCount || 0,
+        total: (queueData?.length || 0) + (completedCount || 0)
       }
 
       return stats

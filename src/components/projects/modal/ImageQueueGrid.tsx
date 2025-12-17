@@ -169,12 +169,12 @@ export function ImageQueueGrid({
 
   // Get counts for tabs
   const tabCounts = useMemo(() => ({
-    all: (queueStats?.total || 0) + (data?.pages?.[0]?.images.length || 0),
+    all: queueStats?.total || 0,
     queued: queueStats?.queued || 0,
     processing: queueStats?.processing || 0,
-    success: 0, // Will be calculated from history
+    success: queueStats?.completed || 0,
     failed: queueStats?.failed || 0
-  }), [queueStats, data])
+  }), [queueStats])
 
   // Handle select all visible
   const handleSelectAllVisible = () => {

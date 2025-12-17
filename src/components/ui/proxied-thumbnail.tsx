@@ -1,7 +1,10 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { Image as ImageIcon, Loader2 } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
 import { cn } from '@/lib/utils'
+
+// Simple in-memory cache for thumbnail URLs
+const thumbnailCache = new Map<string, string>()
 
 interface ProxiedThumbnailProps {
   fileId: string
@@ -16,17 +19,38 @@ export function ProxiedThumbnail({
   className,
   fallbackClassName
 }: ProxiedThumbnailProps) {
-  const [thumbnailUrl, setThumbnailUrl] = useState<string | null>(null)
-  const [isLoading, setIsLoading] = useState(true)
+  const [thumbnailUrl, setThumbnailUrl] = useState<string | null>(() => {
+    // Check cache first
+    return thumbnailCache.get(fileId) || null
+  })
+  const [isLoading, setIsLoading] = useState(!thumbnailCache.has(fileId))
   const [hasError, setHasError] = useState(false)
+  const blobUrlRef = useRef<string | null>(null)
+  const retryCountRef = useRef(0)
+  const maxRetries = 2
 
   useEffect(() => {
     let cancelled = false
 
+    // If already cached, skip fetching
+    if (thumbnailCache.has(fileId)) {
+      setThumbnailUrl(thumbnailCache.get(fileId)!)
+      setIsLoading(false)
+      return
+    }
+
     async function fetchThumbnail() {
       try {
         const { data: { session } } = await supabase.auth.getSession()
-        if (!session || cancelled) return
+        if (!session || cancelled) {
+          // Wait for auth to be ready and retry
+          if (!session && retryCountRef.current < maxRetries) {
+            retryCountRef.current++
+            setTimeout(fetchThumbnail, 500 * retryCountRef.current)
+            return
+          }
+          throw new Error('No session')
+        }
 
         const baseUrl = import.meta.env.VITE_SUPABASE_URL
         const url = `${baseUrl}/functions/v1/thumbnail-proxy?fileId=${encodeURIComponent(fileId)}`
@@ -39,7 +63,13 @@ export function ProxiedThumbnail({
         })
 
         if (!response.ok || cancelled) {
-          throw new Error('Failed to load thumbnail')
+          // Retry on server errors
+          if (response.status >= 500 && retryCountRef.current < maxRetries) {
+            retryCountRef.current++
+            setTimeout(fetchThumbnail, 1000 * retryCountRef.current)
+            return
+          }
+          throw new Error(`Failed to load thumbnail: ${response.status}`)
         }
 
         // Convert to blob URL for display
@@ -47,10 +77,21 @@ export function ProxiedThumbnail({
         if (cancelled) return
 
         const blobUrl = URL.createObjectURL(blob)
+        blobUrlRef.current = blobUrl
+
+        // Cache the blob URL
+        thumbnailCache.set(fileId, blobUrl)
+
         setThumbnailUrl(blobUrl)
         setIsLoading(false)
       } catch (error) {
         if (!cancelled) {
+          // Retry on network errors
+          if (retryCountRef.current < maxRetries) {
+            retryCountRef.current++
+            setTimeout(fetchThumbnail, 1000 * retryCountRef.current)
+            return
+          }
           console.error('Thumbnail load error:', error)
           setHasError(true)
           setIsLoading(false)
@@ -62,9 +103,7 @@ export function ProxiedThumbnail({
 
     return () => {
       cancelled = true
-      if (thumbnailUrl) {
-        URL.revokeObjectURL(thumbnailUrl)
-      }
+      // Don't revoke cached URLs - they're shared
     }
   }, [fileId])
 

@@ -271,9 +271,37 @@ export function SelectionActionsBar({
       }
     }
 
+    // If not in history, try processing_queue - queued images may have file_url or thumbnail
+    const { data: queueItem } = await supabase
+      .from('processing_queue')
+      .select('file_url, thumbnail_url, file_name, file_id')
+      .eq('id', selectedIds[0])
+      .single()
+
+    if (queueItem) {
+      // Use file_url if available (direct URL), otherwise thumbnail
+      const url = queueItem.file_url || queueItem.thumbnail_url
+      if (url) {
+        window.open(
+          `/studio?image=${encodeURIComponent(url)}&name=${encodeURIComponent(queueItem.file_name || 'image')}&source=queue&fileId=${queueItem.file_id || ''}`,
+          '_blank'
+        )
+        return
+      }
+
+      // If we have a file_id (Google Drive), we can still open Studio with that info
+      if (queueItem.file_id) {
+        window.open(
+          `/studio?driveFileId=${queueItem.file_id}&name=${encodeURIComponent(queueItem.file_name || 'image')}`,
+          '_blank'
+        )
+        return
+      }
+    }
+
     toast({
-      title: 'Not ready for Studio',
-      description: 'Process this image first, then you can edit it in Studio',
+      title: 'Image not available',
+      description: 'Could not find a viewable URL for this image',
       variant: 'destructive'
     })
   }
@@ -358,7 +386,7 @@ export function SelectionActionsBar({
           onClick={handleSendToStudio}
           disabled={selectedCount !== 1 || isLoading}
           className="gap-1.5"
-          title="Edit in Studio (processed images only)"
+          title="Edit in Studio"
         >
           <Sparkles className="h-4 w-4" />
           Studio
