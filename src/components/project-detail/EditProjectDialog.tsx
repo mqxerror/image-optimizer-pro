@@ -241,8 +241,13 @@ export function EditProjectDialog({ project, open, onOpenChange, onSaved }: Edit
       return updatedProject as Project
     },
     onSuccess: (updatedProject) => {
+      // Invalidate all project-related queries to ensure UI updates everywhere
       queryClient.invalidateQueries({ queryKey: ['projects'] })
       queryClient.invalidateQueries({ queryKey: ['recent-projects'] })
+      queryClient.invalidateQueries({ queryKey: ['project', updatedProject.id] })
+      queryClient.invalidateQueries({ queryKey: ['project-detail', updatedProject.id] })
+      queryClient.invalidateQueries({ queryKey: ['queue-stats', updatedProject.id] })
+      queryClient.invalidateQueries({ queryKey: ['queue-folder-stats', updatedProject.id] })
       toast({ title: 'Project updated successfully' })
       onSaved?.(updatedProject)
       onOpenChange(false)

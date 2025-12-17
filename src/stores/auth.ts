@@ -20,6 +20,7 @@ interface AuthState {
   // Actions
   initialize: () => Promise<void>
   signIn: (email: string, password: string) => Promise<{ error: Error | null }>
+  signInWithGoogle: () => Promise<{ error: Error | null }>
   signUp: (email: string, password: string) => Promise<{ error: Error | null; needsEmailConfirmation: boolean }>
   signOut: () => Promise<void>
   resetPassword: (email: string) => Promise<{ error: Error | null }>
@@ -107,6 +108,22 @@ export const useAuthStore = create<AuthState>()(
       signIn: async (email, password) => {
         set({ isLoading: true })
         const { error } = await supabase.auth.signInWithPassword({ email, password })
+        set({ isLoading: false })
+        return { error: error as Error | null }
+      },
+
+      signInWithGoogle: async () => {
+        set({ isLoading: true })
+        const { error } = await supabase.auth.signInWithOAuth({
+          provider: 'google',
+          options: {
+            redirectTo: `${window.location.origin}/auth/callback`,
+            queryParams: {
+              access_type: 'offline',
+              prompt: 'consent',
+            }
+          }
+        })
         set({ isLoading: false })
         return { error: error as Error | null }
       },
