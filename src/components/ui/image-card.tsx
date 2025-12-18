@@ -4,7 +4,8 @@ import {
   XCircle,
   Clock,
   Loader2,
-  Image as ImageIcon
+  Image as ImageIcon,
+  Eye
 } from 'lucide-react'
 import { Checkbox } from '@/components/ui/checkbox'
 import { ProxiedThumbnail } from '@/components/ui/proxied-thumbnail'
@@ -72,9 +73,11 @@ export interface ImageCardProps {
   isSelected?: boolean
   onSelect?: (id: string, selected: boolean) => void
   onClick?: (id: string) => void
+  onPreview?: (url: string, fileName: string) => void
   showCheckbox?: boolean
   showStatus?: boolean
   showFileName?: boolean
+  showPreviewButton?: boolean
   size?: 'sm' | 'md' | 'lg'
   className?: string
   children?: React.ReactNode
@@ -91,9 +94,11 @@ export const ImageCard = memo(function ImageCard({
   isSelected = false,
   onSelect,
   onClick,
+  onPreview,
   showCheckbox = true,
   showStatus = true,
   showFileName = true,
+  showPreviewButton = false,
   size = 'md',
   className,
   children
@@ -108,6 +113,10 @@ export const ImageCard = memo(function ImageCard({
 
   const isFailed = status?.toLowerCase() === 'failed'
   const isProcessing = ['processing', 'optimizing', 'submitted'].includes(status?.toLowerCase() || '')
+  const isProcessed = ['success', 'completed'].includes(status?.toLowerCase() || '')
+
+  // Get preview URL
+  const previewUrl = optimizedUrl || thumbnailUrl
 
   // Handle click
   const handleClick = () => {
@@ -217,6 +226,20 @@ export const ImageCard = memo(function ImageCard({
         )}>
           {statusConfig.icon}
         </div>
+      )}
+
+      {/* Preview Button - visible on hover for processed images */}
+      {showPreviewButton && isProcessed && previewUrl && onPreview && (
+        <button
+          className="absolute bottom-8 right-1 p-1.5 bg-white/90 hover:bg-white rounded-full shadow-sm opacity-0 group-hover:opacity-100 transition-opacity z-10"
+          onClick={(e) => {
+            e.stopPropagation()
+            onPreview(previewUrl, fileName || 'Image')
+          }}
+          title="Preview image"
+        >
+          <Eye className="h-3.5 w-3.5 text-slate-700" />
+        </button>
       )}
 
       {/* Filename with status indicator gradient */}

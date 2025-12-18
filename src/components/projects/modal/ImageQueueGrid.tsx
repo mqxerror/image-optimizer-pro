@@ -9,12 +9,18 @@ import {
   Clock,
   Image as ImageIcon,
   CheckSquare,
-  Square
+  Square,
+  X
 } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { ImageCard } from '@/components/ui/image-card'
+import {
+  Dialog,
+  DialogContent,
+  DialogTitle,
+} from '@/components/ui/dialog'
 import { cn } from '@/lib/utils'
 import { supabase } from '@/lib/supabase'
 import type { ProjectQueueStats } from '@/components/project-detail/hooks/useProjectQueueStats'
@@ -65,6 +71,7 @@ export function ImageQueueGrid({
   queueStats
 }: ImageQueueGridProps) {
   const [activeTab, setActiveTab] = useState<ImageStatus>('all')
+  const [previewImage, setPreviewImage] = useState<{ url: string; name: string } | null>(null)
 
   // Handle tab change - notify parent to reset selection
   const handleTabChange = useCallback((tab: ImageStatus) => {
@@ -189,6 +196,19 @@ export function ImageQueueGrid({
 
   const allVisibleSelected = images.length > 0 && images.every(img => selectedImages.includes(img.id))
 
+  // Handle image preview
+  const handlePreview = useCallback((url: string, name: string) => {
+    setPreviewImage({ url, name })
+  }, [])
+
+  // Determine if we should show empty state instead of loading
+  // For tabs with 0 count, show empty state directly
+  const shouldShowEmptyState = !isLoading && images.length === 0
+  const tabHasNoItems = (tab: ImageStatus) => {
+    const count = tabCounts[tab]
+    return count === 0
+  }
+
   return (
     <div className="flex-1 flex flex-col min-h-0 overflow-hidden">
       {/* Status Tabs */}
@@ -247,11 +267,11 @@ export function ImageQueueGrid({
 
       {/* Image Grid */}
       <ScrollArea className="flex-1">
-        {isLoading ? (
+        {isLoading && !tabHasNoItems(activeTab) ? (
           <div className="flex items-center justify-center py-12">
             <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
           </div>
-        ) : images.length === 0 ? (
+        ) : images.length === 0 || tabHasNoItems(activeTab) ? (
           <div className="flex flex-col items-center justify-center py-12 text-muted-foreground">
             <ImageIcon className="h-12 w-12 mb-3 opacity-50" />
             <p className="text-sm font-medium">No images in this category</p>
@@ -278,6 +298,8 @@ export function ImageQueueGrid({
                   errorMessage={image.error_message}
                   isSelected={selectedImages.includes(image.id)}
                   onSelect={(id, selected) => onImageSelect(id, selected)}
+                  showPreviewButton={activeTab === 'success'}
+                  onPreview={handlePreview}
                 />
               ))}
             </div>
@@ -293,6 +315,31 @@ export function ImageQueueGrid({
           </div>
         )}
       </ScrollArea>
+
+      {/* Image Preview Dialog */}
+      <Dialog open={!!previewImage} onOpenChange={() => setPreviewImage(null)}>
+        <DialogContent className="max-w-4xl p-0 overflow-hidden">
+          <DialogTitle className="sr-only">{previewImage?.name || 'Image Preview'}</DialogTitle>
+          <div className="relative">
+            <button
+              onClick={() => setPreviewImage(null)}
+              className="absolute top-2 right-2 p-2 bg-black/50 hover:bg-black/70 rounded-full text-white z-10"
+            >
+              <X className="h-5 w-5" />
+            </button>
+            {previewImage && (
+              <img
+                src={previewImage.url}
+                alt={previewImage.name}
+                className="w-full h-auto max-h-[80vh] object-contain bg-black"
+              />
+            )}
+            <div className="absolute bottom-0 left-0 right-0 p-3 bg-gradient-to-t from-black/70 to-transparent">
+              <p className="text-white text-sm font-medium truncate">{previewImage?.name}</p>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }

@@ -47,6 +47,7 @@ import { ImageQueueGrid } from './modal/ImageQueueGrid'
 import { ProgressFooter } from './modal/ProgressFooter'
 import { SelectionActionsBar } from './modal/SelectionActionsBar'
 import { useProjectQueueStats, useRetryProjectFailed } from '@/components/project-detail/hooks/useProjectQueueStats'
+import { useProjectRealtime } from '@/hooks/useQueueRealtime'
 import AddToQueue from '@/components/processing/AddToQueue'
 import type { Project } from '@/types/database'
 
@@ -98,6 +99,9 @@ export function UnifiedProjectModal({
   // Queue stats
   const { data: queueStats } = useProjectQueueStats(projectId || undefined)
   const retryFailedMutation = useRetryProjectFailed(projectId || undefined)
+
+  // Real-time updates for this project
+  useProjectRealtime(open ? projectId : null)
 
   // Reset state when modal opens/closes
   useEffect(() => {
