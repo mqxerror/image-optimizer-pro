@@ -1,4 +1,4 @@
-import { useState, useMemo, useCallback, memo } from 'react'
+import { useState, useMemo, useCallback } from 'react'
 import { useInfiniteQuery } from '@tanstack/react-query'
 import { useInView } from 'react-intersection-observer'
 import type { LucideIcon } from 'lucide-react'
@@ -11,11 +11,10 @@ import {
   CheckSquare,
   Square
 } from 'lucide-react'
-import { Checkbox } from '@/components/ui/checkbox'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { ScrollArea } from '@/components/ui/scroll-area'
-import { ProxiedThumbnail } from '@/components/ui/proxied-thumbnail'
+import { ImageCard } from '@/components/ui/image-card'
 import { cn } from '@/lib/utils'
 import { supabase } from '@/lib/supabase'
 import type { ProjectQueueStats } from '@/components/project-detail/hooks/useProjectQueueStats'
@@ -270,9 +269,15 @@ export function ImageQueueGrid({
               {images.map((image) => (
                 <ImageCard
                   key={image.id}
-                  image={image}
+                  id={image.id}
+                  fileId={image.file_id}
+                  fileName={image.file_name}
+                  thumbnailUrl={image.thumbnail_url}
+                  optimizedUrl={image.optimized_url}
+                  status={image.status}
+                  errorMessage={image.error_message}
                   isSelected={selectedImages.includes(image.id)}
-                  onSelect={(selected) => onImageSelect(image.id, selected)}
+                  onSelect={(id, selected) => onImageSelect(id, selected)}
                 />
               ))}
             </div>
@@ -292,170 +297,3 @@ export function ImageQueueGrid({
   )
 }
 
-// Image Card Component
-interface ImageCardProps {
-  image: QueueImage
-  isSelected: boolean
-  onSelect: (selected: boolean) => void
-}
-
-function ImageCard({ image, isSelected, onSelect }: ImageCardProps) {
-  // Use optimized_url for processed images (from our storage)
-  // Use ProxiedThumbnail with file_id for Google Drive images
-  const hasOptimizedUrl = !!image.optimized_url
-  const hasFileId = !!image.file_id
-  const [imageError, setImageError] = useState(false)
-
-  // Determine file type for display
-  const fileExt = image.file_name?.split('.').pop()?.toLowerCase() || ''
-
-  // Status-based styling
-  const isProcessed = image.status === 'success' || image.status === 'completed'
-  const isProcessing = image.status === 'processing' || image.status === 'optimizing' || image.status === 'submitted'
-  const isFailed = image.status === 'failed'
-  const isQueued = image.status === 'queued' || !image.status
-
-  const statusConfig = useMemo(() => {
-    if (isProcessed) return {
-      border: 'border-green-400 border-2',
-      bg: 'bg-green-500',
-      icon: <CheckCircle className="h-3 w-3 text-white" />,
-      label: 'Done'
-    }
-    if (isProcessing) return {
-      border: 'border-blue-400 border-2',
-      bg: 'bg-blue-500',
-      icon: <Loader2 className="h-3 w-3 text-white animate-spin" />,
-      label: 'Processing'
-    }
-    if (isFailed) return {
-      border: 'border-red-400 border-2',
-      bg: 'bg-red-500',
-      icon: <XCircle className="h-3 w-3 text-white" />,
-      label: 'Failed'
-    }
-    return {
-      border: 'border-slate-200',
-      bg: 'bg-slate-400',
-      icon: <Clock className="h-3 w-3 text-white" />,
-      label: 'Queued'
-    }
-  }, [isProcessed, isProcessing, isFailed])
-
-  // Render thumbnail based on source
-  const renderThumbnail = () => {
-    // If we have an optimized URL (from our storage), use it directly
-    if (hasOptimizedUrl && !imageError) {
-      return (
-        <img
-          src={image.optimized_url!}
-          alt={image.file_name || 'Image'}
-          className="w-full h-full object-cover"
-          loading="lazy"
-          onError={() => setImageError(true)}
-        />
-      )
-    }
-
-    // If we have a file_id (Google Drive), use ProxiedThumbnail
-    if (hasFileId && !imageError) {
-      return (
-        <ProxiedThumbnail
-          fileId={image.file_id}
-          alt={image.file_name || 'Image'}
-          className="w-full h-full object-cover"
-          fallbackClassName="w-full h-full"
-        />
-      )
-    }
-
-    // Fallback placeholder
-    return (
-      <div className={cn(
-        'w-full h-full flex flex-col items-center justify-center',
-        isProcessed ? 'bg-gradient-to-br from-green-50 to-green-100' :
-        isProcessing ? 'bg-gradient-to-br from-blue-50 to-blue-100' :
-        isFailed ? 'bg-gradient-to-br from-red-50 to-red-100' :
-        'bg-gradient-to-br from-slate-50 to-slate-100'
-      )}>
-        <ImageIcon className={cn(
-          'h-6 w-6 mb-1',
-          isProcessed ? 'text-green-400' :
-          isProcessing ? 'text-blue-400' :
-          isFailed ? 'text-red-400' :
-          'text-slate-400'
-        )} />
-        <span className="text-[9px] font-medium text-slate-600 uppercase px-1">
-          {fileExt || 'img'}
-        </span>
-      </div>
-    )
-  }
-
-  return (
-    <div
-      className={cn(
-        'relative aspect-square rounded-lg overflow-hidden group cursor-pointer transition-all',
-        statusConfig.border,
-        isSelected ? 'ring-2 ring-primary ring-offset-1' : 'hover:ring-1 hover:ring-primary/50',
-        isFailed && 'opacity-75'
-      )}
-      onClick={() => onSelect(!isSelected)}
-    >
-      {/* Thumbnail */}
-      {renderThumbnail()}
-
-      {/* Checkbox (visible on hover or when selected) */}
-      <div
-        className={cn(
-          'absolute top-1 left-1 transition-opacity',
-          isSelected ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'
-        )}
-        onClick={(e) => {
-          e.stopPropagation()
-          onSelect(!isSelected)
-        }}
-      >
-        <Checkbox
-          checked={isSelected}
-          className="bg-white/90 border-white shadow-sm"
-        />
-      </div>
-
-      {/* Status Badge - More prominent */}
-      <div className={cn(
-        'absolute top-1 right-1 flex items-center gap-1 px-1.5 py-0.5 rounded-full shadow-sm',
-        statusConfig.bg
-      )}>
-        {statusConfig.icon}
-      </div>
-
-      {/* Filename with status indicator stripe */}
-      <div className={cn(
-        'absolute bottom-0 left-0 right-0 p-1.5',
-        isProcessed ? 'bg-gradient-to-t from-green-900/80 to-transparent' :
-        isProcessing ? 'bg-gradient-to-t from-blue-900/80 to-transparent' :
-        isFailed ? 'bg-gradient-to-t from-red-900/80 to-transparent' :
-        'bg-gradient-to-t from-black/60 to-transparent'
-      )}>
-        <p className="text-white text-[10px] truncate font-medium">
-          {image.file_name || 'Untitled'}
-        </p>
-      </div>
-
-      {/* Error Overlay */}
-      {isFailed && image.error_message && (
-        <div className="absolute inset-0 bg-red-500/30 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-          <div className="bg-white/95 rounded px-2 py-1 max-w-[90%] shadow-lg">
-            <p className="text-[9px] text-red-600 line-clamp-2 font-medium">{image.error_message}</p>
-          </div>
-        </div>
-      )}
-
-      {/* Processing animation overlay */}
-      {isProcessing && (
-        <div className="absolute inset-0 bg-blue-500/10 animate-pulse pointer-events-none" />
-      )}
-    </div>
-  )
-}

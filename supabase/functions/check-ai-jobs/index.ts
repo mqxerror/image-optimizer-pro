@@ -13,7 +13,10 @@ const corsHeaders = {
 
 interface ModelConfig {
   id: string
+  submit_endpoint: string
   status_endpoint: string
+  request_template: Record<string, any>
+  task_id_path: string[]
   result_url_paths: string[][]
   success_check: { path: string[]; value: any; values?: any[] }
   failure_check: { path: string[]; value?: any; values?: any[] }
@@ -29,6 +32,22 @@ interface Job {
   created_at: string
   source: string
   source_id: string
+}
+
+interface RetryJob {
+  id: string
+  organization_id: string
+  ai_model: string
+  input_url: string
+  input_url_2?: string
+  prompt?: string
+  settings?: Record<string, any>
+  attempt_count: number
+  max_attempts: number
+  source: string
+  source_id?: string
+  job_type: string
+  created_by?: string
 }
 
 // Helper to extract value from nested object using path array
@@ -126,6 +145,59 @@ function checkFailed(statusResult: any, config: ModelConfig): boolean {
     return check.values.includes(value)
   }
   return value === check.value
+}
+
+// Build request body for retry submission
+function buildRequestBody(
+  config: ModelConfig,
+  job: RetryJob,
+  callbackUrl: string
+): Record<string, any> {
+  const template = { ...(config.request_template || {}) }
+
+  const requestBody: Record<string, any> = {
+    ...template,
+    callbackUrl,
+  }
+
+  // Handle different model types
+  if (config.submit_endpoint.includes('/flux/kontext/')) {
+    requestBody.prompt = job.prompt || 'Enhance this jewelry image for professional e-commerce presentation.'
+    requestBody.inputImage = job.input_url
+    requestBody.aspectRatio = (job.settings as any)?.aspect_ratio || '1:1'
+  } else if (config.submit_endpoint.includes('/gpt4o-image/')) {
+    requestBody.prompt = job.prompt || 'Enhance this jewelry image.'
+    requestBody.inputImage = job.input_url
+  } else if (config.submit_endpoint.includes('/jobs/createTask')) {
+    const input = template.input || {}
+
+    if (job.ai_model === 'nano-banana') {
+      input.prompt = job.prompt
+      input.image_urls = [job.input_url]
+      input.image_size = (job.settings as any)?.aspect_ratio || '1:1'
+    } else if (job.ai_model === 'nano-banana-pro') {
+      input.prompt = job.prompt
+      input.image_input = [job.input_url]
+      input.aspect_ratio = (job.settings as any)?.aspect_ratio || '1:1'
+    } else if (job.ai_model === 'ghibli') {
+      input.prompt = `Transform into Studio Ghibli anime style. ${job.prompt || ''}`
+      input.image_input = [job.input_url]
+      input.aspect_ratio = (job.settings as any)?.aspect_ratio || '1:1'
+    } else if (job.ai_model === 'seedream-v4-edit') {
+      input.prompt = job.prompt
+      input.image_input = job.input_url_2
+        ? [job.input_url, job.input_url_2]
+        : [job.input_url]
+      input.aspect_ratio = (job.settings as any)?.aspect_ratio || '1:1'
+    } else {
+      input.prompt = job.prompt
+      input.image_input = [job.input_url]
+    }
+
+    requestBody.input = input
+  }
+
+  return requestBody
 }
 
 Deno.serve(async (req: Request) => {
@@ -306,6 +378,144 @@ Deno.serve(async (req: Request) => {
       }
     }
 
+    // =========================================
+    // PART 2: Process jobs that need retry
+    // =========================================
+    const retryResults: { id: string; status: string; task_id?: string; error?: string }[] = []
+
+    // Get jobs ready for retry (status=pending, next_retry_at <= now, attempt_count > 0)
+    const { data: retryJobs, error: retryFetchError } = await supabase
+      .from('ai_jobs')
+      .select('id, organization_id, ai_model, input_url, input_url_2, prompt, settings, attempt_count, max_attempts, source, source_id, job_type, created_by, callback_token')
+      .eq('status', 'pending')
+      .gt('attempt_count', 0) // Only jobs that are actually retrying
+      .lte('next_retry_at', new Date().toISOString())
+      .lt('attempt_count', 3) // Ensure we don't exceed max attempts
+      .order('next_retry_at', { ascending: true })
+      .limit(5) // Process max 5 retries at a time
+
+    if (retryFetchError) {
+      console.error('[check-ai-jobs] Error fetching retry jobs:', retryFetchError)
+    } else if (retryJobs && retryJobs.length > 0) {
+      console.log(`[check-ai-jobs] Found ${retryJobs.length} jobs ready for retry`)
+
+      // Get model configs for retry jobs
+      const retryModelIds = [...new Set(retryJobs.map(j => j.ai_model))]
+      const { data: retryModelConfigs } = await supabase
+        .from('ai_model_configs')
+        .select('*')
+        .in('id', retryModelIds)
+
+      const retryConfigMap = new Map<string, ModelConfig>()
+      for (const config of (retryModelConfigs || [])) {
+        retryConfigMap.set(config.id, config)
+      }
+
+      for (const job of retryJobs as RetryJob[]) {
+        const config = retryConfigMap.get(job.ai_model)
+        if (!config) {
+          console.log(`[check-ai-jobs] No config for retry model ${job.ai_model}`)
+          retryResults.push({ id: job.id, status: 'no_config' })
+          continue
+        }
+
+        console.log(`[check-ai-jobs] Retrying job ${job.id} (attempt ${job.attempt_count + 1}/${job.max_attempts})`)
+
+        try {
+          // Generate new callback token
+          const callbackToken = (job as any).callback_token || crypto.randomUUID()
+          const callbackUrl = `${supabaseUrl}/functions/v1/ai-webhook?token=${callbackToken}`
+
+          // Build request body
+          const requestBody = buildRequestBody(config, job, callbackUrl)
+
+          // Submit to Kie.ai
+          const kieResponse = await fetch(config.submit_endpoint, {
+            method: 'POST',
+            headers: {
+              'Authorization': `Bearer ${kieApiKey}`,
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(requestBody),
+          })
+
+          if (!kieResponse.ok) {
+            const errorText = await kieResponse.text()
+            console.error(`[check-ai-jobs] Retry submit failed for ${job.id}:`, errorText)
+
+            // Mark as failed if API call fails
+            await supabase
+              .from('ai_jobs')
+              .update({
+                status: 'failed',
+                error_message: `Retry failed: API error ${kieResponse.status}`,
+                completed_at: new Date().toISOString(),
+              })
+              .eq('id', job.id)
+
+            retryResults.push({ id: job.id, status: 'retry_failed', error: errorText })
+            continue
+          }
+
+          const kieResult = await kieResponse.json()
+
+          // Check for API-level errors
+          if (kieResult.code && kieResult.code !== 200) {
+            await supabase
+              .from('ai_jobs')
+              .update({
+                status: 'failed',
+                error_message: kieResult.message || 'Retry failed',
+                completed_at: new Date().toISOString(),
+              })
+              .eq('id', job.id)
+
+            retryResults.push({ id: job.id, status: 'retry_error', error: kieResult.message })
+            continue
+          }
+
+          // Extract task ID
+          let taskId = getNestedValue(kieResult, config.task_id_path as string[])
+          if (!taskId) {
+            taskId = kieResult.data?.taskId || kieResult.taskId || kieResult.data?.id
+          }
+
+          if (!taskId) {
+            await supabase
+              .from('ai_jobs')
+              .update({
+                status: 'failed',
+                error_message: 'No task ID on retry',
+                completed_at: new Date().toISOString(),
+              })
+              .eq('id', job.id)
+
+            retryResults.push({ id: job.id, status: 'no_task_id' })
+            continue
+          }
+
+          // Update job with new task ID and submitted status
+          await supabase
+            .from('ai_jobs')
+            .update({
+              task_id: taskId,
+              status: 'submitted',
+              submitted_at: new Date().toISOString(),
+              next_retry_at: null,
+              error_message: null,
+            })
+            .eq('id', job.id)
+
+          console.log(`[check-ai-jobs] Retry successful for ${job.id}, new taskId: ${taskId}`)
+          retryResults.push({ id: job.id, status: 'retried', task_id: taskId })
+
+        } catch (retryError) {
+          console.error(`[check-ai-jobs] Error retrying ${job.id}:`, retryError)
+          retryResults.push({ id: job.id, status: 'error' })
+        }
+      }
+    }
+
     // Summary
     const summary = {
       checked: pendingJobs.length,
@@ -313,15 +523,18 @@ Deno.serve(async (req: Request) => {
       failed: results.filter(r => r.status === 'failed').length,
       timeout: results.filter(r => r.status === 'timeout').length,
       still_processing: results.filter(r => r.status === 'still_processing').length,
+      retries_processed: retryResults.filter(r => r.status === 'retried').length,
+      retries_failed: retryResults.filter(r => r.status.includes('fail') || r.status === 'error').length,
     }
 
     console.log(`[check-ai-jobs] Summary:`, JSON.stringify(summary))
 
     return new Response(
       JSON.stringify({
-        message: `Checked ${pendingJobs.length} pending jobs`,
+        message: `Checked ${pendingJobs.length} pending jobs, processed ${retryResults.length} retries`,
         ...summary,
         results,
+        retryResults,
       }),
       { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     )

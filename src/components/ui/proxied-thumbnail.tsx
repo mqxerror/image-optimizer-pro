@@ -2,9 +2,13 @@ import { useState, useEffect, useRef } from 'react'
 import { Image as ImageIcon, Loader2 } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
 import { cn } from '@/lib/utils'
+import { useAuthStore } from '@/stores/auth'
 
 // Simple in-memory cache for thumbnail URLs
 const thumbnailCache = new Map<string, string>()
+
+// Total timeout for loading a thumbnail
+const TOTAL_TIMEOUT = 8000
 
 interface ProxiedThumbnailProps {
   fileId: string
@@ -19,6 +23,7 @@ export function ProxiedThumbnail({
   className,
   fallbackClassName
 }: ProxiedThumbnailProps) {
+  const { isInitialized } = useAuthStore()
   const [thumbnailUrl, setThumbnailUrl] = useState<string | null>(() => {
     // Check cache first
     return thumbnailCache.get(fileId) || null
@@ -27,6 +32,7 @@ export function ProxiedThumbnail({
   const [hasError, setHasError] = useState(false)
   const blobUrlRef = useRef<string | null>(null)
   const retryCountRef = useRef(0)
+  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const maxRetries = 2
 
   useEffect(() => {
@@ -38,6 +44,20 @@ export function ProxiedThumbnail({
       setIsLoading(false)
       return
     }
+
+    // Don't start fetching until auth is initialized
+    if (!isInitialized) {
+      return
+    }
+
+    // Set up total timeout to prevent infinite loading
+    timeoutRef.current = setTimeout(() => {
+      if (!cancelled && isLoading) {
+        console.warn('Thumbnail load timed out for', fileId)
+        setHasError(true)
+        setIsLoading(false)
+      }
+    }, TOTAL_TIMEOUT)
 
     async function fetchThumbnail() {
       try {
@@ -84,6 +104,11 @@ export function ProxiedThumbnail({
 
         setThumbnailUrl(blobUrl)
         setIsLoading(false)
+
+        // Clear timeout on success
+        if (timeoutRef.current) {
+          clearTimeout(timeoutRef.current)
+        }
       } catch (error) {
         if (!cancelled) {
           // Retry on network errors
@@ -103,9 +128,12 @@ export function ProxiedThumbnail({
 
     return () => {
       cancelled = true
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current)
+      }
       // Don't revoke cached URLs - they're shared
     }
-  }, [fileId])
+  }, [fileId, isInitialized, isLoading])
 
   if (isLoading) {
     return (

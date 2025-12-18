@@ -127,6 +127,18 @@ export function useQueueRealtime(options: UseQueueRealtimeOptions = {}) {
           queryClient.invalidateQueries({ queryKey: ['queue-stats'] })
           queryClient.invalidateQueries({ queryKey: ['queue-folder-stats'] })
 
+          // Invalidate project-specific queries (critical for modal UI updates)
+          queryClient.invalidateQueries({
+            predicate: (query) => query.queryKey[0] === 'project-queue-stats'
+          })
+          queryClient.invalidateQueries({
+            predicate: (query) => query.queryKey[0] === 'project-images-grid'
+          })
+          queryClient.invalidateQueries({
+            predicate: (query) => query.queryKey[0] === 'unified-project'
+          })
+          queryClient.invalidateQueries({ queryKey: ['projects'] })
+
           // Handle specific events
           if (eventType === 'UPDATE' && newRecord) {
             // Item status changed
@@ -171,6 +183,18 @@ export function useQueueRealtime(options: UseQueueRealtimeOptions = {}) {
           queryClient.invalidateQueries({ queryKey: ['history-page'] })
           queryClient.invalidateQueries({ queryKey: ['token-account'] })
 
+          // Invalidate project-specific queries (critical for modal UI updates)
+          queryClient.invalidateQueries({ queryKey: ['projects'] })
+          queryClient.invalidateQueries({
+            predicate: (query) => query.queryKey[0] === 'project-queue-stats'
+          })
+          queryClient.invalidateQueries({
+            predicate: (query) => query.queryKey[0] === 'project-images-grid'
+          })
+          queryClient.invalidateQueries({
+            predicate: (query) => query.queryKey[0] === 'unified-project'
+          })
+
           if (newRecord?.status === 'success') {
             // Check if this completes a project
             if (newRecord.project_id) {
@@ -198,8 +222,9 @@ export function useProjectRealtime(projectId: string | null) {
   useEffect(() => {
     if (!projectId) return
 
-    const channel = supabase
-      .channel(`project-${projectId}`)
+    // Subscribe to processing_history for completed items
+    const historyChannel = supabase
+      .channel(`project-history-${projectId}`)
       .on(
         'postgres_changes',
         {
@@ -209,9 +234,13 @@ export function useProjectRealtime(projectId: string | null) {
           filter: `project_id=eq.${projectId}`
         },
         (payload) => {
-          // Invalidate project-specific queries
+          // Invalidate all project-specific queries
           queryClient.invalidateQueries({ queryKey: ['project-history', projectId] })
           queryClient.invalidateQueries({ queryKey: ['project-stats', projectId] })
+          queryClient.invalidateQueries({ queryKey: ['project-queue-stats', projectId] })
+          queryClient.invalidateQueries({ queryKey: ['project-images-grid', projectId] })
+          queryClient.invalidateQueries({ queryKey: ['unified-project', projectId] })
+          queryClient.invalidateQueries({ queryKey: ['projects'] })
 
           if (payload.eventType === 'INSERT' && payload.new?.status === 'success') {
             toast({
@@ -223,8 +252,47 @@ export function useProjectRealtime(projectId: string | null) {
       )
       .subscribe()
 
+    // Subscribe to processing_queue for status changes
+    const queueChannel = supabase
+      .channel(`project-queue-${projectId}`)
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'processing_queue',
+          filter: `project_id=eq.${projectId}`
+        },
+        (payload) => {
+          // Invalidate all project-specific queries
+          queryClient.invalidateQueries({ queryKey: ['project-history', projectId] })
+          queryClient.invalidateQueries({ queryKey: ['project-stats', projectId] })
+          queryClient.invalidateQueries({ queryKey: ['project-queue-stats', projectId] })
+          queryClient.invalidateQueries({ queryKey: ['project-images-grid', projectId] })
+          queryClient.invalidateQueries({ queryKey: ['unified-project', projectId] })
+          queryClient.invalidateQueries({ queryKey: ['projects'] })
+
+          // Show toast for status changes
+          if (payload.eventType === 'UPDATE') {
+            const newStatus = payload.new?.status
+            const oldStatus = payload.old?.status
+            if (newStatus === 'processing' && oldStatus !== 'processing') {
+              // Image started processing - no toast, just update UI
+            } else if (newStatus === 'failed' && oldStatus !== 'failed') {
+              toast({
+                title: 'Processing failed',
+                description: payload.new?.file_name || 'An image failed to process',
+                variant: 'destructive'
+              })
+            }
+          }
+        }
+      )
+      .subscribe()
+
     return () => {
-      supabase.removeChannel(channel)
+      supabase.removeChannel(historyChannel)
+      supabase.removeChannel(queueChannel)
     }
   }, [projectId, queryClient, toast])
 }
