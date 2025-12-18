@@ -1,43 +1,37 @@
 import { useState, useEffect, useCallback } from 'react'
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { useQueryClient } from '@tanstack/react-query'
 import {
   Loader2,
-  Settings,
   Sparkles,
-  Wand2,
-  FileText,
-  Palette,
-  PenLine,
-  Check,
-  Camera,
-  Sun
+  Layout,
+  Eye,
+  ChevronDown,
+  ChevronRight,
+  Zap,
+  Star,
+  Crown,
+  Check
 } from 'lucide-react'
-import { Label } from '@/components/ui/label'
-import { Textarea } from '@/components/ui/textarea'
 import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
 import { Slider } from '@/components/ui/slider'
 import { ScrollArea } from '@/components/ui/scroll-area'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
 import { cn } from '@/lib/utils'
 import { useToast } from '@/hooks/use-toast'
 import { supabase } from '@/lib/supabase'
-import { useAuthStore } from '@/stores/auth'
 import type { Project } from '@/types/database'
+import { BriefBuilderInline } from './brief-builder'
+import { AI_MODEL_CONFIG } from './RunActionBar'
 
-const AI_MODELS = [
-  { id: 'flux-kontext-pro', name: 'Flux Kontext Pro', price: '$0.04', recommended: true },
-  { id: 'flux-kontext-max', name: 'Flux Kontext Max', price: '$0.08' },
-  { id: 'nano-banana', name: 'Nano Banana', price: '$0.02' },
-  { id: 'nano-banana-pro', name: 'Nano Banana Pro', price: '$0.09' },
-  { id: 'ghibli', name: 'Ghibli Style', price: '$0.05' },
-]
+// Convert unified config to array for selection
+const AI_MODELS = Object.entries(AI_MODEL_CONFIG).map(([id, config]) => ({
+  id,
+  name: config.displayName,
+  internalName: config.internalName,
+  price: config.pricePerImage,
+  tier: config.tier,
+  bestFor: config.bestFor,
+  recommended: config.recommended || false,
+}))
 
 interface SettingsPanelProps {
   project: Project
@@ -46,67 +40,30 @@ interface SettingsPanelProps {
 export function SettingsPanel({ project }: SettingsPanelProps) {
   const queryClient = useQueryClient()
   const { toast } = useToast()
-  const { organization } = useAuthStore()
 
-  // Local state for inline editing
+  // Local state for run config
   const [aiModel, setAiModel] = useState(project.ai_model || 'flux-kontext-pro')
   const [resolution, setResolution] = useState<'2K' | '4K'>((project.resolution as '2K' | '4K') || '2K')
-  const [trialCount, setTrialCount] = useState(project.trial_count || 3)
-  const [promptMode, setPromptMode] = useState<'template' | 'preset' | 'custom'>(
-    (project.prompt_mode as 'template' | 'preset' | 'custom') ||
-    (project.template_id ? 'template' : project.studio_preset_id ? 'preset' : 'custom')
-  )
-  const [templateId, setTemplateId] = useState(project.template_id || '')
-  const [presetId, setPresetId] = useState(project.studio_preset_id || '')
-  const [customPrompt, setCustomPrompt] = useState(project.custom_prompt || '')
+  const [previewCount, setPreviewCount] = useState(project.trial_count || 5)
   const [isSaving, setIsSaving] = useState(false)
-  const [isGenerating, setIsGenerating] = useState(false)
+
+  // Expanded sections state (Studio-style)
+  const [expandedSections, setExpandedSections] = useState({
+    model: true,
+    resolution: false,
+    preview: false,
+  })
+
+  const toggleSection = (section: keyof typeof expandedSections) => {
+    setExpandedSections(prev => ({ ...prev, [section]: !prev[section] }))
+  }
 
   // Sync with project changes
   useEffect(() => {
     setAiModel(project.ai_model || 'flux-kontext-pro')
     setResolution((project.resolution as '2K' | '4K') || '2K')
-    setTrialCount(project.trial_count || 3)
-    setPromptMode(
-      (project.prompt_mode as 'template' | 'preset' | 'custom') ||
-      (project.template_id ? 'template' : project.studio_preset_id ? 'preset' : 'custom')
-    )
-    setTemplateId(project.template_id || '')
-    setPresetId(project.studio_preset_id || '')
-    setCustomPrompt(project.custom_prompt || '')
+    setPreviewCount(project.trial_count || 5)
   }, [project])
-
-  // Fetch templates
-  const { data: templates } = useQuery({
-    queryKey: ['templates-panel', organization?.id],
-    queryFn: async () => {
-      if (!organization) return []
-      const { data } = await supabase
-        .from('prompt_templates')
-        .select('id, name, category, subcategory, is_system, base_prompt')
-        .or(`is_system.eq.true,organization_id.eq.${organization.id}`)
-        .eq('is_active', true)
-        .order('is_system', { ascending: false })
-      return data || []
-    },
-    enabled: !!organization
-  })
-
-  // Fetch presets
-  const { data: presets } = useQuery({
-    queryKey: ['presets-panel', organization?.id],
-    queryFn: async () => {
-      if (!organization) return []
-      const { data } = await supabase
-        .from('studio_presets')
-        .select('id, name, description, category, is_system, camera_angle, lighting_style, background_type')
-        .or(`is_system.eq.true,organization_id.eq.${organization.id}`)
-        .eq('is_active', true)
-        .order('is_system', { ascending: false })
-      return data || []
-    },
-    enabled: !!organization
-  })
 
   // Auto-save with debounce
   const saveSettings = useCallback(async (updates: Partial<Project>) => {
@@ -143,330 +100,220 @@ export function SettingsPanel({ project }: SettingsPanelProps) {
     saveSettings({ resolution: value })
   }
 
-  const handleTrialCountChange = (value: number[]) => {
-    setTrialCount(value[0])
+  const handlePreviewCountChange = (value: number[]) => {
+    setPreviewCount(value[0])
     saveSettings({ trial_count: value[0] })
   }
 
-  const handlePromptModeChange = (value: 'template' | 'preset' | 'custom') => {
-    setPromptMode(value)
-    const updates: Partial<Project> = { prompt_mode: value }
-
-    if (value === 'template') {
-      updates.studio_preset_id = null
-      updates.custom_prompt = null
-    } else if (value === 'preset') {
-      updates.template_id = null
-      updates.custom_prompt = null
-    } else {
-      updates.template_id = null
-      updates.studio_preset_id = null
-    }
-
-    saveSettings(updates)
-  }
-
-  const handleTemplateChange = (id: string) => {
-    setTemplateId(id)
-    saveSettings({
-      template_id: id,
-      studio_preset_id: null,
-      custom_prompt: null,
-      prompt_mode: 'template'
-    })
-  }
-
-  const handlePresetChange = (id: string) => {
-    setPresetId(id)
-    saveSettings({
-      studio_preset_id: id,
-      template_id: null,
-      custom_prompt: null,
-      prompt_mode: 'preset'
-    })
-  }
-
-  const handleCustomPromptBlur = () => {
-    if (customPrompt !== project.custom_prompt) {
-      saveSettings({
-        custom_prompt: customPrompt,
-        template_id: null,
-        studio_preset_id: null,
-        prompt_mode: 'custom'
-      })
-    }
-  }
-
-  // AI Generate prompt
-  const handleAIGenerate = async () => {
-    setIsGenerating(true)
-    try {
-      const { data: { session } } = await supabase.auth.getSession()
-      if (!session) return
-
-      const response = await fetch(
-        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/optimize-prompt`,
-        {
-          method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${session.access_token}`,
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            current_prompt: customPrompt,
-            settings: {
-              background_type: 'white',
-              lighting_style: 'studio',
-              enhancement_level: 'high'
-            }
-          })
-        }
-      )
-
-      const result = await response.json()
-      if (result.optimized_prompt || result.prompt) {
-        const newPrompt = result.optimized_prompt || result.prompt
-        setCustomPrompt(newPrompt)
-        saveSettings({
-          custom_prompt: newPrompt,
-          template_id: null,
-          studio_preset_id: null,
-          prompt_mode: 'custom'
-        })
-        toast({ title: 'Prompt generated!' })
-      }
-    } catch (error) {
-      toast({
-        title: 'Failed to generate prompt',
-        description: (error as Error).message,
-        variant: 'destructive'
-      })
-    } finally {
-      setIsGenerating(false)
-    }
-  }
-
-  const selectedTemplate = templates?.find(t => t.id === templateId)
-  const selectedPreset = presets?.find(p => p.id === presetId)
+  const selectedModel = AI_MODELS.find(m => m.id === aiModel)
 
   return (
-    <ScrollArea className="flex-1">
-      <div className="p-4 space-y-6 relative">
-        {/* Settings Section */}
-        <div className="space-y-4">
-          <div className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
-            {isSaving ? (
-              <Loader2 className="h-4 w-4 animate-spin" />
-            ) : (
-              <Settings className="h-4 w-4" />
-            )}
-            Settings
-          </div>
+    <div className="flex flex-col h-full bg-slate-50/50">
+      <ScrollArea className="flex-1">
+        <div className="p-2 space-y-1.5">
+          {/* Saving indicator */}
+          {isSaving && (
+            <div className="flex items-center gap-2 text-xs text-muted-foreground px-1 mb-1">
+              <Loader2 className="h-3 w-3 animate-spin" />
+              <span>Saving...</span>
+            </div>
+          )}
 
-          {/* AI Model */}
-          <div className="space-y-2">
-            <Label className="text-xs">AI Model</Label>
-            <Select value={aiModel} onValueChange={handleAiModelChange}>
-              <SelectTrigger className="h-9">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
+        {/* AI Model Card */}
+        <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
+          <button
+            onClick={() => toggleSection('model')}
+            className="w-full flex items-center justify-between px-3 py-2.5 hover:bg-slate-50/50 transition-colors"
+          >
+            <div className="flex items-center gap-2">
+              <div className="w-7 h-7 rounded-lg bg-indigo-50 flex items-center justify-center">
+                <Sparkles className="w-3.5 h-3.5 text-indigo-500" />
+              </div>
+              <span className="text-sm font-medium text-slate-700">AI Model</span>
+              {!expandedSections.model && selectedModel && (
+                <span className="text-xs text-slate-400 ml-1">{selectedModel.name}</span>
+              )}
+            </div>
+            <div className={cn(
+              "w-6 h-6 rounded-full flex items-center justify-center transition-all",
+              expandedSections.model ? "bg-indigo-100" : "bg-slate-100"
+            )}>
+              {expandedSections.model ? (
+                <ChevronDown className="w-3.5 h-3.5 text-indigo-500" />
+              ) : (
+                <ChevronRight className="w-3.5 h-3.5 text-slate-400" />
+              )}
+            </div>
+          </button>
+
+          {expandedSections.model && (
+            <div className="border-t border-slate-100 px-3 pb-3 pt-3">
+              <div className="space-y-1.5">
                 {AI_MODELS.map(model => (
-                  <SelectItem key={model.id} value={model.id}>
-                    <div className="flex items-center justify-between gap-2 w-full">
-                      <span>{model.name}</span>
-                      {model.recommended && (
-                        <Badge variant="secondary" className="text-[10px]">REC</Badge>
-                      )}
-                    </div>
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-
-          {/* Resolution */}
-          <div className="space-y-2">
-            <Label className="text-xs">Resolution</Label>
-            <div className="flex gap-2">
-              <Button
-                size="sm"
-                variant={resolution === '2K' ? 'default' : 'outline'}
-                onClick={() => handleResolutionChange('2K')}
-                className="flex-1 h-8"
-              >
-                2K
-              </Button>
-              <Button
-                size="sm"
-                variant={resolution === '4K' ? 'default' : 'outline'}
-                onClick={() => handleResolutionChange('4K')}
-                className="flex-1 h-8"
-              >
-                4K
-              </Button>
-            </div>
-          </div>
-
-          {/* Trial Count */}
-          <div className="space-y-2">
-            <div className="flex items-center justify-between">
-              <Label className="text-xs">Trial Images</Label>
-              <span className="text-xs text-muted-foreground">{trialCount}</span>
-            </div>
-            <div
-              className="touch-none"
-              onPointerDown={(e) => e.stopPropagation()}
-            >
-              <Slider
-                value={[trialCount]}
-                onValueChange={handleTrialCountChange}
-                min={0}
-                max={10}
-                step={1}
-                className="w-full"
-              />
-            </div>
-          </div>
-        </div>
-
-        {/* Prompt Section */}
-        <div className="space-y-4 pt-4 border-t">
-          <div className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
-            <Sparkles className="h-4 w-4" />
-            Prompt
-          </div>
-
-          {/* Prompt Mode Selection */}
-          <div className="grid grid-cols-3 gap-1">
-            {[
-              { id: 'template', icon: FileText, label: 'Template' },
-              { id: 'preset', icon: Palette, label: 'Preset' },
-              { id: 'custom', icon: PenLine, label: 'Custom' },
-            ].map(mode => (
-              <button
-                key={mode.id}
-                onClick={() => handlePromptModeChange(mode.id as 'template' | 'preset' | 'custom')}
-                className={cn(
-                  'flex flex-col items-center gap-1 p-2 rounded-lg border text-xs transition-all',
-                  promptMode === mode.id
-                    ? 'border-primary bg-primary/5 text-primary'
-                    : 'border-transparent hover:bg-muted'
-                )}
-              >
-                <mode.icon className="h-4 w-4" />
-                {mode.label}
-              </button>
-            ))}
-          </div>
-
-          {/* Template Selection */}
-          {promptMode === 'template' && (
-            <div className="space-y-2">
-              <div className="max-h-[200px] overflow-y-auto space-y-1">
-                {templates?.map(template => (
                   <button
-                    key={template.id}
-                    onClick={() => handleTemplateChange(template.id)}
+                    key={model.id}
+                    onClick={() => handleAiModelChange(model.id)}
                     className={cn(
-                      'w-full flex items-start gap-2 p-2 rounded-lg text-left text-xs transition-all',
-                      templateId === template.id
-                        ? 'bg-primary/10 border border-primary'
-                        : 'hover:bg-muted border border-transparent'
+                      "w-full flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all text-left",
+                      aiModel === model.id
+                        ? "bg-indigo-50 ring-1 ring-indigo-400"
+                        : "bg-slate-50 hover:bg-slate-100"
                     )}
                   >
-                    {templateId === template.id && (
-                      <Check className="h-3 w-3 text-primary shrink-0 mt-0.5" />
-                    )}
-                    <div className={cn(templateId !== template.id && 'ml-5')}>
-                      <span className="font-medium">{template.name}</span>
-                      {template.category && (
-                        <p className="text-muted-foreground">{template.category}</p>
-                      )}
+                    <div className={cn(
+                      "w-6 h-6 rounded-md flex items-center justify-center",
+                      model.tier === 'fast' ? 'bg-amber-100' :
+                      model.tier === 'balanced' ? 'bg-blue-100' : 'bg-purple-100'
+                    )}>
+                      {model.tier === 'fast' && <Zap className="w-3 h-3 text-amber-600" />}
+                      {model.tier === 'balanced' && <Star className="w-3 h-3 text-blue-600" />}
+                      {model.tier === 'premium' && <Crown className="w-3 h-3 text-purple-600" />}
                     </div>
-                  </button>
-                ))}
-              </div>
-              {selectedTemplate && (
-                <div className="p-2 bg-muted/50 rounded text-xs text-muted-foreground line-clamp-2">
-                  {selectedTemplate.base_prompt || 'No preview'}
-                </div>
-              )}
-            </div>
-          )}
-
-          {/* Preset Selection */}
-          {promptMode === 'preset' && (
-            <div className="space-y-2">
-              <div className="max-h-[200px] overflow-y-auto space-y-1">
-                {presets?.map(preset => (
-                  <button
-                    key={preset.id}
-                    onClick={() => handlePresetChange(preset.id)}
-                    className={cn(
-                      'w-full flex items-start gap-2 p-2 rounded-lg text-left text-xs transition-all',
-                      presetId === preset.id
-                        ? 'bg-primary/10 border border-primary'
-                        : 'hover:bg-muted border border-transparent'
-                    )}
-                  >
-                    {presetId === preset.id && (
-                      <Check className="h-3 w-3 text-primary shrink-0 mt-0.5" />
-                    )}
-                    <div className={cn(presetId !== preset.id && 'ml-5')}>
-                      <span className="font-medium">{preset.name}</span>
-                      <div className="flex gap-1 mt-1">
-                        <Badge variant="outline" className="text-[9px] px-1">
-                          <Camera className="h-2 w-2 mr-0.5" />
-                          {preset.camera_angle}
-                        </Badge>
-                        <Badge variant="outline" className="text-[9px] px-1">
-                          <Sun className="h-2 w-2 mr-0.5" />
-                          {preset.lighting_style?.replace('-', ' ')}
-                        </Badge>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2">
+                        <span className={cn(
+                          "text-sm font-medium",
+                          aiModel === model.id ? "text-indigo-700" : "text-slate-700"
+                        )}>
+                          {model.name}
+                        </span>
+                        {model.recommended && (
+                          <Badge className="text-[9px] py-0 h-4 bg-green-100 text-green-700 border-0">
+                            Recommended
+                          </Badge>
+                        )}
+                        <span className="text-xs text-slate-400 ml-auto">{model.price}</span>
                       </div>
+                      <p className="text-[10px] text-slate-500 truncate mt-0.5">
+                        {model.bestFor}
+                      </p>
                     </div>
+                    {aiModel === model.id && (
+                      <Check className="w-4 h-4 text-indigo-500 flex-shrink-0" />
+                    )}
                   </button>
                 ))}
               </div>
-              {selectedPreset && (
-                <div className="p-2 bg-muted/50 rounded text-xs text-muted-foreground">
-                  {selectedPreset.description || `${selectedPreset.camera_angle}, ${selectedPreset.lighting_style}`}
-                </div>
-              )}
-            </div>
-          )}
-
-          {/* Custom Prompt */}
-          {promptMode === 'custom' && (
-            <div className="space-y-2">
-              <div className="flex justify-end">
-                <Button
-                  size="sm"
-                  variant="outline"
-                  onClick={handleAIGenerate}
-                  disabled={isGenerating}
-                  className="h-7 text-xs gap-1"
-                >
-                  {isGenerating ? (
-                    <Loader2 className="h-3 w-3 animate-spin" />
-                  ) : (
-                    <Wand2 className="h-3 w-3" />
-                  )}
-                  AI Generate
-                </Button>
-              </div>
-              <Textarea
-                value={customPrompt}
-                onChange={(e) => setCustomPrompt(e.target.value)}
-                onBlur={handleCustomPromptBlur}
-                placeholder="Describe how you want images transformed..."
-                className="min-h-[100px] text-xs resize-none"
-              />
             </div>
           )}
         </div>
-      </div>
-    </ScrollArea>
+
+        {/* Resolution Card */}
+        <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
+          <button
+            onClick={() => toggleSection('resolution')}
+            className="w-full flex items-center justify-between px-3 py-2.5 hover:bg-slate-50/50 transition-colors"
+          >
+            <div className="flex items-center gap-2">
+              <div className="w-7 h-7 rounded-lg bg-purple-50 flex items-center justify-center">
+                <Layout className="w-3.5 h-3.5 text-purple-500" />
+              </div>
+              <span className="text-sm font-medium text-slate-700">Resolution</span>
+              <span className="text-xs text-slate-400 ml-1">{resolution}</span>
+            </div>
+            <div className={cn(
+              "w-6 h-6 rounded-full flex items-center justify-center transition-all",
+              expandedSections.resolution ? "bg-purple-100" : "bg-slate-100"
+            )}>
+              {expandedSections.resolution ? (
+                <ChevronDown className="w-3.5 h-3.5 text-purple-500" />
+              ) : (
+                <ChevronRight className="w-3.5 h-3.5 text-slate-400" />
+              )}
+            </div>
+          </button>
+
+          {expandedSections.resolution && (
+            <div className="border-t border-slate-100 px-3 pb-3 pt-3">
+              <div className="grid grid-cols-2 gap-2">
+                {(['2K', '4K'] as const).map(res => (
+                  <button
+                    key={res}
+                    onClick={() => handleResolutionChange(res)}
+                    className={cn(
+                      "flex flex-col items-center gap-1 py-3 px-4 rounded-lg transition-all",
+                      resolution === res
+                        ? "bg-purple-50 ring-1 ring-purple-400"
+                        : "bg-slate-50 hover:bg-slate-100"
+                    )}
+                  >
+                    <span className={cn(
+                      "text-lg font-semibold",
+                      resolution === res ? "text-purple-600" : "text-slate-600"
+                    )}>
+                      {res}
+                    </span>
+                    <span className={cn(
+                      "text-[10px]",
+                      resolution === res ? "text-purple-500" : "text-slate-400"
+                    )}>
+                      {res === '2K' ? 'Web-ready' : 'High detail'}
+                    </span>
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Preview Sample Card */}
+        <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
+          <button
+            onClick={() => toggleSection('preview')}
+            className="w-full flex items-center justify-between px-3 py-2.5 hover:bg-slate-50/50 transition-colors"
+          >
+            <div className="flex items-center gap-2">
+              <div className="w-7 h-7 rounded-lg bg-amber-50 flex items-center justify-center">
+                <Eye className="w-3.5 h-3.5 text-amber-500" />
+              </div>
+              <span className="text-sm font-medium text-slate-700">Preview Sample</span>
+              <span className="text-xs text-slate-400 ml-1">{previewCount} images</span>
+            </div>
+            <div className={cn(
+              "w-6 h-6 rounded-full flex items-center justify-center transition-all",
+              expandedSections.preview ? "bg-amber-100" : "bg-slate-100"
+            )}>
+              {expandedSections.preview ? (
+                <ChevronDown className="w-3.5 h-3.5 text-amber-500" />
+              ) : (
+                <ChevronRight className="w-3.5 h-3.5 text-slate-400" />
+              )}
+            </div>
+          </button>
+
+          {expandedSections.preview && (
+            <div className="border-t border-slate-100 px-3 pb-3 pt-3">
+              <div className="space-y-3">
+                <div
+                  className="touch-none"
+                  onPointerDown={(e) => e.stopPropagation()}
+                >
+                  <Slider
+                    value={[previewCount]}
+                    onValueChange={handlePreviewCountChange}
+                    min={1}
+                    max={10}
+                    step={1}
+                    className="w-full"
+                  />
+                </div>
+                <div className="flex justify-between text-[10px] text-slate-400">
+                  <span>1</span>
+                  <span className="font-medium text-amber-600">{previewCount} images</span>
+                  <span>10</span>
+                </div>
+                <p className="text-[10px] text-slate-500 text-center">
+                  We'll pick representative images to validate the look
+                </p>
+              </div>
+            </div>
+          )}
+          </div>
+
+          {/* Brief Builder - Inline without its own scroll */}
+          <BriefBuilderInline project={project} />
+        </div>
+      </ScrollArea>
+    </div>
   )
 }

@@ -1,3 +1,4 @@
+import { Layers, FileEdit, Loader2, CheckCircle2, Archive } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { cn } from '@/lib/utils'
 
@@ -17,12 +18,12 @@ interface ProjectStatusTabsProps {
   counts: ProjectStatusCount
 }
 
-const tabs: { id: ProjectStatusTab; label: string; color?: string }[] = [
-  { id: 'all', label: 'All' },
-  { id: 'draft', label: 'Draft', color: 'bg-gray-100 text-gray-700' },
-  { id: 'active', label: 'Active', color: 'bg-blue-100 text-blue-700' },
-  { id: 'completed', label: 'Completed', color: 'bg-green-100 text-green-700' },
-  { id: 'archived', label: 'Archived', color: 'bg-gray-100 text-gray-500' },
+const tabs: { id: ProjectStatusTab; label: string; color?: string; icon?: React.ReactNode }[] = [
+  { id: 'all', label: 'All', icon: <Layers className="h-3 w-3" /> },
+  { id: 'draft', label: 'Draft', color: 'bg-slate-100 text-slate-700', icon: <FileEdit className="h-3 w-3" /> },
+  { id: 'active', label: 'Active', color: 'bg-blue-100 text-blue-700', icon: <Loader2 className="h-3 w-3" /> },
+  { id: 'completed', label: 'Completed', color: 'bg-green-100 text-green-700', icon: <CheckCircle2 className="h-3 w-3" /> },
+  { id: 'archived', label: 'Archived', color: 'bg-slate-100 text-slate-500', icon: <Archive className="h-3 w-3" /> },
 ]
 
 export function ProjectStatusTabs({ activeTab, onTabChange, counts }: ProjectStatusTabsProps) {
@@ -47,7 +48,15 @@ export function ProjectStatusTabs({ activeTab, onTabChange, counts }: ProjectSta
                 ? 'border-primary bg-primary/5 shadow-sm'
                 : 'border-gray-200 bg-white'
             )}
+            aria-pressed={isActive}
           >
+            {tab.icon && (
+              <span className={cn(
+                isActive ? 'text-primary' : 'text-slate-500'
+              )} aria-hidden="true">
+                {tab.icon}
+              </span>
+            )}
             <span className={cn(
               'font-medium',
               isActive ? 'text-primary' : 'text-gray-700'

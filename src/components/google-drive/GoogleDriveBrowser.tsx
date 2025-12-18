@@ -41,6 +41,7 @@ interface FolderPreviewState {
 interface GoogleDriveBrowserProps {
   onSelectFiles?: (files: GoogleDriveFile[]) => void
   onSelectFolder?: (folderId: string, folderName: string) => void
+  onSelectionChange?: (files: GoogleDriveFile[]) => void // Called on every selection change (optional)
   selectionMode?: 'files' | 'folder' | 'both'
   maxFiles?: number
   projectId?: string // For remembering last folder per project
@@ -57,6 +58,7 @@ const getLastFolderKey = (projectId: string) => `drive-last-folder-${projectId}`
 export default function GoogleDriveBrowser({
   onSelectFiles,
   onSelectFolder,
+  onSelectionChange,
   selectionMode = 'files',
   maxFiles = 500,
   projectId
@@ -230,7 +232,7 @@ export default function GoogleDriveBrowser({
     setBreadcrumbs([...breadcrumbs, { id: folderId, name: folderName }])
     setSelectedFiles([])
     setSearchQuery('')
-    onSelectFiles?.([])
+    onSelectionChange?.([])
   }
 
   const navigateToBreadcrumb = (index: number) => {
@@ -240,7 +242,7 @@ export default function GoogleDriveBrowser({
     setBreadcrumbs(breadcrumbs.slice(0, index + 1))
     setSelectedFiles([])
     setSearchQuery('')
-    onSelectFiles?.([])
+    onSelectionChange?.([])
   }
 
   const toggleFileSelection = (file: GoogleDriveFile) => {
@@ -254,8 +256,8 @@ export default function GoogleDriveBrowser({
       return
     }
     setSelectedFiles(newSelection)
-    // Notify parent of selection change
-    onSelectFiles?.(newSelection)
+    // Notify parent of selection change (for live tracking, not confirm)
+    onSelectionChange?.(newSelection)
   }
 
   const selectAllImages = () => {
@@ -269,12 +271,12 @@ export default function GoogleDriveBrowser({
     }
 
     setSelectedFiles(newSelected)
-    onSelectFiles?.(newSelected)
+    onSelectionChange?.(newSelected)
   }
 
   const deselectAll = () => {
     setSelectedFiles([])
-    onSelectFiles?.([])
+    onSelectionChange?.([])
   }
 
   const handleConfirm = () => {

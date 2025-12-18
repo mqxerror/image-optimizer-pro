@@ -9,7 +9,9 @@
 |---------|-----|----------|----------|
 | Main Server SSH | `ssh -p 2222 root@38.97.60.181` | root | 3F68ypfD1LOfcAd |
 | CloudPanel | https://38.97.60.181:8443 | (your account) | (your password) |
-| Dokploy | http://38.97.60.181:3000 | (your account) | (your password) |
+| Dokploy (Main) | http://38.97.60.181:3000 | (your account) | (your password) |
+| **Dokploy (Apps)** | http://198.46.142.2:3000 | (your account) | (your password) |
+| **Apps Server SSH** | `ssh root@198.46.142.2` | root | rf38e6OlbJ47FTGXg2 |
 | n8n | http://38.97.60.181:5680 | wassim | 5ty6%TY^5ty6 |
 | NocoDB | http://38.97.60.181:8081 | wassim@mercan.com | 5ty6%TY^5ty6 |
 | Supabase Studio | http://38.97.60.181:3002 | wassim | 5ty6%TY^5ty6 |
@@ -139,7 +141,53 @@ curl -X POST "http://38.97.60.181:11235/crawl" \
 
 ## 5. Other Servers
 
-### 5.1 Old n8n Server
+### 5.1 Apps/Staging Server (RackNerd - Dokploy)
+| Property | Value |
+|----------|-------|
+| **Hostname** | racknerd-a261aa2 |
+| **IP Address** | 198.46.142.2 |
+| **SSH Port** | 22 |
+| **Username** | root |
+| **Password** | rf38e6OlbJ47FTGXg2 |
+| **Dokploy URL** | http://198.46.142.2:3000 |
+| **Dokploy API Key** | `yUJENbJxTRoCWpriHSTmUPDbqFBdxghAHNdxhfakEjFOgqrHckftGBlDqypHHbaX` |
+| **Purpose** | Staging deployments, app hosting |
+
+#### Image Processing Services (Apps Server)
+
+| Service | URL | Purpose | Status |
+|---------|-----|---------|--------|
+| **imgproxy** | https://imgproxy.pixelcraftedmedia.com | Image compression (WebP q92) | ✅ Active - Used by Image Optimizer |
+| **imaginary** | https://imaginary.pixelcraftedmedia.com | Image manipulation API | 🔜 Future - Studio features |
+| **IOPaint** | https://iopaint.pixelcraftedmedia.com | AI inpainting/editing | 🔜 Future - Studio features |
+
+**imgproxy Usage (Active):**
+```bash
+# Compress to WebP at quality 92, max 2048px
+https://imgproxy.pixelcraftedmedia.com/insecure/rs:fit:2048:2048/q:92/plain/{encoded_source_url}@webp
+```
+
+**imaginary Usage (Future - for Studio):**
+```bash
+# Resize image
+curl "https://imaginary.pixelcraftedmedia.com/resize?width=800&height=600&url={image_url}"
+
+# Crop image
+curl "https://imaginary.pixelcraftedmedia.com/crop?width=500&height=500&url={image_url}"
+
+# Rotate image
+curl "https://imaginary.pixelcraftedmedia.com/rotate?rotate=90&url={image_url}"
+```
+
+**IOPaint Usage (Future - for Studio):**
+```bash
+# AI-powered inpainting/object removal
+curl -X POST "https://iopaint.pixelcraftedmedia.com/inpaint" \
+  -F "image=@input.jpg" \
+  -F "mask=@mask.png"
+```
+
+### 5.2 Old n8n Server
 | Property | Value |
 |----------|-------|
 | **IP Address** | 23.94.185.25 |
@@ -216,7 +264,8 @@ curl -X POST "http://38.97.60.181:11235/crawl" \
 
 | Service | Token/Key |
 |---------|-----------|
-| Dokploy API | `qaBFTnweBNakQRcFNdQyFbsfnYhGxaKlDRDnhqtdfEdSrwOVmJJTofWXiVKHEYgC` |
+| Dokploy API (Main) | `qaBFTnweBNakQRcFNdQyFbsfnYhGxaKlDRDnhqtdfEdSrwOVmJJTofWXiVKHEYgC` |
+| Dokploy API (Apps) | `yUJENbJxTRoCWpriHSTmUPDbqFBdxghAHNdxhfakEjFOgqrHckftGBlDqypHHbaX` |
 | Crawl4AI | `crawl4ai_secret_token` |
 | Old NocoDB API | `bpRRKPcqa6_V-Q7-waocifzpZdQjEi5ATb8_zl7t` |
 

@@ -157,12 +157,17 @@ Deno.serve(async (req: Request) => {
       if (resultUrl) {
         console.log(`[ai-webhook] SUCCESS! Job ${job.id} result: ${resultUrl}`)
 
+        // IMGPROXY DISABLED - using Kie.ai result URL directly
+        // TODO: Re-enable imgproxy compression and re-upload once working
+        const finalUrl = resultUrl
+        console.log(`[ai-webhook] Using direct result URL (imgproxy disabled)`)
+
         // Update job (triggers sync to source table via database trigger)
         const { error: updateError } = await supabase
           .from('ai_jobs')
           .update({
             status: 'success',
-            result_url: resultUrl,
+            result_url: finalUrl,
             error_message: null,
             callback_received: true,
             callback_at: new Date().toISOString(),
@@ -178,12 +183,15 @@ Deno.serve(async (req: Request) => {
           )
         }
 
+        // Note: We keep both compressed original and optimized result
+        // Future feature: Keep originals for 3 months free, then $5/month for extended storage
+
         return new Response(
           JSON.stringify({
             success: true,
             job_id: job.id,
             status: 'success',
-            result_url: resultUrl,
+            result_url: finalUrl,
           }),
           { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
         )

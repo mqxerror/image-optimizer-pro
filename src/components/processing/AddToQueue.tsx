@@ -40,7 +40,7 @@ export default function AddToQueue({
   projectId,
   projectName,
   onQueued,
-  autoProcess = true, // Default to auto-processing
+  autoProcess = false, // Manual run behavior - nothing processes until Run Batch
   autoProcessBatchSize = 10
 }: AddToQueueProps) {
   const queryClient = useQueryClient()
@@ -151,9 +151,10 @@ export default function AddToQueue({
             : `Processing ${idsToProcess.length} images`
         })
       } else {
+        // Manual run behavior - friendly toast
         toast({
-          title: 'Images added to queue',
-          description: `${data.inserted} images queued for processing`
+          title: `${data.inserted} images added`,
+          description: 'Ready to run. Click Run Batch to start processing.'
         })
       }
 
@@ -226,9 +227,10 @@ export default function AddToQueue({
             : `Processing ${idsToProcess.length} images`
         })
       } else {
+        // Manual run behavior - friendly toast
         toast({
-          title: 'Images added to queue',
-          description: `${insertedIds.length} images queued for processing`
+          title: `${insertedIds.length} images added`,
+          description: 'Ready to run. Click Run Batch to start processing.'
         })
       }
 
@@ -326,26 +328,31 @@ export default function AddToQueue({
 
         {/* Footer - only show for Google Drive tab */}
         {activeTab === 'google-drive' && (
-          <DialogFooter className="mt-4">
-            <Button variant="outline" onClick={() => setIsOpen(false)} disabled={isUploading}>
-              Cancel
-            </Button>
-            <Button
-              onClick={handleAddToQueue}
-              disabled={selectedFiles.length === 0 || addToQueueMutation.isPending}
-            >
-              {addToQueueMutation.isPending ? (
-                <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Adding...
-                </>
-              ) : (
-                <>
-                  <ImageIcon className="mr-2 h-4 w-4" />
-                  Add {selectedFiles.length} to Queue
-                </>
-              )}
-            </Button>
+          <DialogFooter className="mt-4 flex-col sm:flex-row gap-2">
+            <div className="flex-1 text-xs text-muted-foreground text-left hidden sm:block">
+              Nothing runs until you click Run Batch.
+            </div>
+            <div className="flex gap-2">
+              <Button variant="outline" onClick={() => setIsOpen(false)} disabled={isUploading}>
+                Cancel
+              </Button>
+              <Button
+                onClick={handleAddToQueue}
+                disabled={selectedFiles.length === 0 || addToQueueMutation.isPending}
+              >
+                {addToQueueMutation.isPending ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Adding...
+                  </>
+                ) : (
+                  <>
+                    <ImageIcon className="mr-2 h-4 w-4" />
+                    Add {selectedFiles.length} to Batch
+                  </>
+                )}
+              </Button>
+            </div>
           </DialogFooter>
         )}
       </DialogContent>

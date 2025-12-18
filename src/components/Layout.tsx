@@ -26,6 +26,7 @@ import {
 import { cn } from '@/lib/utils'
 import { useAuthStore } from '@/stores/auth'
 import { CommandPalette } from '@/components/CommandPalette'
+import { KeyboardShortcutsHelp } from '@/components/KeyboardShortcutsHelp'
 import { useQueueRealtime } from '@/hooks/useQueueRealtime'
 import { usePermissions } from '@/hooks/usePermissions'
 import { OrganizationSwitcher } from '@/components/OrganizationSwitcher'
@@ -160,6 +161,9 @@ export default function Layout() {
 
       {/* Command Palette - Press Cmd+K to open */}
       <CommandPalette open={commandPaletteOpen} onOpenChange={setCommandPaletteOpen} />
+
+      {/* Keyboard Shortcuts Help - Press ? to open */}
+      <KeyboardShortcutsHelp />
 
       {/* Mobile Navigation Sheet */}
       <Sheet open={mobileNavOpen} onOpenChange={setMobileNavOpen}>

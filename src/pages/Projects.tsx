@@ -61,7 +61,7 @@ import { useToast } from '@/hooks/use-toast'
 import { supabase } from '@/lib/supabase'
 import { useAuthStore } from '@/stores/auth'
 import { UnifiedProjectModal } from '@/components/projects/UnifiedProjectModal'
-import { CreateProjectWizard } from '@/components/project-wizard'
+import { NewProjectWizard } from '@/components/project-wizard-v2'
 import { InsufficientTokensPrompt } from '@/components/tokens/InsufficientTokensPrompt'
 import type { Project } from '@/types/database'
 
@@ -618,10 +618,13 @@ export default function Projects() {
         </div>
       )}
 
-      {/* Create Project Wizard */}
-      <CreateProjectWizard
+      {/* Create Project Wizard - New unified mobile-first design */}
+      <NewProjectWizard
         open={isCreateOpen}
         onOpenChange={setIsCreateOpen}
+        onProjectCreated={(projectId) => {
+          setSelectedProjectId(projectId)
+        }}
       />
 
       {/* Unified Project Modal - Combines view, edit, and management */}

@@ -5,11 +5,13 @@ import type { LucideIcon } from 'lucide-react'
 import {
   Loader2,
   CheckCircle,
-  XCircle,
+  AlertTriangle,
   Clock,
   Image as ImageIcon,
   CheckSquare,
-  Square
+  Square,
+  XCircle,
+  LayoutGrid
 } from 'lucide-react'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Badge } from '@/components/ui/badge'
@@ -49,12 +51,13 @@ interface StatusTab {
   animate?: boolean
 }
 
+// Outcome-based tab labels for user-friendly UI
 const statusTabs: StatusTab[] = [
-  { id: 'all', label: 'All', color: 'bg-gray-100 text-gray-700' },
-  { id: 'queued', label: 'Queue', color: 'bg-gray-100 text-gray-700', icon: Clock },
-  { id: 'processing', label: 'Processing', color: 'bg-blue-100 text-blue-700', icon: Loader2, animate: true },
-  { id: 'success', label: 'Done', color: 'bg-green-100 text-green-700', icon: CheckCircle },
-  { id: 'failed', label: 'Failed', color: 'bg-red-100 text-red-700', icon: XCircle },
+  { id: 'all', label: 'All Images', color: 'bg-slate-100 text-slate-700', icon: LayoutGrid },
+  { id: 'queued', label: 'To Process', color: 'bg-slate-100 text-slate-700', icon: Clock },
+  { id: 'processing', label: 'Running', color: 'bg-blue-100 text-blue-700', icon: Loader2, animate: true },
+  { id: 'success', label: 'Ready to Review', color: 'bg-green-100 text-green-700', icon: CheckCircle },
+  { id: 'failed', label: 'Needs Fix', color: 'bg-amber-100 text-amber-700', icon: AlertTriangle },
 ]
 
 export function ImageQueueGrid({
@@ -258,10 +261,10 @@ export function ImageQueueGrid({
             <p className="text-sm font-medium">No images in this category</p>
             <p className="text-xs">
               {activeTab === 'all' && 'Add images to start processing'}
-              {activeTab === 'queued' && 'No images waiting in queue'}
-              {activeTab === 'processing' && 'No images currently processing'}
-              {activeTab === 'success' && 'No images processed yet'}
-              {activeTab === 'failed' && 'No failed images'}
+              {activeTab === 'queued' && 'No images waiting to be processed'}
+              {activeTab === 'processing' && 'No images currently running'}
+              {activeTab === 'success' && 'No images ready for review yet'}
+              {activeTab === 'failed' && 'No images need fixing'}
             </p>
           </div>
         ) : (

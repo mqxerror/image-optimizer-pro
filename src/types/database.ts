@@ -963,6 +963,7 @@ export type Database = {
       projects: {
         Row: {
           ai_model: string | null
+          brief_data: Json | null
           created_at: string | null
           custom_prompt: string | null
           failed_images: number | null
@@ -987,6 +988,7 @@ export type Database = {
         }
         Insert: {
           ai_model?: string | null
+          brief_data?: Json | null
           created_at?: string | null
           custom_prompt?: string | null
           failed_images?: number | null
@@ -1011,6 +1013,7 @@ export type Database = {
         }
         Update: {
           ai_model?: string | null
+          brief_data?: Json | null
           created_at?: string | null
           custom_prompt?: string | null
           failed_images?: number | null

@@ -46,6 +46,7 @@ import { SettingsPanel } from './modal/SettingsPanel'
 import { ImageQueueGrid } from './modal/ImageQueueGrid'
 import { ProgressFooter } from './modal/ProgressFooter'
 import { SelectionActionsBar } from './modal/SelectionActionsBar'
+import { RunActionBar } from './modal/RunActionBar'
 import { useProjectQueueStats, useRetryProjectFailed } from '@/components/project-detail/hooks/useProjectQueueStats'
 import AddToQueue from '@/components/processing/AddToQueue'
 import type { Project } from '@/types/database'
@@ -584,6 +585,19 @@ export function UnifiedProjectModal({
 
             {/* Right Panel - Images */}
             <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
+              {/* Run Action Bar - Clear CTAs */}
+              <RunActionBar
+                project={project}
+                queueStats={queueStats}
+                onPreviewRun={() => {
+                  // Preview run processes only trial_count images
+                  statusMutation.mutate('active')
+                }}
+                onRunBatch={() => statusMutation.mutate('active')}
+                isRunning={statusMutation.isPending}
+                isProcessing={isProcessingImages}
+              />
+
               {/* Image Queue Grid */}
               <ImageQueueGrid
                 projectId={project.id}

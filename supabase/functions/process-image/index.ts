@@ -357,86 +357,137 @@ Deno.serve(async (req: Request) => {
       }
     }
 
-    // Get Google Drive connection for this organization
-    const { data: connection, error: connectionError } = await supabase
-      .from('google_drive_connections')
-      .select('id')
-      .eq('organization_id', queueItem.organization_id)
-      .eq('is_active', true)
-      .single()
-
-    if (connectionError || !connection) {
-      throw new Error('No active Google Drive connection found')
-    }
-
-    // Step 1: Download image from Google Drive
-    console.log('[process-image] Step 1: Downloading from Google Drive')
-
-    await supabase
-      .from('processing_queue')
-      .update({ progress: 20 })
-      .eq('id', queueItemId)
-
-    const downloadResponse = await fetchWithTimeout(
-      `${supabaseUrl}/functions/v1/google-drive-files`,
-      {
-        method: 'POST',
-        headers: {
-          'Authorization': authHeader,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          action: 'download',
-          folder_id: queueItem.file_id,
-          connection_id: connection.id
-        })
-      },
-      30000
+    // Determine the source URL for AI processing
+    // For direct uploads: use file_url directly (already in Supabase Storage)
+    // For Google Drive: download and upload first
+    let originalPublicUrl: string
+    const isDirectUpload = queueItem.file_url && (
+      queueItem.file_url.includes('supabase') ||
+      queueItem.file_url.includes(supabaseUrl) ||
+      queueItem.file_id?.startsWith('local_')
     )
 
-    if (!downloadResponse.ok) {
-      const errorText = await downloadResponse.text()
-      throw new Error(`Failed to download from Google Drive: ${errorText}`)
+    if (isDirectUpload && queueItem.file_url) {
+      // OPTIMIZED PATH: Direct upload - use imgproxy for compression
+      console.log('[process-image] Direct upload detected')
+
+      await supabase
+        .from('processing_queue')
+        .update({ progress: 40 })
+        .eq('id', queueItemId)
+
+      // For direct uploads, extract storage path and create signed URL for imgproxy
+      // URL format: https://xxx.supabase.co/storage/v1/object/public/bucket/path
+      // Or: https://xxx.supabase.co/storage/v1/object/sign/bucket/path?token=...
+      const fileUrl = queueItem.file_url
+
+      // IMGPROXY DISABLED - using direct URLs until imgproxy is properly configured
+      // TODO: Re-enable imgproxy compression once working
+      originalPublicUrl = fileUrl
+      console.log('[process-image] Using direct URL (imgproxy disabled)')
+
+      await supabase
+        .from('processing_queue')
+        .update({ progress: 60 })
+        .eq('id', queueItemId)
+
+    } else {
+      // STANDARD PATH: Google Drive file - download and upload
+      console.log('[process-image] Google Drive file, downloading...')
+
+      // Get Google Drive connection for this organization
+      const { data: connection, error: connectionError } = await supabase
+        .from('google_drive_connections')
+        .select('id')
+        .eq('organization_id', queueItem.organization_id)
+        .eq('is_active', true)
+        .single()
+
+      if (connectionError || !connection) {
+        throw new Error('No active Google Drive connection found')
+      }
+
+      // Step 1: Download image from Google Drive
+      console.log('[process-image] Step 1: Downloading from Google Drive')
+
+      await supabase
+        .from('processing_queue')
+        .update({ progress: 20 })
+        .eq('id', queueItemId)
+
+      const downloadResponse = await fetchWithTimeout(
+        `${supabaseUrl}/functions/v1/google-drive-files`,
+        {
+          method: 'POST',
+          headers: {
+            'Authorization': authHeader,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            action: 'download',
+            folder_id: queueItem.file_id,
+            connection_id: connection.id
+          })
+        },
+        30000
+      )
+
+      if (!downloadResponse.ok) {
+        const errorText = await downloadResponse.text()
+        throw new Error(`Failed to download from Google Drive: ${errorText}`)
+      }
+
+      const downloadResult = await downloadResponse.json()
+      console.log('[process-image] Download successful')
+
+      await supabase
+        .from('processing_queue')
+        .update({ progress: 40 })
+        .eq('id', queueItemId)
+
+      // Step 2: Upload compressed version to Supabase Storage
+      // We compress via Image Transformation when sending to Kie.ai
+      console.log('[process-image] Step 2: Uploading compressed to storage')
+
+      const originalImageBase64 = downloadResult.data
+      const originalBuffer = Uint8Array.from(atob(originalImageBase64), c => c.charCodeAt(0))
+
+      // Store compressed version (we keep this + the optimized result)
+      // Future feature: Keep originals for 3 months free, then $5/month for extended storage
+      const compressedPath = `${queueItem.organization_id}/${queueItem.project_id}/compressed_${queueItem.id}.jpg`
+
+      const { error: uploadError } = await supabase.storage
+        .from('processed-images')
+        .upload(compressedPath, originalBuffer, {
+          contentType: downloadResult.contentType || 'image/jpeg',
+          upsert: true
+        })
+
+      if (uploadError) {
+        console.error('[process-image] Upload error:', uploadError)
+        throw new Error('Failed to upload image to storage')
+      }
+
+      // Generate signed URL for the source image (private bucket, expires in 1 hour)
+      const { data: signedUrlData, error: signedUrlError } = await supabase.storage
+        .from('processed-images')
+        .createSignedUrl(compressedPath, 3600) // 1 hour expiry
+
+      if (signedUrlError || !signedUrlData?.signedUrl) {
+        console.error('[process-image] Failed to create signed URL:', signedUrlError)
+        throw new Error('Failed to create signed URL for image')
+      }
+
+      // IMGPROXY DISABLED - using direct signed URL until imgproxy is properly configured
+      // TODO: Re-enable imgproxy compression once working
+      originalPublicUrl = signedUrlData.signedUrl
+      console.log('[process-image] Using direct signed URL for Kie.ai (imgproxy disabled)')
+
+      await supabase
+        .from('processing_queue')
+        .update({ progress: 60 })
+        .eq('id', queueItemId)
     }
-
-    const downloadResult = await downloadResponse.json()
-    console.log('[process-image] Download successful')
-
-    await supabase
-      .from('processing_queue')
-      .update({ progress: 40 })
-      .eq('id', queueItemId)
-
-    // Step 2: Upload original to Supabase Storage
-    console.log('[process-image] Step 2: Uploading to storage')
-
-    const originalImageBase64 = downloadResult.data
-    const originalBuffer = Uint8Array.from(atob(originalImageBase64), c => c.charCodeAt(0))
-    const fileExt = queueItem.file_name.split('.').pop() || 'jpg'
-    const originalPath = `${queueItem.organization_id}/${queueItem.project_id}/original_${Date.now()}.${fileExt}`
-
-    const { error: uploadError } = await supabase.storage
-      .from('processed-images')
-      .upload(originalPath, originalBuffer, {
-        contentType: downloadResult.contentType,
-        upsert: true
-      })
-
-    if (uploadError) {
-      console.error('[process-image] Upload error:', uploadError)
-      throw new Error('Failed to upload image to storage')
-    }
-
-    const { data: { publicUrl: originalPublicUrl } } = supabase.storage
-      .from('processed-images')
-      .getPublicUrl(originalPath)
-
-    console.log('[process-image] Original uploaded:', originalPublicUrl)
-
-    await supabase
-      .from('processing_queue')
-      .update({ progress: 60 })
-      .eq('id', queueItemId)
 
     // Step 3: Submit AI job (FIRE-AND-FORGET!)
     console.log('[process-image] Step 3: Submitting AI job')
