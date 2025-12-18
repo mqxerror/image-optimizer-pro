@@ -94,9 +94,10 @@ export function ImageQueueGrid({
       const pageSize = 50
       const offset = pageParam * pageSize
 
-      // For success tab, fetch from processing_history
+      // For success tab, fetch from processing_history AND any stuck success items in queue
       if (activeTab === 'success') {
-        const { data: historyData, error } = await supabase
+        // First, get items from processing_history
+        const { data: historyData, error: historyError } = await supabase
           .from('processing_history')
           .select('id, file_id, file_name, original_url, optimized_url, status')
           .eq('project_id', projectId)
@@ -104,21 +105,48 @@ export function ImageQueueGrid({
           .order('completed_at', { ascending: false, nullsFirst: false })
           .range(offset, offset + pageSize - 1)
 
-        if (error) {
-          console.error('Error fetching processing_history:', error)
-          throw error
+        if (historyError) {
+          console.error('Error fetching processing_history:', historyError)
+          throw historyError
         }
 
+        // Also check for any items stuck in processing_queue with success status
+        // (fallback in case DELETE failed in the sync trigger)
+        const { data: queueSuccessData } = await supabase
+          .from('processing_queue')
+          .select('id, file_id, file_name, file_url, thumbnail_url, status')
+          .eq('project_id', projectId)
+          .eq('status', 'success')
+          .order('last_updated', { ascending: false })
+          .limit(50)
+
+        // Combine both sources, history first
+        const historyImages = (historyData || []).map(h => ({
+          id: h.id,
+          file_id: h.file_id,
+          file_name: h.file_name,
+          thumbnail_url: h.optimized_url || h.original_url,
+          optimized_url: h.optimized_url,
+          status: h.status,
+          error_message: null
+        })) as QueueImage[]
+
+        const queueSuccessImages = (queueSuccessData || []).map(q => ({
+          id: q.id,
+          file_id: q.file_id,
+          file_name: q.file_name,
+          thumbnail_url: q.thumbnail_url || q.file_url,
+          optimized_url: null,
+          status: q.status,
+          error_message: null
+        })) as QueueImage[]
+
+        // Merge, avoiding duplicates by file_id
+        const seenFileIds = new Set(historyImages.map(i => i.file_id))
+        const uniqueQueueImages = queueSuccessImages.filter(q => !seenFileIds.has(q.file_id))
+
         return {
-          images: (historyData || []).map(h => ({
-            id: h.id,
-            file_id: h.file_id,
-            file_name: h.file_name,
-            thumbnail_url: h.optimized_url || h.original_url,
-            optimized_url: h.optimized_url,
-            status: h.status,
-            error_message: null
-          })) as QueueImage[],
+          images: [...historyImages, ...uniqueQueueImages],
           nextPage: (historyData?.length || 0) === pageSize ? pageParam + 1 : undefined
         }
       }
