@@ -322,18 +322,60 @@ Deno.serve(async (req: Request) => {
           if (resultUrl) {
             console.log(`[check-ai-jobs] SUCCESS! Job ${id} result: ${resultUrl}`)
 
+            // Download result image from Kie.ai and re-upload to Supabase Storage
+            let finalUrl = resultUrl
+            try {
+              console.log(`[check-ai-jobs] Downloading result image for job ${id}...`)
+              const imageResponse = await fetch(resultUrl)
+              if (imageResponse.ok) {
+                const imageBlob = await imageResponse.blob()
+                const contentType = imageResponse.headers.get('content-type') || 'image/png'
+                const ext = contentType.includes('jpeg') ? 'jpg' : contentType.includes('webp') ? 'webp' : 'png'
+                const fileName = `${job.organization_id}/${id}_optimized.${ext}`
+
+                // Upload to Supabase Storage
+                const { data: uploadData, error: uploadError } = await supabase
+                  .storage
+                  .from('optimized')
+                  .upload(fileName, imageBlob, {
+                    contentType,
+                    upsert: true
+                  })
+
+                if (uploadError) {
+                  console.error(`[check-ai-jobs] Upload error for job ${id}:`, uploadError)
+                } else {
+                  // Get public URL
+                  const { data: urlData } = supabase
+                    .storage
+                    .from('optimized')
+                    .getPublicUrl(fileName)
+
+                  if (urlData?.publicUrl) {
+                    finalUrl = urlData.publicUrl
+                    console.log(`[check-ai-jobs] Uploaded to Supabase: ${finalUrl}`)
+                  }
+                }
+              } else {
+                console.error(`[check-ai-jobs] Failed to download result: ${imageResponse.status}`)
+              }
+            } catch (uploadErr) {
+              console.error(`[check-ai-jobs] Error re-uploading result for job ${id}:`, uploadErr)
+              // Continue with original URL if upload fails
+            }
+
             await supabase
               .from('ai_jobs')
               .update({
                 status: 'success',
-                result_url: resultUrl,
+                result_url: finalUrl, // Use Supabase URL if upload succeeded
                 error_message: null,
                 callback_received: true, // Mark as received even though we polled
                 completed_at: new Date().toISOString(),
               })
               .eq('id', id)
 
-            results.push({ id, status: 'success', result_url: resultUrl })
+            results.push({ id, status: 'success', result_url: finalUrl })
           } else {
             console.log(`[check-ai-jobs] Job ${id} shows success but no URL found`)
             console.log(`[check-ai-jobs] Full response:`, JSON.stringify(statusResult))
