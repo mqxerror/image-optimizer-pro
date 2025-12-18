@@ -86,7 +86,8 @@ export function ImageQueueGrid({
     fetchNextPage,
     hasNextPage,
     isFetchingNextPage,
-    isLoading
+    isLoading,
+    error: queryError
   } = useInfiniteQuery({
     queryKey: ['project-images-grid', projectId, activeTab],
     queryFn: async ({ pageParam = 0 }) => {
@@ -95,13 +96,18 @@ export function ImageQueueGrid({
 
       // For success tab, fetch from processing_history
       if (activeTab === 'success') {
-        const { data: historyData } = await supabase
+        const { data: historyData, error } = await supabase
           .from('processing_history')
           .select('id, file_id, file_name, original_url, optimized_url, status')
           .eq('project_id', projectId)
           .in('status', ['success', 'completed'])
-          .order('completed_at', { ascending: false })
+          .order('completed_at', { ascending: false, nullsFirst: false })
           .range(offset, offset + pageSize - 1)
+
+        if (error) {
+          console.error('Error fetching processing_history:', error)
+          throw error
+        }
 
         return {
           images: (historyData || []).map(h => ({

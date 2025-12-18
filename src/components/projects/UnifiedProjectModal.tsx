@@ -47,7 +47,7 @@ import { ImageQueueGrid } from './modal/ImageQueueGrid'
 import { ProgressFooter } from './modal/ProgressFooter'
 import { SelectionActionsBar } from './modal/SelectionActionsBar'
 import { useProjectQueueStats, useRetryProjectFailed } from '@/components/project-detail/hooks/useProjectQueueStats'
-import { useProjectRealtime } from '@/hooks/useQueueRealtime'
+import { useProjectRealtime, useProcessingPolling } from '@/hooks/useQueueRealtime'
 import AddToQueue from '@/components/processing/AddToQueue'
 import type { Project } from '@/types/database'
 
@@ -102,6 +102,10 @@ export function UnifiedProjectModal({
 
   // Real-time updates for this project
   useProjectRealtime(open ? projectId : null)
+
+  // Poll check-ai-jobs when there are processing items (fallback for failed webhooks)
+  const hasProcessingItems = open && (queueStats?.processing || 0) > 0
+  useProcessingPolling(hasProcessingItems)
 
   // Reset state when modal opens/closes
   useEffect(() => {

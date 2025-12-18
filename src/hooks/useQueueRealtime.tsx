@@ -214,6 +214,81 @@ export function useQueueRealtime(options: UseQueueRealtimeOptions = {}) {
   }, [organization?.id, queryClient, toast, onItemCompleted, onItemFailed, showToasts, checkProjectCompletion])
 }
 
+// Hook to poll check-ai-jobs when there are processing items
+// This ensures jobs get updated even when webhooks fail
+export function useProcessingPolling(hasProcessingItems: boolean) {
+  const queryClient = useQueryClient()
+  const pollIntervalRef = useRef<NodeJS.Timeout | null>(null)
+  const lastPollRef = useRef<number>(0)
+
+  useEffect(() => {
+    if (!hasProcessingItems) {
+      // Clear polling when no processing items
+      if (pollIntervalRef.current) {
+        clearInterval(pollIntervalRef.current)
+        pollIntervalRef.current = null
+      }
+      return
+    }
+
+    // Start polling every 10 seconds when there are processing items
+    const pollCheckAiJobs = async () => {
+      // Throttle to prevent overlapping calls
+      const now = Date.now()
+      if (now - lastPollRef.current < 8000) return
+      lastPollRef.current = now
+
+      try {
+        const { data: { session } } = await supabase.auth.getSession()
+        if (!session) return
+
+        const response = await fetch(
+          `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/check-ai-jobs`,
+          {
+            method: 'POST',
+            headers: {
+              'Authorization': `Bearer ${session.access_token}`,
+              'Content-Type': 'application/json',
+            },
+          }
+        )
+
+        if (response.ok) {
+          const result = await response.json()
+          console.log('[useProcessingPolling] check-ai-jobs result:', result)
+
+          // If any jobs were updated, invalidate queries
+          if (result.success > 0 || result.failed > 0 || result.timeout > 0) {
+            queryClient.invalidateQueries({
+              predicate: (query) =>
+                query.queryKey[0] === 'project-queue-stats' ||
+                query.queryKey[0] === 'project-images-grid' ||
+                query.queryKey[0] === 'unified-project' ||
+                query.queryKey[0] === 'projects' ||
+                query.queryKey[0] === 'queue-stats'
+            })
+          }
+        }
+      } catch (error) {
+        console.error('[useProcessingPolling] Error polling check-ai-jobs:', error)
+      }
+    }
+
+    // Poll immediately
+    pollCheckAiJobs()
+
+    // Then poll every 10 seconds
+    pollIntervalRef.current = setInterval(pollCheckAiJobs, 10000)
+
+    return () => {
+      if (pollIntervalRef.current) {
+        clearInterval(pollIntervalRef.current)
+        pollIntervalRef.current = null
+      }
+    }
+  }, [hasProcessingItems, queryClient])
+}
+
 // Hook specifically for project detail page
 export function useProjectRealtime(projectId: string | null) {
   const queryClient = useQueryClient()
