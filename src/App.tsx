@@ -26,6 +26,8 @@ import ShopifySettings from './pages/ShopifySettings'
 import ShopifyJobs from './pages/ShopifyJobs'
 import ShopifyJobDetail from './pages/ShopifyJobDetail'
 import Landing from './pages/Landing'
+import ProcessTest from './pages/ProcessTest'
+import AdminDashboard from './pages/AdminDashboard'
 
 // Settings pages
 import SettingsLayout from './pages/settings/SettingsLayout'
@@ -90,6 +92,8 @@ function App() {
           <Route path="studio" element={<Studio />} />
           <Route path="projects" element={<Projects />} />
           <Route path="activity" element={<Activity />} />
+          <Route path="test" element={<ProcessTest />} />
+          <Route path="dev-admin" element={<AdminDashboard />} />
 
           {/* Settings - nested routes */}
           <Route path="settings" element={<SettingsLayout />}>

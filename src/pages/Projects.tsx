@@ -59,6 +59,7 @@ import {
 } from '@/components/ui/table'
 import { useToast } from '@/hooks/use-toast'
 import { supabase } from '@/lib/supabase'
+import { apiPatch, apiDelete } from '@/lib/api'
 import { useAuthStore } from '@/stores/auth'
 import { UnifiedProjectModal } from '@/components/projects/UnifiedProjectModal'
 import { NewProjectWizard } from '@/components/project-wizard-v2'
@@ -123,15 +124,10 @@ export default function Projects() {
   const projectIds = useMemo(() => (projects || []).map(p => p.id), [projects])
   const { data: previewImagesMap = {} } = useProjectPreviewImages(projectIds)
 
-  // Update status mutation
+  // Update status mutation - uses NestJS API
   const updateStatusMutation = useMutation({
     mutationFn: async ({ id, status }: { id: string; status: string }) => {
-      const { error } = await supabase
-        .from('projects')
-        .update({ status })
-        .eq('id', id)
-
-      if (error) throw error
+      await apiPatch(`/projects/${id}`, { status })
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['projects'] })
@@ -139,23 +135,14 @@ export default function Projects() {
       toast({ title: 'Project status updated' })
     },
     onError: (error) => {
-      toast({ title: 'Error updating status', description: error.message, variant: 'destructive' })
+      toast({ title: 'Error updating status', description: error instanceof Error ? error.message : 'Unknown error', variant: 'destructive' })
     }
   })
 
-  // Delete project mutation
+  // Delete project mutation - uses NestJS API (handles cascade delete)
   const deleteProjectMutation = useMutation({
     mutationFn: async (id: string) => {
-      // Delete related records first
-      await supabase.from('processing_queue').delete().eq('project_id', id)
-      await supabase.from('processing_history').delete().eq('project_id', id)
-
-      const { error } = await supabase
-        .from('projects')
-        .delete()
-        .eq('id', id)
-
-      if (error) throw error
+      await apiDelete(`/projects/${id}`)
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['projects'] })
@@ -163,7 +150,7 @@ export default function Projects() {
       toast({ title: 'Project deleted' })
     },
     onError: (error) => {
-      toast({ title: 'Error deleting project', description: error.message, variant: 'destructive' })
+      toast({ title: 'Error deleting project', description: error instanceof Error ? error.message : 'Unknown error', variant: 'destructive' })
     }
   })
 
